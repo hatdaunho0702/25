@@ -178,6 +178,7 @@
     <Compile Include="Models\DonHang.cs">
       <DependentUpon>DB_SkinFood.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\DonHang.Partial.cs" />
     <Compile Include="Models\GioHang.cs" />
     <Compile Include="Models\HomeViewModel.cs" />
     <Compile Include="Models\LienHe.cs">
@@ -296,6 +297,8 @@
     <Content Include="Areas\Admin\Views\NguoiDungs\Details.cshtml" />
     <Content Include="Areas\Admin\Views\NguoiDungs\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\NguoiDungs\Index.cshtml" />
+    <Content Include="OPTIMIZATION_REPORT.md" />
+    <Content Include="CSRF_FIX_REPORT.md" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />

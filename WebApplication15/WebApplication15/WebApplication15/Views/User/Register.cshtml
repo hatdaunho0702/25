@@ -18,6 +18,8 @@
 
         @using (Html.BeginForm("RegisterSubmit", "User", FormMethod.Post))
         {
+            @Html.AntiForgeryToken()
+            
             <div class="card" style="width:450px;">
                 <h3 class="card-title text-center mb-3" style="color:white">Đăng ký tài khoản</h3>
 
@@ -72,6 +74,11 @@
                 @if (ViewBag.Error != null)
                 {
                     <div class="alert alert-danger mt-3">@ViewBag.Error</div>
+                }
+                
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success mt-3">@TempData["Success"]</div>
                 }
             </div>
         }

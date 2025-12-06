@@ -12,11 +12,22 @@ namespace WebApplication15.Areas.Admin.Controllers
     [AuthorizeAdmin]
     public class LoaiSPController : Controller
     {
-        // GET: Admin/LoaiSP
+        private DB_SkinFood1Entities db = new DB_SkinFood1Entities();
 
-        DB_SkinFood1Entities db = new DB_SkinFood1Entities();
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db?.Dispose();
+            }
+            base.Dispose(disposing);
+        }
 
-        public ActionResult Index() => View(db.LoaiSPs.ToList());
+        public ActionResult Index()
+        {
+            var loaiSPs = db.LoaiSPs.ToList();
+            return View(loaiSPs);
+        }
 
         public ActionResult Create()
         {
@@ -92,7 +103,7 @@ namespace WebApplication15.Areas.Admin.Controllers
                     TempData["SuccessMessage"] = "Xóa loại sản phẩm thành công!";
                 }
             }
-            catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
+            catch (System.Data.Entity.Infrastructure.DbUpdateException)
             {
                 TempData["ErrorMessage"] = "Không thể xóa loại sản phẩm này vì còn có sản phẩm liên quan.";
             }

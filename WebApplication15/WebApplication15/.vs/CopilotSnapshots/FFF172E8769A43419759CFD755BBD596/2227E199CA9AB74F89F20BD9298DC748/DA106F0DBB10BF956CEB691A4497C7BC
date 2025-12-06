@@ -63,21 +63,20 @@ namespace WebApplication15.Areas.Admin.Controllers
             ViewBag.SoLuongTonTatCa = soLuongTonTatCa;
             ViewBag.SanPhamHetHang = sanPhamHetHang;
 
-            // Doanh thu tháng này - Optimized
+            // Doanh thu tháng này
             var ngayDauThang = new DateTime(ngayHienTai.Year, ngayHienTai.Month, 1);
-            
-            // Lấy tất cả đơn hàng vào memory một lần để tránh multiple queries
-            var allDonHangs = db.DonHangs.ToList();
-            
-            var doanhThuThangNay = allDonHangs
+            var doanhThuThangNay = db.DonHangs
                 .Where(dh => dh.NgayDat >= ngayDauThang && dh.NgayDat <= ngayHienTai)
-                .Sum(dh => (decimal?)dh.TongTien) ?? 0;
+                .Sum(dh => dh.TongTien) ?? 0;
 
             ViewBag.DoanhThuThangNay = doanhThuThangNay;
 
             // ======================================
             // THỐNG KÊ THANH TOÁN
             // ======================================
+
+            // Lấy tất cả đơn hàng vào memory trước
+            var allDonHangs = db.DonHangs.ToList();
 
             // Đơn hàng đã thanh toán
             var donHangDaThanhToan = allDonHangs
@@ -90,10 +89,10 @@ namespace WebApplication15.Areas.Admin.Controllers
                 .ToList();
 
             // Doanh thu từ các đơn hàng đã thanh toán
-            var doanhThuDaThanhToan = donHangDaThanhToan.Sum(dh => (decimal?)dh.TongTien) ?? 0;
+            var doanhThuDaThanhToan = donHangDaThanhToan.Sum(dh => dh.TongTien) ?? 0;
 
             // Doanh thu từ các đơn hàng chưa thanh toán
-            var doanhThuChuaThanhToan = donHangChuaThanhToan.Sum(dh => (decimal?)dh.TongTien) ?? 0;
+            var doanhThuChuaThanhToan = donHangChuaThanhToan.Sum(dh => dh.TongTien) ?? 0;
 
             ViewBag.DonHangDaThanhToan = donHangDaThanhToan.Count;
             ViewBag.DonHangChuaThanhToan = donHangChuaThanhToan.Count;
@@ -131,7 +130,7 @@ namespace WebApplication15.Areas.Admin.Controllers
                 
                 var doanhThu = allDonHangs
                     .Where(dh => dh.NgayDat >= ngayBatDau && dh.NgayDat < ngayKetThuc)
-                    .Sum(dh => (decimal?)dh.TongTien) ?? 0;
+                    .Sum(dh => dh.TongTien) ?? 0;
                 
                 doanhThuTheoNgay.Add(doanhThu);
                 labelTheoNgay.Add(ngay.ToString("dd/MM"));
@@ -149,7 +148,7 @@ namespace WebApplication15.Areas.Admin.Controllers
                 
                 var doanhThu = allDonHangs
                     .Where(dh => dh.NgayDat >= ngayDauThangTemp && dh.NgayDat < ngayCuoiThang)
-                    .Sum(dh => (decimal?)dh.TongTien) ?? 0;
+                    .Sum(dh => dh.TongTien) ?? 0;
                 
                 doanhThuTheoThang.Add(doanhThu);
                 labelTheoThang.Add(thang.ToString("MM/yyyy"));
@@ -167,7 +166,7 @@ namespace WebApplication15.Areas.Admin.Controllers
                 
                 var doanhThu = allDonHangs
                     .Where(dh => dh.NgayDat >= ngayDauNam && dh.NgayDat < ngayCuoiNam)
-                    .Sum(dh => (decimal?)dh.TongTien) ?? 0;
+                    .Sum(dh => dh.TongTien) ?? 0;
                 
                 doanhThuTheoNam.Add(doanhThu);
                 labelTheoNam.Add(nam.ToString());

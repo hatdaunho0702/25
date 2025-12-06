@@ -12,17 +12,30 @@ namespace WebApplication15.Areas.Admin.Controllers
     [AuthorizeAdmin]
     public class TaiKhoanController : Controller
     {
-        DB_SkinFood1Entities db = new DB_SkinFood1Entities();
+        private DB_SkinFood1Entities db = new DB_SkinFood1Entities();
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db?.Dispose();
+            }
+            base.Dispose(disposing);
+        }
 
         public ActionResult Index()
         {
-            return View(db.TaiKhoans.ToList());
+            var taiKhoans = db.TaiKhoans.ToList();
+            return View(taiKhoans);
         }
+
         public ActionResult Create()
         {
             return View();
         }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Create(TaiKhoanCreateVM model)
         {
             if (!ModelState.IsValid)
@@ -34,66 +47,77 @@ namespace WebApplication15.Areas.Admin.Controllers
                 return View(model);
             }
 
-            // 1. Tạo mới người dùng
-            var nd = new NguoiDung
+            try
             {
-                HoTen = model.HoTenNguoiDung,
-                NgayTao = DateTime.Now
-            };
+                // Kiểm tra tên đăng nhập đã tồn tại chưa
+                var existingUser = db.TaiKhoans.FirstOrDefault(t => t.TenDangNhap == model.TenDangNhap);
+                if (existingUser != null)
+                {
+                    ModelState.AddModelError("", "Tên đăng nhập đã tồn tại.");
+                    return View(model);
+                }
 
-            db.NguoiDungs.Add(nd);
-            db.SaveChanges();  // => Sinh ra MaND
+                // Tạo mới người dùng
+                var nd = new NguoiDung
+                {
+                    HoTen = model.HoTenNguoiDung,
+                    NgayTao = DateTime.Now
+                };
 
-            // 2. Tạo tài khoản
-            var tk = new TaiKhoan
+                db.NguoiDungs.Add(nd);
+                db.SaveChanges();
+
+                // Tạo tài khoản
+                var tk = new TaiKhoan
+                {
+                    TenDangNhap = model.TenDangNhap,
+                    MatKhauHash = model.MatKhau,
+                    VaiTro = model.VaiTro,
+                    MaND = nd.MaND
+                };
+
+                db.TaiKhoans.Add(tk);
+                db.SaveChanges();
+
+                TempData["SuccessMessage"] = "Tạo tài khoản thành công!";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
             {
-                TenDangNhap = model.TenDangNhap,
-                MatKhauHash = model.MatKhau,     // Nếu có hash thì hash trước
-                VaiTro = model.VaiTro,
-                MaND = nd.MaND
-            };
-
-            db.TaiKhoans.Add(tk);
-            db.SaveChanges();
-
-            return RedirectToAction("Index");
+                ModelState.AddModelError("", "Có lỗi xảy ra: " + ex.Message);
+                return View(model);
+            }
         }
-
-        //public ActionResult Create()
-        //{
-        //    ViewBag.MaND = new SelectList(db.NguoiDungs, "MaND", "HoTen");
-        //    return View();
-        //}
-
-        //[HttpPost]
-        //public ActionResult Create(TaiKhoan tk)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        db.TaiKhoans.Add(tk);
-        //        db.SaveChanges();
-        //        return RedirectToAction("Index");
-        //    }
-        //    ViewBag.MaND = new SelectList(db.NguoiDungs, "MaND", "HoTen", tk.MaND);
-        //    return View(tk);
-        //}
 
         public ActionResult Edit(int id)
         {
             var tk = db.TaiKhoans.Find(id);
+            if (tk == null)
+                return HttpNotFound();
+
             ViewBag.MaND = new SelectList(db.NguoiDungs, "MaND", "HoTen", tk.MaND);
             return View(tk);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(TaiKhoan tk)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(tk).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.Entry(tk).State = EntityState.Modified;
+                    db.SaveChanges();
+                    TempData["SuccessMessage"] = "Cập nhật tài khoản thành công!";
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Có lỗi xảy ra: " + ex.Message);
+                }
             }
+
             ViewBag.MaND = new SelectList(db.NguoiDungs, "MaND", "HoTen", tk.MaND);
             return View(tk);
         }
@@ -107,10 +131,11 @@ namespace WebApplication15.Areas.Admin.Controllers
                 {
                     db.TaiKhoans.Remove(tk);
                     db.SaveChanges();
+                    TempData["SuccessMessage"] = "Xóa tài khoản thành công!";
                     return RedirectToAction("Index");
                 }
             }
-            catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
+            catch (System.Data.Entity.Infrastructure.DbUpdateException)
             {
                 TempData["ErrorMessage"] = "Không thể xóa tài khoản này vì còn có dữ liệu liên quan.";
             }

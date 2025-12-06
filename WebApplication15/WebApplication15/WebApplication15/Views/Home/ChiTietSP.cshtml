@@ -69,6 +69,8 @@
                     <h5 class="review-title">Đánh giá sản phẩm</h5>
 
                     <form method="post" action="@Url.Action("ThemDanhGia", "Home")" class="review-form">
+                        @Html.AntiForgeryToken()
+                        
                         <input type="hidden" name="MaSP" value="@Model.MaSP" />
 
                         <div class="mb-3">
@@ -94,10 +96,10 @@
                             </div>
                         </div>
                             
-                            <label>Nội dung:</label>
-                            <textarea name="NoiDung" class="form-control mb-3" required></textarea>
+                        <label>Nội dung:</label>
+                        <textarea name="NoiDung" class="form-control mb-3" required></textarea>
 
-                            <button class="btn btn-primary w-100 review-btn">Gửi đánh giá</button>
+                        <button class="btn btn-primary w-100 review-btn">Gửi đánh giá</button>
                     </form>
                 </div>
             }

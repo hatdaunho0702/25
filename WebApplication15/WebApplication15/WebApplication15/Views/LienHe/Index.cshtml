@@ -19,6 +19,7 @@
         <!-- FORM LIÊN HỆ -->
         <div class="col-md-6">
             <form method="post" action="/LienHe/GuiLienHe">
+                @Html.AntiForgeryToken()
 
                 <div class="mb-3">
                     <label>Họ và tên</label>

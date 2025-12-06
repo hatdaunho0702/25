@@ -6,10 +6,12 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using WebApplication15.Areas.Admin.Data;
 using WebApplication15.Models;
 
 namespace WebApplication15.Areas.Admin.Controllers
 {
+    [AuthorizeAdmin]
     public class NguoiDungsController : Controller
     {
         private DB_SkinFood1Entities db = new DB_SkinFood1Entities();
@@ -17,7 +19,8 @@ namespace WebApplication15.Areas.Admin.Controllers
         // GET: Admin/NguoiDungs
         public ActionResult Index()
         {
-            return View(db.NguoiDungs.ToList());
+            var nguoiDungs = db.NguoiDungs.ToList();
+            return View(nguoiDungs);
         }
 
         // GET: Admin/NguoiDungs/Details/5
@@ -27,11 +30,13 @@ namespace WebApplication15.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             NguoiDung nguoiDung = db.NguoiDungs.Find(id);
             if (nguoiDung == null)
             {
                 return HttpNotFound();
             }
+
             return View(nguoiDung);
         }
 
@@ -42,17 +47,24 @@ namespace WebApplication15.Areas.Admin.Controllers
         }
 
         // POST: Admin/NguoiDungs/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "MaND,HoTen,SoDienThoai,DiaChi,GioiTinh,NgaySinh,NgayTao")] NguoiDung nguoiDung)
         {
             if (ModelState.IsValid)
             {
-                db.NguoiDungs.Add(nguoiDung);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    nguoiDung.NgayTao = DateTime.Now;
+                    db.NguoiDungs.Add(nguoiDung);
+                    db.SaveChanges();
+                    TempData["SuccessMessage"] = "Thêm người dùng thành công!";
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Có lỗi xảy ra: " + ex.Message);
+                }
             }
 
             return View(nguoiDung);
@@ -65,27 +77,36 @@ namespace WebApplication15.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             NguoiDung nguoiDung = db.NguoiDungs.Find(id);
             if (nguoiDung == null)
             {
                 return HttpNotFound();
             }
+
             return View(nguoiDung);
         }
 
         // POST: Admin/NguoiDungs/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "MaND,HoTen,SoDienThoai,DiaChi,GioiTinh,NgaySinh,NgayTao")] NguoiDung nguoiDung)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(nguoiDung).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.Entry(nguoiDung).State = EntityState.Modified;
+                    db.SaveChanges();
+                    TempData["SuccessMessage"] = "Cập nhật người dùng thành công!";
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Có lỗi xảy ra: " + ex.Message);
+                }
             }
+
             return View(nguoiDung);
         }
 
@@ -96,11 +117,13 @@ namespace WebApplication15.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             NguoiDung nguoiDung = db.NguoiDungs.Find(id);
             if (nguoiDung == null)
             {
                 return HttpNotFound();
             }
+
             return View(nguoiDung);
         }
 
@@ -109,9 +132,25 @@ namespace WebApplication15.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            NguoiDung nguoiDung = db.NguoiDungs.Find(id);
-            db.NguoiDungs.Remove(nguoiDung);
-            db.SaveChanges();
+            try
+            {
+                NguoiDung nguoiDung = db.NguoiDungs.Find(id);
+                if (nguoiDung != null)
+                {
+                    db.NguoiDungs.Remove(nguoiDung);
+                    db.SaveChanges();
+                    TempData["SuccessMessage"] = "Xóa người dùng thành công!";
+                }
+            }
+            catch (System.Data.Entity.Infrastructure.DbUpdateException)
+            {
+                TempData["ErrorMessage"] = "Không thể xóa người dùng này vì còn có dữ liệu liên quan (tài khoản, đơn hàng).";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi xóa: " + ex.Message;
+            }
+
             return RedirectToAction("Index");
         }
 
@@ -119,7 +158,7 @@ namespace WebApplication15.Areas.Admin.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                db?.Dispose();
             }
             base.Dispose(disposing);
         }

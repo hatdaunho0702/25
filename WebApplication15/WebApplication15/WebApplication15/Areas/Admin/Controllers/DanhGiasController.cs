@@ -6,10 +6,12 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using WebApplication15.Areas.Admin.Data;
 using WebApplication15.Models;
 
 namespace WebApplication15.Areas.Admin.Controllers
 {
+    [AuthorizeAdmin]
     public class DanhGiasController : Controller
     {
         private DB_SkinFood1Entities db = new DB_SkinFood1Entities();
@@ -17,8 +19,13 @@ namespace WebApplication15.Areas.Admin.Controllers
         // GET: Admin/DanhGias
         public ActionResult Index()
         {
-            var danhGias = db.DanhGias.Include(d => d.NguoiDung).Include(d => d.SanPham);
-            return View(danhGias.ToList());
+            var danhGias = db.DanhGias
+                .Include(d => d.NguoiDung)
+                .Include(d => d.SanPham)
+                .OrderByDescending(d => d.NgayDanhGia)
+                .ToList();
+
+            return View(danhGias);
         }
 
         // GET: Admin/DanhGias/Details/5
@@ -28,11 +35,13 @@ namespace WebApplication15.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             DanhGia danhGia = db.DanhGias.Find(id);
             if (danhGia == null)
             {
                 return HttpNotFound();
             }
+
             return View(danhGia);
         }
 
@@ -45,17 +54,24 @@ namespace WebApplication15.Areas.Admin.Controllers
         }
 
         // POST: Admin/DanhGias/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "MaDG,MaSP,MaND,NoiDung,Diem,NgayDanhGia,DuocApprove,TraLoiAdmin,ThoiGianTraLoi")] DanhGia danhGia)
         {
             if (ModelState.IsValid)
             {
-                db.DanhGias.Add(danhGia);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    danhGia.NgayDanhGia = DateTime.Now;
+                    db.DanhGias.Add(danhGia);
+                    db.SaveChanges();
+                    TempData["SuccessMessage"] = "Thêm đánh giá thành công!";
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Có lỗi xảy ra: " + ex.Message);
+                }
             }
 
             ViewBag.MaND = new SelectList(db.NguoiDungs, "MaND", "HoTen", danhGia.MaND);
@@ -70,29 +86,38 @@ namespace WebApplication15.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             DanhGia danhGia = db.DanhGias.Find(id);
             if (danhGia == null)
             {
                 return HttpNotFound();
             }
+
             ViewBag.MaND = new SelectList(db.NguoiDungs, "MaND", "HoTen", danhGia.MaND);
             ViewBag.MaSP = new SelectList(db.SanPhams, "MaSP", "TenSP", danhGia.MaSP);
             return View(danhGia);
         }
 
         // POST: Admin/DanhGias/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "MaDG,MaSP,MaND,NoiDung,Diem,NgayDanhGia,DuocApprove,TraLoiAdmin,ThoiGianTraLoi")] DanhGia danhGia)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(danhGia).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.Entry(danhGia).State = EntityState.Modified;
+                    db.SaveChanges();
+                    TempData["SuccessMessage"] = "Cập nhật đánh giá thành công!";
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Có lỗi xảy ra: " + ex.Message);
+                }
             }
+
             ViewBag.MaND = new SelectList(db.NguoiDungs, "MaND", "HoTen", danhGia.MaND);
             ViewBag.MaSP = new SelectList(db.SanPhams, "MaSP", "TenSP", danhGia.MaSP);
             return View(danhGia);
@@ -105,42 +130,65 @@ namespace WebApplication15.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             DanhGia danhGia = db.DanhGias.Find(id);
             if (danhGia == null)
             {
                 return HttpNotFound();
             }
+
             return View(danhGia);
         }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult DeleteSelected(int[] ids)
         {
-            if (ids != null && ids.Length > 0)
+            try
             {
-                foreach (var id in ids)
+                if (ids != null && ids.Length > 0)
                 {
-                    var item = db.DanhGias.Find(id);
-                    if (item != null)
+                    foreach (var id in ids)
                     {
-                        db.DanhGias.Remove(item);
+                        var item = db.DanhGias.Find(id);
+                        if (item != null)
+                        {
+                            db.DanhGias.Remove(item);
+                        }
                     }
-                }
 
-                db.SaveChanges();
+                    db.SaveChanges();
+                    TempData["SuccessMessage"] = $"Đã xóa {ids.Length} đánh giá thành công!";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi xóa: " + ex.Message;
             }
 
             return RedirectToAction("Index");
         }
-
 
         // POST: Admin/DanhGias/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            DanhGia danhGia = db.DanhGias.Find(id);
-            db.DanhGias.Remove(danhGia);
-            db.SaveChanges();
+            try
+            {
+                DanhGia danhGia = db.DanhGias.Find(id);
+                if (danhGia != null)
+                {
+                    db.DanhGias.Remove(danhGia);
+                    db.SaveChanges();
+                    TempData["SuccessMessage"] = "Xóa đánh giá thành công!";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi xóa: " + ex.Message;
+            }
+
             return RedirectToAction("Index");
         }
 
@@ -148,7 +196,7 @@ namespace WebApplication15.Areas.Admin.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                db?.Dispose();
             }
             base.Dispose(disposing);
         }

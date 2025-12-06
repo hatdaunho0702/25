@@ -12,12 +12,22 @@ namespace WebApplication15.Areas.Admin.Controllers
     [AuthorizeAdmin]
     public class DonHangController : Controller
     {
-        // GET: Admin/DonHang
-        DB_SkinFood1Entities db = new DB_SkinFood1Entities();
+        private DB_SkinFood1Entities db = new DB_SkinFood1Entities();
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db?.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        // GET: Admin/DonHang
         public ActionResult Index()
         {
-            return View(db.DonHangs.OrderByDescending(d => d.NgayDat).ToList());
+            var donHangs = db.DonHangs.OrderByDescending(d => d.NgayDat).ToList();
+            return View(donHangs);
         }
 
         public ActionResult Details(int id)
@@ -39,13 +49,16 @@ namespace WebApplication15.Areas.Admin.Controllers
         {
             try
             {
-                db.ChiTietDonHangs.RemoveRange(
-                    db.ChiTietDonHangs.Where(c => c.MaDH == id)
-                );
+                var chiTietList = db.ChiTietDonHangs.Where(c => c.MaDH == id).ToList();
+                db.ChiTietDonHangs.RemoveRange(chiTietList);
 
-                db.DonHangs.Remove(db.DonHangs.Find(id));
-                db.SaveChanges();
-                TempData["SuccessMessage"] = "Xóa đơn hàng thành công!";
+                var donHang = db.DonHangs.Find(id);
+                if (donHang != null)
+                {
+                    db.DonHangs.Remove(donHang);
+                    db.SaveChanges();
+                    TempData["SuccessMessage"] = "Xóa đơn hàng thành công!";
+                }
             }
             catch (Exception ex)
             {

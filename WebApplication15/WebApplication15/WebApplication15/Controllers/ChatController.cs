@@ -5,47 +5,92 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Newtonsoft.Json;
 
-public class ChatController : Controller
+namespace WebApplication15.Controllers
 {
-    private readonly string apiKey = "";
-
-    public ActionResult ChatAI()
+    public class ChatController : Controller
     {
-        return View();
-    }
+        // Lưu ý: Thay thế API key của bạn ở đây
+        private readonly string apiKey = ""; // TODO: Thêm API key của bạn vào đây hoặc lưu trong Web.config
 
-    [HttpPost]
-    public async Task<ActionResult> SendMessage(string message)
-    {
-        try
+        public ActionResult ChatAI()
         {
-            var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
-
-            var requestBody = new
-            {
-                model = "gpt-4o-mini",
-                input = message
-            };
-
-            var content = new StringContent(
-                JsonConvert.SerializeObject(requestBody),
-                Encoding.UTF8,
-                "application/json"
-            );
-
-            var response = await httpClient.PostAsync("https://api.openai.com/v1/responses", content);
-            var responseString = await response.Content.ReadAsStringAsync();
-
-            dynamic data = JsonConvert.DeserializeObject(responseString);
-
-            string reply = data.output[0].content[0].text;
-
-            return Content(reply);
+            return View();
         }
-        catch (Exception ex)
+
+        [HttpPost]
+        public async Task<ActionResult> SendMessage(string message)
         {
-            return Content("Lỗi: " + ex.Message);
+            try
+            {
+                if (string.IsNullOrWhiteSpace(apiKey))
+                {
+                    return Content("Vui lòng cấu hình API key trong ChatController.");
+                }
+
+                if (string.IsNullOrWhiteSpace(message))
+                {
+                    return Content("Vui lòng nhập tin nhắn.");
+                }
+
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+                    httpClient.Timeout = TimeSpan.FromSeconds(30);
+
+                    // Sửa request body theo API OpenAI đúng
+                    var requestBody = new
+                    {
+                        model = "gpt-3.5-turbo",
+                        messages = new[]
+                        {
+                            new
+                            {
+                                role = "system",
+                                content = "Bạn là trợ lý ảo hỗ trợ khách hàng về mỹ phẩm và chăm sóc da."
+                            },
+                            new
+                            {
+                                role = "user",
+                                content = message
+                            }
+                        },
+                        max_tokens = 500,
+                        temperature = 0.7
+                    };
+
+                    var content = new StringContent(
+                        JsonConvert.SerializeObject(requestBody),
+                        Encoding.UTF8,
+                        "application/json"
+                    );
+
+                    // Sửa endpoint đúng theo API OpenAI
+                    var response = await httpClient.PostAsync("https://api.openai.com/v1/chat/completions", content);
+                    
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var errorContent = await response.Content.ReadAsStringAsync();
+                        System.Diagnostics.Debug.WriteLine($"API Error: {errorContent}");
+                        return Content($"Lỗi từ API: {response.StatusCode}");
+                    }
+
+                    var responseString = await response.Content.ReadAsStringAsync();
+                    dynamic data = JsonConvert.DeserializeObject(responseString);
+
+                    string reply = data.choices[0].message.content;
+
+                    return Content(reply);
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                return Content("Yêu cầu đã hết thời gian chờ. Vui lòng thử lại.");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Chat Error: {ex.Message}");
+                return Content("Lỗi: Không thể kết nối đến dịch vụ AI. Vui lòng thử lại sau.");
+            }
         }
     }
 }

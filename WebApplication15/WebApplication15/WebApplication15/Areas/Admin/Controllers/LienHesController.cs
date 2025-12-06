@@ -6,10 +6,12 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using WebApplication15.Areas.Admin.Data;
 using WebApplication15.Models;
 
 namespace WebApplication15.Areas.Admin.Controllers
 {
+    [AuthorizeAdmin]
     public class LienHesController : Controller
     {
         private DB_SkinFood1Entities db = new DB_SkinFood1Entities();
@@ -18,10 +20,12 @@ namespace WebApplication15.Areas.Admin.Controllers
         public ActionResult Index(string q)
         {
             var list = db.LienHes.AsQueryable();
-            if (!String.IsNullOrEmpty(q))
+            
+            if (!string.IsNullOrEmpty(q))
             {
                 list = list.Where(x => x.HoTen.Contains(q) || x.Email.Contains(q) || x.NoiDung.Contains(q));
             }
+
             return View(list.OrderByDescending(x => x.NgayGui).ToList());
         }
 
@@ -32,11 +36,13 @@ namespace WebApplication15.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             LienHe lienHe = db.LienHes.Find(id);
             if (lienHe == null)
             {
                 return HttpNotFound();
             }
+
             return View(lienHe);
         }
 
@@ -47,17 +53,24 @@ namespace WebApplication15.Areas.Admin.Controllers
         }
 
         // POST: Admin/LienHes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "MaLH,HoTen,Email,SoDienThoai,NoiDung,NgayGui")] LienHe lienHe)
         {
             if (ModelState.IsValid)
             {
-                db.LienHes.Add(lienHe);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    lienHe.NgayGui = DateTime.Now;
+                    db.LienHes.Add(lienHe);
+                    db.SaveChanges();
+                    TempData["SuccessMessage"] = "Thêm liên hệ thành công!";
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Có lỗi xảy ra: " + ex.Message);
+                }
             }
 
             return View(lienHe);
@@ -70,48 +83,61 @@ namespace WebApplication15.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             LienHe lienHe = db.LienHes.Find(id);
             if (lienHe == null)
             {
                 return HttpNotFound();
             }
+
             return View(lienHe);
         }
 
         // POST: Admin/LienHes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "MaLH,HoTen,Email,SoDienThoai,NoiDung,NgayGui")] LienHe lienHe)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(lienHe).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.Entry(lienHe).State = EntityState.Modified;
+                    db.SaveChanges();
+                    TempData["SuccessMessage"] = "Cập nhật liên hệ thành công!";
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Có lỗi xảy ra: " + ex.Message);
+                }
             }
+
             return View(lienHe);
         }
 
-            // GET: Admin/LienHes/Delete/5
-            public ActionResult Delete(int? id)
+        // GET: Admin/LienHes/Delete/5
+        public ActionResult Delete(int? id)
+        {
+            if (id == null)
             {
-                if (id == null)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-                LienHe lienHe = db.LienHes.Find(id);
-                if (lienHe == null)
-                {
-                    return HttpNotFound();
-                }
-                return View(lienHe);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            [HttpPost]
+            LienHe lienHe = db.LienHes.Find(id);
+            if (lienHe == null)
+            {
+                return HttpNotFound();
+            }
 
-            public ActionResult DeleteSelected(int[] idsToDelete)
+            return View(lienHe);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteSelected(int[] idsToDelete)
+        {
+            try
             {
                 if (idsToDelete != null && idsToDelete.Length > 0)
                 {
@@ -122,26 +148,45 @@ namespace WebApplication15.Areas.Admin.Controllers
                             db.LienHes.Remove(item);
                     }
                     db.SaveChanges();
+                    TempData["SuccessMessage"] = $"Đã xóa {idsToDelete.Length} liên hệ thành công!";
                 }
-                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi xóa: " + ex.Message;
             }
 
-            // POST: Admin/LienHes/Delete/5
-            [HttpPost, ActionName("Delete")]
+            return RedirectToAction("Index");
+        }
 
+        // POST: Admin/LienHes/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
+        {
+            try
             {
                 LienHe lienHe = db.LienHes.Find(id);
-                db.LienHes.Remove(lienHe);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (lienHe != null)
+                {
+                    db.LienHes.Remove(lienHe);
+                    db.SaveChanges();
+                    TempData["SuccessMessage"] = "Xóa liên hệ thành công!";
+                }
             }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi xóa: " + ex.Message;
+            }
+
+            return RedirectToAction("Index");
+        }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                db.Dispose();
+                db?.Dispose();
             }
             base.Dispose(disposing);
         }

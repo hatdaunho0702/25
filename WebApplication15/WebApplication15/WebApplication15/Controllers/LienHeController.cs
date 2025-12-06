@@ -3,51 +3,67 @@ using System.Data.Entity;
 using System.Web.Mvc;
 using WebApplication15.Models;
 
-public class LienHeController : Controller
+namespace WebApplication15.Controllers
 {
-    private DB_SkinFood1Entities db = new DB_SkinFood1Entities();
-
-    public ActionResult Index()
+    public class LienHeController : Controller
     {
-        return View();
-    }
+        private DB_SkinFood1Entities db = new DB_SkinFood1Entities();
 
-    [HttpPost]
-    public ActionResult GuiLienHe(LienHe model)
-    {
-        if (ModelState.IsValid)
+        protected override void Dispose(bool disposing)
         {
-            model.NgayGui = DateTime.Now;  
-
-            db.LienHes.Add(model);
-            db.SaveChanges();
-
-            TempData["Success"] = "Gửi liên hệ thành công! Chúng tôi sẽ phản hồi sớm nhất.";
-            return RedirectToAction("Index");
+            if (disposing)
+            {
+                db?.Dispose();
+            }
+            base.Dispose(disposing);
         }
 
-        TempData["Error"] = "Gửi thất bại. Vui lòng thử lại!";
-        return View("Index");
-    }
-    public ActionResult CheckLogin()
-    {
-        if (Session["User"] != null)
+        public ActionResult Index()
         {
-            return RedirectToAction("Index", "Home");
+            return View();
         }
-        return RedirectToAction("Login", "User");
-    }
-    public ActionResult HuongDanMuaHang()
-    {
-        return View();
-    }
-    public ActionResult ChinhSachDoiTra()
-    {
-        return View();
-    }
-    public ActionResult ChinhSachBaoMat()
-    {
-        return View();
-    }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult GuiLienHe(LienHe model)
+        {
+            if (ModelState.IsValid)
+            {
+                model.NgayGui = DateTime.Now;  
+
+                db.LienHes.Add(model);
+                db.SaveChanges();
+
+                TempData["Success"] = "Gửi liên hệ thành công! Chúng tôi sẽ phản hồi sớm nhất.";
+                return RedirectToAction("Index");
+            }
+
+            TempData["Error"] = "Gửi thất bại. Vui lòng thử lại!";
+            return View("Index", model);
+        }
+
+        public ActionResult CheckLogin()
+        {
+            if (Session["User"] != null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            return RedirectToAction("Login", "User");
+        }
+
+        public ActionResult HuongDanMuaHang()
+        {
+            return View();
+        }
+
+        public ActionResult ChinhSachDoiTra()
+        {
+            return View();
+        }
+
+        public ActionResult ChinhSachBaoMat()
+        {
+            return View();
+        }
+    }
 }

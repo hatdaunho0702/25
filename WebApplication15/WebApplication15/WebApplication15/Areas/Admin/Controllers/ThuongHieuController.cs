@@ -12,29 +12,63 @@ namespace WebApplication15.Areas.Admin.Controllers
     [AuthorizeAdmin]
     public class ThuongHieuController : Controller
     {
-        // GET: Admin/ThuongHieu
-        DB_SkinFood1Entities db = new DB_SkinFood1Entities();
+        private DB_SkinFood1Entities db = new DB_SkinFood1Entities();
 
-        public ActionResult Index() => View(db.ThuongHieux.ToList());
-
-        public ActionResult Create() => View();
-
-        [HttpPost]
-        public ActionResult Create(ThuongHieu th)
+        protected override void Dispose(bool disposing)
         {
-            db.ThuongHieux.Add(th);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            if (disposing)
+            {
+                db?.Dispose();
+            }
+            base.Dispose(disposing);
         }
 
-        public ActionResult Edit(int id) => View(db.ThuongHieux.Find(id));
+        // GET: Admin/ThuongHieu
+        public ActionResult Index()
+        {
+            var thuongHieus = db.ThuongHieux.ToList();
+            return View(thuongHieus);
+        }
+
+        public ActionResult Create()
+        {
+            return View();
+        }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(ThuongHieu th)
+        {
+            if (ModelState.IsValid)
+            {
+                db.ThuongHieux.Add(th);
+                db.SaveChanges();
+                TempData["SuccessMessage"] = "Thêm thương hiệu thành công!";
+                return RedirectToAction("Index");
+            }
+            return View(th);
+        }
+
+        public ActionResult Edit(int id)
+        {
+            var th = db.ThuongHieux.Find(id);
+            if (th == null)
+                return HttpNotFound();
+            return View(th);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(ThuongHieu th)
         {
-            db.Entry(th).State = EntityState.Modified;
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            if (ModelState.IsValid)
+            {
+                db.Entry(th).State = EntityState.Modified;
+                db.SaveChanges();
+                TempData["SuccessMessage"] = "Cập nhật thương hiệu thành công!";
+                return RedirectToAction("Index");
+            }
+            return View(th);
         }
 
         public ActionResult Delete(int id)
@@ -46,10 +80,11 @@ namespace WebApplication15.Areas.Admin.Controllers
                 {
                     db.ThuongHieux.Remove(th);
                     db.SaveChanges();
+                    TempData["SuccessMessage"] = "Xóa thương hiệu thành công!";
                     return RedirectToAction("Index");
                 }
             }
-            catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
+            catch (System.Data.Entity.Infrastructure.DbUpdateException)
             {
                 TempData["ErrorMessage"] = "Không thể xóa thương hiệu này vì còn có sản phẩm liên quan.";
             }
