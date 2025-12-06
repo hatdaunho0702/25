@@ -19,10 +19,6 @@
     <httpRuntime targetFramework="4.7.2" maxRequestLength="5120" requestValidationMode="2.0" />
     <globalization requestEncoding="utf-8" responseEncoding="utf-8" culture="vi-VN" uiCulture="vi-VN" fileEncoding="utf-8" />
     <pages controlRenderingCompatibilityVersion="4.0" />
-    <machineKey validationKey="AutoGenerate,IsolateApps" 
-                decryptionKey="AutoGenerate,IsolateApps" 
-                validation="HMACSHA256" 
-                decryption="Auto" />
   </system.web>
   <system.webServer>
     <httpProtocol>

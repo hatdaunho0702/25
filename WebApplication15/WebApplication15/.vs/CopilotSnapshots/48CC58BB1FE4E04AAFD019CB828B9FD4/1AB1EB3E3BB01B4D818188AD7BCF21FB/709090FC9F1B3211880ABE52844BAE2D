@@ -11,7 +11,7 @@
         @* Nút tạo mới *@
         @Html.ActionLink("Tạo liên hệ mới", "Create", null, new { @class = "btn btn-success me-2" })
 
-        @* Nút xóa nhiều *@
+        @* Nút xóa nhiều (yêu cầu action DeleteSelected ở controller nếu muốn dùng) *@
         <button id="btnDeleteSelected" class="btn btn-danger me-2">Xóa đã chọn</button>
 
         <a href="@Url.Action("Index")" class="btn btn-outline-secondary">Làm mới</a>
@@ -23,7 +23,6 @@
     </form>
 </div>
 
-@* Form xóa nhiều *@
 @using (Html.BeginForm("DeleteSelected", "LienHes", new { area = "Admin" }, FormMethod.Post, new { id = "bulkDeleteForm" }))
 {
     @Html.AntiForgeryToken()
@@ -65,7 +64,11 @@
                         <td>
                             @Html.ActionLink("Chi tiết", "Details", new { id = item.MaLH, area = "Admin" }, new { @class = "btn btn-info btn-sm me-1" })
                             @Html.ActionLink("Sửa", "Edit", new { id = item.MaLH, area = "Admin" }, new { @class = "btn btn-warning btn-sm me-1" })
-                            <button type="button" class="btn btn-danger btn-sm btn-delete-single" data-id="@item.MaLH">Xóa</button>
+                            @using (Html.BeginForm("Delete", "LienHes", new { area = "Admin", id = item.MaLH }, FormMethod.Post, new { onsubmit = "return confirm('Bạn chắc chắn muốn xóa liên hệ này?');", style = "display:inline" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                            }
                         </td>
                     </tr>
                 }
@@ -73,12 +76,6 @@
         </tbody>
     </table>
 }
-
-@* Form ẩn để xóa từng item *@
-<form id="singleDeleteForm" method="post" style="display:none;">
-    @Html.AntiForgeryToken()
-    <input type="hidden" name="id" id="deleteItemId" />
-</form>
 
 @section scripts {
     <script>
@@ -103,22 +100,6 @@
             }
 
             document.getElementById('bulkDeleteForm').submit();
-        });
-
-        // Xóa từng item
-        document.querySelectorAll('.btn-delete-single').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const id = this.getAttribute('data-id');
-                
-                if (!confirm('Bạn chắc chắn muốn xóa liên hệ này?')) {
-                    return;
-                }
-
-                const form = document.getElementById('singleDeleteForm');
-                form.action = '@Url.Action("Delete", "LienHes", new { area = "Admin" })';
-                document.getElementById('deleteItemId').value = id;
-                form.submit();
-            });
         });
     </script>
 }

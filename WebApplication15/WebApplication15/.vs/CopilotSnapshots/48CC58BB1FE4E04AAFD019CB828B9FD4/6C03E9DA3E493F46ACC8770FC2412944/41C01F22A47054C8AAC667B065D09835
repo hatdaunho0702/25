@@ -19,10 +19,10 @@
     <httpRuntime targetFramework="4.7.2" maxRequestLength="5120" requestValidationMode="2.0" />
     <globalization requestEncoding="utf-8" responseEncoding="utf-8" culture="vi-VN" uiCulture="vi-VN" fileEncoding="utf-8" />
     <pages controlRenderingCompatibilityVersion="4.0" />
-    <machineKey validationKey="AutoGenerate,IsolateApps" 
-                decryptionKey="AutoGenerate,IsolateApps" 
-                validation="HMACSHA256" 
-                decryption="Auto" />
+    <machineKey validationKey="C50B3C89CB21F4F1422FF158A5B42D0E8DB8CB5CDA1742572A487D9401E3400267682B202B746511891C1BAF47F8D25C07F6C39A104696DB51F17C529AD3CABE" 
+                decryptionKey="8A9BE8FD67AF6979E7D20198CFEA50DD3D3799C77AF2B72F" 
+                validation="SHA1" 
+                decryption="AES" />
   </system.web>
   <system.webServer>
     <httpProtocol>

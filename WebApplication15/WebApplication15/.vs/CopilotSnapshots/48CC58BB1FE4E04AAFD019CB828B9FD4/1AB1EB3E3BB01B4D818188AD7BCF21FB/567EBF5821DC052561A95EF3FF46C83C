@@ -134,6 +134,7 @@ namespace WebApplication15.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult DeleteSelected(int[] idsToDelete)
         {
             try
@@ -161,26 +162,16 @@ namespace WebApplication15.Areas.Admin.Controllers
         // POST: Admin/LienHes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int? id)
+        public ActionResult DeleteConfirmed(int id)
         {
             try
             {
-                if (id == null)
-                {
-                    TempData["ErrorMessage"] = "ID không hợp lệ!";
-                    return RedirectToAction("Index");
-                }
-
                 LienHe lienHe = db.LienHes.Find(id);
                 if (lienHe != null)
                 {
                     db.LienHes.Remove(lienHe);
                     db.SaveChanges();
                     TempData["SuccessMessage"] = "Xóa liên hệ thành công!";
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = "Không tìm thấy liên hệ!";
                 }
             }
             catch (Exception ex)
