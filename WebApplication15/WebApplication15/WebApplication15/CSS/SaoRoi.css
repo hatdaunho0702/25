@@ -1,0 +1,203 @@
+﻿body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: sans-serif;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+}
+
+.night {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform: rotate(45deg);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform: rotate(45deg);
+    overflow: hidden;
+}
+.login-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000; /* nằm trên hiệu ứng */
+}
+.shooting_star {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 2px;
+    height: 80px;
+    background: linear-gradient(-45deg, white, rgba(255,255,255,0));
+    border-radius: 999px;
+    filter: drop-shadow(0 0 6px white);
+    animation: tail 1.5s infinite, move 1.5s infinite;
+}
+
+    /* Random vị trí mỗi sao */
+    .shooting_star:nth-child(1) {
+        top: 10%;
+        left: 20%;
+        animation-delay: 0s;
+    }
+
+    .shooting_star:nth-child(2) {
+        top: 30%;
+        left: 70%;
+        animation-delay: 0.3s;
+    }
+
+    .shooting_star:nth-child(3) {
+        top: 50%;
+        left: 40%;
+        animation-delay: 0.6s;
+    }
+
+    .shooting_star:nth-child(4) {
+        top: 80%;
+        left: 60%;
+        animation-delay: 0.9s;
+    }
+
+    .shooting_star:nth-child(5) {
+        top: 20%;
+        left: 80%;
+        animation-delay: 1.2s;
+    }
+
+    .shooting_star:nth-child(6) {
+        top: 60%;
+        left: 30%;
+        animation-delay: 1.5s;
+    }
+
+    .shooting_star:nth-child(7) {
+        top: 75%;
+        left: 15%;
+        animation-delay: 1.7s;
+    }
+
+    .shooting_star:nth-child(8) {
+        top: 40%;
+        left: 90%;
+        animation-delay: 1.9s;
+    }
+
+    .shooting_star:nth-child(9) {
+        top: 55%;
+        left: 10%;
+        animation-delay: 2.1s;
+    }
+
+    .shooting_star:nth-child(10) {
+        top: 25%;
+        left: 50%;
+        animation-delay: 2.3s;
+    }
+
+/* Animation cho đuôi */
+@keyframes tail {
+    0% {
+        height: 0;
+        opacity: 1;
+    }
+
+    30% {
+        height: 80px;
+        opacity: 1;
+    }
+
+    100% {
+        height: 0;
+        opacity: 0;
+    }
+}
+
+/* Animation cho chuyển động */
+@keyframes move {
+    0% {
+        transform: translateX(0) translateY(0);
+    }
+
+    100% {
+        transform: translateX(-400px) translateY(400px);
+    }
+}
+
+
+
+.login-wrapper .card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* Tiêu đề */
+.card-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: #ffffff !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Input đẹp hơn */
+.login-wrapper input.form-control {
+    height: 45px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.2);
+    color: white;
+}
+
+    .login-wrapper input.form-control::placeholder {
+        color: #dddddd;
+    }
+
+    /* Input hover */
+    .login-wrapper input.form-control:focus {
+        border-color: #3b8dff;
+        box-shadow: 0 0 8px rgba(59,141,255,0.6);
+    }
+
+/* Nút đăng nhập */
+.login-wrapper .btn-primary {
+    background: linear-gradient(90deg, #007bff, #00a8ff);
+    border: none;
+    height: 45px;
+    font-size: 17px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+    .login-wrapper .btn-primary:hover {
+        opacity: 0.85;
+        transform: scale(1.02);
+    }
+
+/* Ô card spacing */
+.login-wrapper .card {
+    padding: 32px;
+}
+
+/* Text dưới */
+.login-wrapper p,
+.login-wrapper a {
+    color: #f0f0f0;
+}
+
+    .login-wrapper a:hover {
+        text-decoration: underline;
+    }

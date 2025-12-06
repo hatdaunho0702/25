@@ -1,0 +1,18 @@
+﻿@model WebApplication15.Models.DonHang
+
+<h2 class="text-center mb-3">Thanh toán bằng QR</h2>
+
+<div class="card p-4 shadow">
+
+    <h5>Quét mã QR để thanh toán</h5>
+
+    <img src="~/Content/images/QR.jpg" style="width:250px" class="mx-auto d-block" />
+
+    <hr />
+
+    <p><b>Số tiền:</b> @Model.TongTien.Value.ToString("N0") đ</p>
+
+    <a href="@Url.Action("ConfirmPaymentComplete", new { maDH = Model.MaDH })" class="btn btn-primary mt-3">
+        Tôi đã thanh toán
+    </a>
+</div>

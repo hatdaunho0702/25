@@ -1,0 +1,40 @@
+﻿@model List<WebApplication15.Models.DonHang>
+
+<h3 class="fw-bold mb-4">📦 Đơn hàng của tôi</h3>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-warning">Bạn chưa có đơn hàng nào.</div>
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Mã ĐH</th>
+                <th>Ngày đặt</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var d in Model)
+            {
+                <tr>
+                    <td>#@d.MaDH</td>
+                    <td>@d.NgayDat.Value.ToString("dd/MM/yyyy")</td>
+                    <td class="text-danger fw-bold">@d.TongTien.Value.ToString("N0") đ</td>
+                    @*<td>@d.TrangThai</td>*@
+                    <td>
+                        <a class="btn btn-sm btn-primary"
+                           href="@Url.Action("DonHangChiTiet", "User", new { id = d.MaDH })">
+                            Xem chi tiết
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

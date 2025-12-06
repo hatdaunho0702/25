@@ -1,0 +1,120 @@
+﻿@{
+    ViewBag.Title = "Hướng dẫn mua hàng";
+}
+
+<div class="container my-5">
+
+    <h2 class="text-center fw-bold mb-4">
+        🛒 Hướng Dẫn Mua Hàng
+    </h2>
+
+    <p class="text-center text-muted mb-5">
+        Làm theo các bước đơn giản dưới đây để đặt mua sản phẩm nhanh chóng và tiện lợi.
+    </p>
+
+    <!-- Bước 1 -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-body">
+            <h4 class="fw-bold">
+                <span class="badge bg-primary me-2">1</span>
+                Chọn sản phẩm
+            </h4>
+            <p>
+                Truy cập danh mục sản phẩm và chọn sản phẩm bạn muốn mua.
+                Bạn có thể xem mô tả, giá, hình ảnh và các đánh giá từ khách hàng khác.
+            </p>
+        </div>
+    </div>
+
+    <!-- Bước 2 -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-body">
+            <h4 class="fw-bold">
+                <span class="badge bg-success me-2">2</span>
+                Thêm vào giỏ hàng
+            </h4>
+            <p>
+                Nhấn nút <strong>“Thêm vào giỏ hàng”</strong> để lưu sản phẩm.
+                Bạn có thể tiếp tục mua sắm hoặc chuyển sang thanh toán bất cứ lúc nào.
+            </p>
+        </div>
+    </div>
+
+    <!-- Bước 3 -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-body">
+            <h4 class="fw-bold">
+                <span class="badge bg-warning me-2">3</span>
+                Kiểm tra giỏ hàng
+            </h4>
+            <p>
+                Mở giỏ hàng của bạn để xem lại danh sách sản phẩm, số lượng, giá tiền.
+                Tại đây bạn có thể cập nhật số lượng hoặc xóa sản phẩm nếu muốn.
+            </p>
+        </div>
+    </div>
+
+    <!-- Bước 4 -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-body">
+            <h4 class="fw-bold">
+                <span class="badge bg-danger me-2">4</span>
+                Nhập thông tin giao hàng
+            </h4>
+            <p>
+                Điền đầy đủ họ tên, số điện thoại và địa chỉ giao hàng.
+                Vui lòng kiểm tra thật kỹ để tránh sai sót khi giao hàng.
+            </p>
+        </div>
+    </div>
+
+    <!-- Bước 5 -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-body">
+            <h4 class="fw-bold">
+                <span class="badge bg-info me-2">5</span>
+                Chọn phương thức thanh toán
+            </h4>
+            <p>
+                Hệ thống hỗ trợ thanh toán khi nhận hàng (COD) hoặc chuyển khoản.
+                Hãy chọn phương thức phù hợp với bạn.
+            </p>
+        </div>
+    </div>
+
+    <!-- Bước 6 -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-body">
+            <h4 class="fw-bold">
+                <span class="badge bg-dark me-2">6</span>
+                Hoàn tất đơn hàng
+            </h4>
+            <p>
+                Nhấn nút <strong>“Đặt hàng”</strong>.
+                Đơn hàng của bạn sẽ được xử lý và nhân viên sẽ liên hệ để xác nhận.
+            </p>
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <a href="@Url.Action("CheckLogin", "LienHe")" class="btn btn-primary btn-lg px-4">
+            Bắt đầu mua sắm ngay
+        </a>
+    </div>
+</div>
+
+<style>
+    .badge {
+        font-size: 18px;
+        padding: 10px 15px;
+    }
+
+    h4 {
+        display: flex;
+        align-items: center;
+    }
+
+    .card {
+        border-radius: 12px !important;
+    }
+</style>

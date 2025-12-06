@@ -1,0 +1,101 @@
+﻿@*@model WebApplication15.Models.TaiKhoan
+
+    @{
+        ViewBag.Title = "Thêm tài khoản";
+        Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    }
+
+    <h2>📝 Thêm tài khoản</h2>
+
+    @using (Html.BeginForm("Create", "TaiKhoan", FormMethod.Post, new { @class = "form-group" }))
+    {
+        @Html.AntiForgeryToken()
+
+
+        <div class="form-group">
+            <label for="TenDangNhap">Tên đăng nhập <span class="text-danger">*</span></label>
+            @Html.TextBoxFor(m => m.TenDangNhap, new { @class = "form-control", placeholder = "Nhập tên đăng nhập" })
+            @Html.ValidationMessageFor(m => m.TenDangNhap, "", new { @class = "text-danger" })
+        </div>
+
+
+        <div class="form-group">
+            <label for="MatKhauHash">Mật khẩu <span class="text-danger">*</span></label>
+            @Html.PasswordFor(m => m.MatKhauHash, new { @class = "form-control", placeholder = "Nhập mật khẩu" })
+            @Html.ValidationMessageFor(m => m.MatKhauHash, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            <label for="MatKhauHash">Nhập lại mật khẩu <span class="text-danger">*</span></label>
+            @Html.PasswordFor(m => m.MatKhauHash, new { @class = "form-control", placeholder = "Nhập lại mật khẩu" })
+            @Html.ValidationMessageFor(m => m.MatKhauHash, "", new { @class = "text-danger" })
+        </div>
+
+
+        <div class="form-group">
+            <label for="VaiTro">Vai trò <span class="text-danger">*</span></label>
+            @Html.TextBoxFor(m => m.VaiTro, new { @class = "form-control", placeholder = "Nhập vai trò (Admin/User...)" })
+            @Html.ValidationMessageFor(m => m.VaiTro, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            <label for="MaND">Người dùng <span class="text-danger">*</span></label>
+            @Html.DropDownListFor(m => m.MaND,
+                (SelectList)ViewBag.MaND,
+                "-- Chọn người dùng --",
+                new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.MaND, "", new { @class = "text-danger" })
+        </div>
+
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">✅ Thêm mới</button>
+            <a href="@Url.Action("Index")" class="btn btn-secondary">❌ Hủy</a>
+        </div>
+    }*@
+
+@model WebApplication15.Areas.Admin.Data.TaiKhoanCreateVM
+
+<h2>📝 Thêm tài khoản</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <!-- Tên đăng nhập -->
+    <div class="form-group">
+        <label>Tên đăng nhập</label>
+        @Html.TextBoxFor(m => m.TenDangNhap, new { @class = "form-control" })
+    </div>
+
+    <!-- Mật khẩu -->
+    <div class="form-group">
+        <label>Mật khẩu</label>
+        @Html.PasswordFor(m => m.MatKhau, new { @class = "form-control" })
+    </div>
+
+    <!-- Nhập lại mật khẩu -->
+    <div class="form-group">
+        <label>Nhập lại mật khẩu</label>
+        @Html.PasswordFor(m => m.NhapLaiMatKhau, new { @class = "form-control" })
+    </div>
+
+    <!-- Vai trò -->
+    <div class="form-group">
+        <label>Vai Trò</label>
+        @Html.DropDownListFor(m => m.VaiTro, new List<SelectListItem>
+        {
+            new SelectListItem { Text = "Admin", Value = "Admin" },
+            new SelectListItem { Text = "User", Value = "User" }
+        }, "-- Chọn Vai Trò --", new { @class = "form-control", required = "required" })
+    </div>
+
+    <!-- Họ tên người dùng -->
+    <div class="form-group">
+        <label>Họ tên người dùng</label>
+        @Html.TextBoxFor(m => m.HoTenNguoiDung, new { @class = "form-control" })
+    </div>
+
+    <button type="submit" class="btn btn-primary">Thêm mới</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">Hủy</a>
+}

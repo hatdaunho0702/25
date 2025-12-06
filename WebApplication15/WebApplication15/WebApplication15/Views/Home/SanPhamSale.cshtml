@@ -1,0 +1,31 @@
+﻿@model List<WebApplication15.Models.SanPham>
+<link href="~/CSS/HienSP.css" rel="stylesheet" />
+<div class="container mt-4">
+    <h3 class="fw-bold mb-4">⚡ Sản phẩm SALE</h3>
+
+    <div class="row">
+        @foreach (var sp in Model)
+        {
+            <div class="col-md-3 mb-4">
+                <a href="@Url.Action("ChiTietSP", "Home", new { MaSP = sp.MaSP })"
+                   class="text-dark text-decoration-none">
+                    <div class="card shadow-sm">
+                        <img src="~/Content/images/@sp.HinhAnh" class="card-img-top" />
+
+                        <div class="card-body">
+                            <h6 class="fw-bold">@sp.TenSP</h6>
+                            <p class="mb-0">
+                                <span class="text-muted text-decoration-line-through">
+                                    @sp.GiaBan.Value.ToString("N0") đ
+                                </span><br />
+                                <span class="text-danger fw-bold">
+                                    @((sp.GiaBan.Value * (1 - (sp.GiamGia/100)))?.ToString("N0")) đ
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div>

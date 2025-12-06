@@ -1,0 +1,34 @@
+﻿@model WebApplication15.Models.LoaiSP
+@{
+    ViewBag.Title = "Sửa loại sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>✏️ Sửa loại sản phẩm</h2>
+
+@using (Html.BeginForm("Edit", "LoaiSP", FormMethod.Post, new { @class = "form-group" }))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(m => m.MaLoai)
+
+    <div class="form-group">
+        <label for="TenLoai">Tên Loại Sản Phẩm <span class="text-danger">*</span></label>
+        @Html.TextBoxFor(m => m.TenLoai, new { @class = "form-control", placeholder = "Nhập tên loại sản phẩm" })
+        @Html.ValidationMessageFor(m => m.TenLoai, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        <label for="MaDM">Danh Mục <span class="text-danger">*</span></label>
+        @Html.DropDownListFor(m => m.MaDM, 
+            (SelectList)ViewBag.MaDM, 
+            "-- Chọn danh mục --",
+            new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.MaDM, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">✅ Lưu thay đổi</button>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">❌ Hủy</a>
+    </div>
+}

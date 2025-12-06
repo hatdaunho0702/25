@@ -1,0 +1,22 @@
+﻿@model WebApplication15.Models.UserProfileViewModel
+
+<div class="container mt-4" style="max-width:600px">
+
+    <div class="card shadow p-4">
+        <h3 class="text-primary mb-3">Thông tin tài khoản</h3>
+
+        <p><strong>Họ tên:</strong> @Model.NguoiDung.HoTen</p>
+        <p><strong>Số điện thoại:</strong> @Model.NguoiDung.SoDienThoai</p>
+        <p><strong>Địa chỉ:</strong> @Model.NguoiDung.DiaChi</p>
+        <p><strong>Giới tính:</strong> @Model.NguoiDung.GioiTinh</p>
+        <p><strong>Ngày sinh:</strong> @Model.NguoiDung.NgaySinh</p>
+
+        <hr />
+
+        <p><strong>Tên đăng nhập:</strong> @Model.TaiKhoan.TenDangNhap</p>
+        <p><strong>Vai trò:</strong> @Model.TaiKhoan.VaiTro</p>
+        <a href="@Url.Action("DonHang", "User")" class="text-primary mb-3">Đơn hàng của tôi</a>
+        <a href="@Url.Action("Logout", "User")" class="btn btn-danger mt-3">Đăng xuất</a>
+    </div>
+
+</div>

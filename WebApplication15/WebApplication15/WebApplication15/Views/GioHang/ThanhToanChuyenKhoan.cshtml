@@ -1,0 +1,21 @@
+﻿@model WebApplication15.Models.DonHang
+
+<h2 class="text-center mb-3">Chuyển khoản ngân hàng</h2>
+
+<div class="card p-4 shadow">
+
+    <h5>Quét mã để thanh toán</h5>
+
+    <img src="~/Content/images/QR.jpg" style="width:250px" class="mx-auto d-block" />
+
+    <hr />
+
+    <p><b>Ngân hàng:</b> MBBank</p>
+    <p><b>Số tài khoản:</b> 06030082005</p>
+    <p><b>Tên tài khoản:</b> Dao Minh Thuan</p>
+    <p><b>Số tiền:</b> @Model.TongTien.Value.ToString("N0") đ</p>
+
+    <a href="@Url.Action("ConfirmPaymentComplete", new { maDH = Model.MaDH })" class="btn btn-success mt-3">
+        Tôi đã thanh toán
+    </a>
+</div>

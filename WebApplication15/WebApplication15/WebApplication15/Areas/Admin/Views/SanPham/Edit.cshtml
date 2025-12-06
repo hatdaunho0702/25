@@ -1,0 +1,195 @@
+﻿@model WebApplication15.Models.SanPham
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>✏️ Sửa sản phẩm</h2>
+
+@using (Html.BeginForm("Edit", "SanPham", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(m => m.MaSP)
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label>Tên Sản Phẩm <span class="text-danger">*</span></label>
+            @Html.TextBoxFor(m => m.TenSP, new { @class = "form-control", required = "required" })
+        </div>
+
+        <div class="form-group col-md-3">
+            <label>Giá Bán <span class="text-danger">*</span></label>
+            @Html.TextBoxFor(m => m.GiaBan, new { @class = "form-control", type = "number", step = "0.01", required = "required" })
+        </div>
+
+        <div class="form-group col-md-3">
+            <label>Giảm Giá (%)</label>
+            @Html.TextBoxFor(m => m.GiamGia, new { @class = "form-control", type = "number", step = "0.01", placeholder = "0" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Mô Tả</label>
+        @Html.TextAreaFor(m => m.MoTa, new { @class = "form-control", rows = 3 })
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label>Hình Ảnh</label>
+            @if (!string.IsNullOrEmpty(Model.HinhAnh))
+            {
+                <div class="mb-2">
+                    <img src="~/Content/images/@Model.HinhAnh" alt="@Model.TenSP" style="max-width: 200px; border: 1px solid #ccc; border-radius: 4px;" />
+                    <p class="text-muted small">Hình ảnh hiện tại</p>
+                </div>
+            }
+            <input type="file" name="imageFile" id="imageFile" class="form-control" accept="image/*" />
+            <small class="form-text text-muted">Để trống nếu không muốn thay đổi. Chọn JPG, PNG, GIF hoặc WebP</small>
+            <div id="imagePreview" style="margin-top: 10px;"></div>
+        </div>
+
+        <div class="form-group col-md-3">
+            <label>Số Lượng Tồn</label>
+            @Html.TextBoxFor(m => m.SoLuongTon, new { @class = "form-control", type = "number" })
+        </div>
+
+        <div class="form-group col-md-3">
+            <label>Kích Cỡ Tiêu Chuẩn</label>
+            @Html.TextBoxFor(m => m.KichCoTieuChuan, new { @class = "form-control", placeholder = "50ml, 100ml..." })
+        </div>
+    </div>
+
+    <!-- PHẦN THÔNG TIN MỸ PHẨM -->
+    <div class="card mt-3 mb-3">
+        <div class="card-header bg-info text-white">
+            <strong>💄 Thông Tin Mỹ Phẩm</strong>
+        </div>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Loại Da</label>
+                    @Html.DropDownListFor(m => m.LoaiDa,
+                        new List<SelectListItem> {
+                            new SelectListItem { Text = "-- Chọn --", Value = "" },
+                            new SelectListItem { Text = "Dầu", Value = "Dầu" },
+                            new SelectListItem { Text = "Khô", Value = "Khô" },
+                            new SelectListItem { Text = "Hỗn hợp", Value = "Hỗn hợp" },
+                            new SelectListItem { Text = "Nhạy cảm", Value = "Nhạy cảm" }
+                        }, new { @class = "form-control" })
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label>Vấn Đề Chỉ Rỉ (phân cách bằng |)</label>
+                    @Html.TextBoxFor(m => m.VanDeChiRi, new { @class = "form-control", placeholder = "Mụn|Thâm|Lão hóa" })
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Tôn Da / Màu (Makeup)</label>
+                    @Html.TextBoxFor(m => m.TonDaMau, new { @class = "form-control", placeholder = "Đỏ tươi, Cam, Cushion sáng..." })
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label>Thành Phần Chính Yếu</label>
+                    @Html.TextBoxFor(m => m.ThanhPhanChiNhYeu, new { @class = "form-control", placeholder = "SPF, Retinol, Collagen..." })
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label>Số Lần Sử Dụng/Tuần</label>
+                    @Html.TextBoxFor(m => m.SoLanSuDungMoiTuan, new { @class = "form-control", type = "number", value = "1" })
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label>Độ Tin Cậy (0-5)</label>
+                    @Html.TextBoxFor(m => m.DoTinCay, new { @class = "form-control", type = "number", step = "0.1", value = "0" })
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label>Trạng Thái Sản Phẩm</label>
+                    @Html.DropDownListFor(m => m.TrangThaiSanPham,
+                        new List<SelectListItem> {
+                            new SelectListItem { Text = "Kinh doanh", Value = "Kinh doanh" },
+                            new SelectListItem { Text = "Sale xả hàng", Value = "Sale xả hàng" },
+                            new SelectListItem { Text = "Ngừng kinh doanh", Value = "Ngừng kinh doanh" },
+                            new SelectListItem { Text = "Hết hàng", Value = "Hết hàng" }
+                        }, new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PHẦN HẠNHẠN SỬ DỤNG -->
+    <div class="card mt-3 mb-3">
+        <div class="card-header bg-warning text-dark">
+            <strong>📅 Ngày Sản Xuất & Hạn Sử Dụng</strong>
+        </div>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Ngày Sản Xuất</label>
+                    @Html.TextBoxFor(m => m.NgaySanXuat, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label>Hạn Sử Dụng <span class="text-danger">*</span></label>
+                    @Html.TextBoxFor(m => m.HanSuDung, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                    <small class="form-text text-muted">⭐ Rất quan trọng cho cảnh báo tồn kho</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PHẦN PHÂN LOẠI -->
+    <div class="card mt-3 mb-3">
+        <div class="card-header bg-secondary text-white">
+            <strong>🏷️ Phân Loại Sản Phẩm</strong>
+        </div>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Loại Sản Phẩm</label>
+                    @Html.DropDownListFor(m => m.MaLoai, (SelectList)ViewBag.MaLoai, "-- Chọn Loại --", new { @class = "form-control" })
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label>Thương Hiệu</label>
+                    @Html.DropDownListFor(m => m.MaTH, (SelectList)ViewBag.MaTH, "-- Chọn Thương Hiệu --", new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NÚT HÀNH ĐỘNG -->
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary btn-lg">💾 Cập nhật</button>
+        <a href="@Url.Action("Index")" class="btn btn-secondary btn-lg">❌ Hủy</a>
+    </div>
+}
+
+<style>
+    .text-danger { color: #dc3545; }
+    .card-header { padding: 0.75rem 1.25rem; }
+    .form-control:focus { border-color: #80bdff; box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); }
+    #imagePreview { max-width: 200px; }
+    #imagePreview img { max-width: 100%; border-radius: 4px; border: 1px solid #ccc; }
+</style>
+
+<script>
+    document.getElementById('imageFile').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        const preview = document.getElementById('imagePreview');
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                preview.innerHTML = '<img src="' + event.target.result + '" alt="Preview" />';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.innerHTML = '';
+        }
+    });
+</script>

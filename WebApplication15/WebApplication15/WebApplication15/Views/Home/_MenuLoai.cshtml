@@ -1,0 +1,10 @@
+﻿@model IEnumerable<WebApplication15.Models.LoaiSP>
+
+@foreach (var item in Model.GroupBy(x => x.TenLoai).Select(g => g.First()))
+{
+    <li>
+        <a href="@Url.Action("SanPhamTheoLoai", "Home", new { id = item.MaLoai })">
+            @item.TenLoai
+        </a>
+    </li>
+}

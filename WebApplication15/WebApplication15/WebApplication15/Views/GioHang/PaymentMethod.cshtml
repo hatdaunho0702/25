@@ -1,0 +1,53 @@
+﻿@model WebApplication15.Models.DonHang
+
+<h2 class="text-center mb-4">Thông tin nhận hàng</h2>
+
+<form method="post" action="@Url.Action("LuuThongTinNhanHang")">
+    <input type="hidden" name="MaDH" value="@Model.MaDH" />
+
+    <div class="mb-3">
+        <label>Họ tên người nhận</label>
+        <input type="text" name="TenNguoiNhan" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label>Số điện thoại</label>
+        <input type="text" name="SoDienThoai" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label>Địa chỉ giao hàng</label>
+        <textarea name="DiaChiGiaoHang" class="form-control" required></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label>Ghi chú (không bắt buộc)</label>
+        <textarea name="GhiChu" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">Lưu thông tin</button>
+</form>
+
+<hr />
+
+<h2 class="text-center mb-4">Chọn phương thức thanh toán</h2>
+
+<div class="list-group shadow">
+    <a href="@Url.Action("ThanhToanCOD", new { maDH = Model.MaDH })" class="list-group-item list-group-item-action">
+        💳 Thanh toán khi nhận hàng (COD)
+    </a>
+
+    <a href="@Url.Action("ThanhToanChuyenKhoan", new { maDH = Model.MaDH })" class="list-group-item list-group-item-action">
+        🏦 Chuyển khoản ngân hàng
+    </a>
+
+    <a href="@Url.Action("ThanhToanQR", new { maDH = Model.MaDH })" class="list-group-item list-group-item-action">
+        📱 Thanh toán bằng QR
+    </a>
+</div>
+
+
+
+
+
+

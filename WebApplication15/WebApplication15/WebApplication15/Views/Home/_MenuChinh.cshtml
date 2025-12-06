@@ -1,0 +1,41 @@
+﻿@model List<WebApplication15.Models.DanhMuc>
+<section id="f-menu">
+    <div class="container">
+        <div class="f-menu-wrap">
+
+            <!-- Nút DANH MỤC SẢN PHẨM có dropdown -->
+            <div class="f-menu-nav">
+                <a href="@Url.Action("Index", "Home")" class="f-menu-nav-btn">
+                    <svg fill="none" height="24" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><line x1="3" x2="21" y1="12" y2="12">
+                                    </line><line x1="3" x2="21" y1="6" y2="6"></line><line x1="3" x2="21" y1="18" y2="18"></line></svg>
+                    <span> DANH MỤC SẢN PHẨM</span>
+                </a>
+
+                <!-- Menu ẩn, sẽ hiện khi hover -->
+                <div class="dropdown-menu">
+                    @Html.Action("MenuDanhMuc", "Home")
+                </div>
+            </div>
+
+            <!-- Các danh mục lấy từ database -->
+            <div class="f-menu-list">
+                <ul class="new-main-menu">
+                    @foreach (var dm in Model)
+                    {
+                        <div class="f-menu-nav">
+                            <a href="@Url.Action("SanPhamTheoDanhMuc", "Home", new { maDM = dm.MaDM })" class="f-menu-nav-btn">
+                                <span>@dm.TenDM.ToUpper()</span>
+                            </a>
+
+                            <div class="dropdown-menu">
+                                @Html.Action("MenuLoai", "Home", new { maDM = dm.MaDM })
+                            </div>
+                        </div>
+                    }
+
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</section>

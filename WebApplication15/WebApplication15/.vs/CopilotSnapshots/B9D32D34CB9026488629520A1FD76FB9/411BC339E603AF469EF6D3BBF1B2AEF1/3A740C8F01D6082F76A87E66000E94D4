@@ -1,0 +1,23 @@
+﻿@model WebApplication15.Models.DonHang
+
+<h2 class="text-center mb-4">Chọn phương thức thanh toán</h2>
+
+<div class="list-group shadow">
+    <a href="@Url.Action("ThanhToanCOD")" class="list-group-item list-group-item-action">
+        Thanh toán khi nhận hàng (COD)
+    </a>
+
+    <a href="@Url.Action("ThanhToanChuyenKhoan")" class="list-group-item list-group-item-action">
+        Chuyển khoản ngân hàng
+    </a>
+
+    <a href="@Url.Action("ThanhToanQR")" class="list-group-item list-group-item-action">
+        Thanh toán bằng QR
+    </a>
+</div>
+
+
+
+
+
+

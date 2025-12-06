@@ -1,0 +1,32 @@
+﻿<link href="~/CSS/HienSP.css" rel="stylesheet" />
+@model IEnumerable<WebApplication15.Models.SanPham>
+
+<h2 class="mb-4">@ViewBag.TenLoai</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-warning text-center">
+        Không có sản phẩm nào thuộc loại này.
+    </div>
+}
+
+
+else
+{
+<div class="row">
+    @foreach (var sp in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <a href="@Url.Action("ChiTietSP", "Home", new { maSP = sp.MaSP })" class="product-link d-block h-100">
+                <div class="card h-100 shadow-sm">
+                    <img src="~/Content/images/@sp.HinhAnh" alt="@sp.TenSP" class="card-img-top" />
+                    <div class="card-body">
+                        <h5 class="card-title">@sp.TenSP</h5>
+                        <p class="card-text">Giá: @String.Format("{0:N0} đ", sp.GiaBan)</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
+</div>
+}

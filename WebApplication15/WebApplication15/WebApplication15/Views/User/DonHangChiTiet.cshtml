@@ -1,0 +1,33 @@
+﻿@model WebApplication15.Models.UserOrdersViewModel
+
+<h3 class="fw-bold mb-3">📄 Chi tiết đơn hàng #@Model.DonHang.MaDH</h3>
+
+<p><strong>Ngày đặt:</strong> @Model.DonHang.NgayDat.Value.ToString("dd/MM/yyyy")</p>
+@*<p><strong>Trạng thái:</strong> @Model.DonHang.TrangThai</p>*@
+
+<table class="table table-bordered">
+    <tr>
+        <th>Hình</th>
+        <th>Sản phẩm</th>
+        <th>Số lượng</th>
+        <th>Giá</th>
+        <th>Tổng</th>
+    </tr>
+
+    @foreach (var sp in Model.ChiTiet)
+    {
+        <tr>
+            <td width="80">
+                <img src="~/Content/images/@sp.SanPham.HinhAnh" width="70" />
+            </td>
+            <td>@sp.SanPham.TenSP</td>
+            <td>@sp.SoLuong</td>
+            <td>@sp.DonGia.Value.ToString("N0") đ</td>
+            <td>@((sp.SoLuong * sp.DonGia).Value.ToString("N0")) đ</td>
+        </tr>
+    }
+</table>
+
+<p class="fw-bold fs-5 text-end">
+    Tổng đơn: <strong>@(Model.DonHang.TongTien.Value.ToString("N0")) đ</strong>
+</p>

@@ -1,0 +1,22 @@
+﻿@model WebApplication15.Models.DanhGia
+
+@{
+    ViewBag.Title = "Chi tiết đánh giá";
+}
+
+<h2>Chi tiết đánh giá</h2>
+
+<table class="table table-bordered">
+    <tr><th>Người dùng</th><td>@Model.NguoiDung.HoTen</td></tr>
+    <tr><th>Sản phẩm</th><td>@Model.SanPham.TenSP</td></tr>
+    <tr><th>Điểm</th><td>@Model.Diem</td></tr>
+    <tr><th>Nội dung</th><td>@Model.NoiDung</td></tr>
+    <tr><th>Ngày đánh giá</th><td>@Model.NgayDanhGia?.ToString("dd/MM/yyyy")</td></tr>
+    <tr><th>Duyệt</th><td>@Model.DuocApprove</td></tr>
+    <tr><th>Trả lời</th><td>@Model.TraLoiAdmin</td></tr>
+</table>
+
+<p>
+    @Html.ActionLink("Sửa", "Edit", new { id = Model.MaDG }, new { @class = "btn btn-warning" })
+    @Html.ActionLink("Quay lại", "Index", null, new { @class = "btn btn-secondary" })
+</p>

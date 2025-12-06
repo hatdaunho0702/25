@@ -1,0 +1,11 @@
+﻿@model IEnumerable<WebApplication15.Models.LoaiSP>
+<h2>LOẠI SẢN PHẨM</h2>
+<ul>
+    @foreach (var item in Model)
+    {
+        <li>
+            <a href="@Url.Action("Index", "Home", new { id = item.MaLoai })">@item.TenLoai</a>
+        </li>
+    }
+</ul>
+

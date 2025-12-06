@@ -1,0 +1,97 @@
+﻿@model WebApplication15.Models.SanPham
+
+@{
+    ViewBag.Title = Model.TenSP;
+}
+
+<div class="container my-5">
+    <h2>@Model.TenSP</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-5">
+            <img src="~/Content/images/@Model.HinhAnh" alt="@Model.TenSP" class="img-fluid rounded shadow-sm" />
+        </div>
+        <div class="col-md-7">
+            <h3>Thông tin chi tiết</h3>
+
+            <p><strong>Thương hiệu:</strong> @ViewBag.TenThuongHieu</p>
+            <p><strong>Danh mục:</strong> @ViewBag.TenDanhMuc</p>
+            <p><strong>Loại:</strong> @(Model.LoaiSP?.TenLoai ?? "Không xác định")</p>
+
+            @if (Model.GiamGia > 0)
+            {
+                <p class="text-danger lead">
+                    <del>Giá gốc: @String.Format("{0:N0} VNĐ", Model.GiaBan)</del>
+                </p>
+                // Tính giá sau khi giảm giá (ví dụ: GiamGia là % giảm)
+                decimal giaGiam = (decimal)(Model.GiaBan * (1 - Model.GiamGia / 100));
+                <h4 class="text-success">
+                    Giá bán: @String.Format("{0:N0} VNĐ", giaGiam)
+                </h4>
+            }
+            else
+            {
+                <h4 class="text-success">Giá bán: @String.Format("{0:N0} VNĐ", Model.GiaBan)</h4>
+            }
+
+            <p><strong>Tình trạng:</strong> @(Model.SoLuongTon > 0 ? "Còn hàng" : "Hết hàng")</p>
+
+            <div class="mt-4">
+                <a href="@Url.Action("AddToCart", "GioHang", new { id = Model.MaSP })"
+                   class="btn btn-success btn-lg me-2">
+                    <i class="bi bi-cart-plus"></i> Thêm vào giỏ
+                </a>
+                <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary btn-lg">
+                    <i class="bi bi-arrow-left"></i> Quay lại
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item"><a class="nav-link active" id="mota-tab" data-toggle="tab" href="#mota" role="tab">Mô Tả Sản Phẩm</a></li>
+            <li class="nav-item">
+                <a class="nav-link" id="danhgia-tab" data-bs-toggle="tab" href="#danhgia" role="tab">Đánh Giá (@(((List<WebApplication15.Models.DanhGia>)ViewBag.DanhSachDanhGia)?.Count ?? 0))</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active p-3" id="mota" role="tabpanel">
+                @Html.Raw(Model.MoTa)
+            </div>
+
+            <div class="tab-pane fade p-3" id="danhgia" role="tabpanel">
+                @Html.Partial("_DanhSachDanhGia", (List<WebApplication15.Models.DanhGia>)ViewBag.DanhSachDanhGia)
+            </div>
+        </div>
+    </div>
+    @if (ViewBag.SanPhamLienQuan is List<WebApplication15.Models.SanPham> spLienQuanList && spLienQuanList.Any())
+    {
+        <h4 class="mt-5 mb-3">Sản Phẩm Liên Quan</h4>
+        <div class="row">
+            @foreach (var sp in spLienQuanList)
+            {
+                <div class="col-md-3 mb-4">
+                    <a href="@Url.Action("ChiTietSP", "Home", new { maSP = sp.MaSP })" class="text-decoration-none text-dark">
+                        <div class="card h-100 shadow-sm">
+                            <img src="~/Content/images/@sp.HinhAnh" class="card-img-top" alt="@sp.TenSP">
+                            <div class="card-body">
+                                <h5 class="card-title">@sp.TenSP</h5>
+                                <span class="text-decoration-line-through text-muted">@sp.GiaBan.Value.ToString("N0") đ</span><br />
+                                <span class="text-danger fw-bold">
+                                    @((sp.GiaBan.Value * (1 - (sp.GiamGia ?? 0)/100)))?.ToString("N0") đ
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">Không có sản phẩm liên quan.</div>
+    }
+</div>
+

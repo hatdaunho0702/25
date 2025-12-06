@@ -1,0 +1,217 @@
+﻿body {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #212121;
+}
+
+
+/* ----- 1. SỬA BANNER ĐẦU TRANG ----- */
+.top-page-banner {
+    text-align: center;
+    background-color: #000;
+    line-height: 0; /* Xóa khoảng trắng thừa dưới ảnh */
+}
+    /* Bắt buộc ảnh banner phải rộng 100% */
+    .top-page-banner img {
+        width: 100% !important; /* Ép ảnh giãn ra 100% */
+        height: auto; /* Tự động tính chiều cao */
+        max-width: 100% !important;
+    }
+
+
+/* ----- 2. Sửa Header (Logo, Tìm kiếm, Icons) ----- */
+
+.f-header-top {
+    background-color: #fff; /* Nền trắng cho thanh header */
+}
+
+.f-header-top-wrap {
+    display: flex !important; /* Xếp các mục (logo, search, tools) theo hàng ngang */
+    flex-wrap: nowrap;
+    justify-content: space-between; /* Đẩy 3 khối ra 3 góc */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    padding: 20px 0;
+    width: 100%;
+}
+
+/* Cột 1: Logo */
+.f-header-top-logo {
+    flex-shrink: 0; /* Không cho logo bị co lại */
+}
+
+    .f-header-top-logo img {
+        max-width: 85px !important; /* Thu nhỏ logo */
+        height: auto;
+    }
+
+
+
+/* Cột 2: Tìm kiếm */
+.f-header-top-search {
+    flex-grow: 1;
+    padding: 0 30px;
+    position: relative;
+}
+
+    .f-header-top-search .form-group {
+        margin-bottom: 0;
+    }
+
+    .f-header-top-search .search-input-wrap {
+        display: block;
+        border-bottom: 2px solid #D92F2F !important; /* Gạch dưới MÀU ĐỎ */
+    }
+
+    .f-header-top-search .form-control {
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+        padding-left: 0;
+        padding-right: 40px; /* Đệm phải để chữ không đè lên icon */
+        border-radius: 0;
+        height: 40px;
+    }
+
+        .f-header-top-search .form-control:focus {
+            box-shadow: none !important;
+            border-color: transparent !important;
+        }
+
+    .f-header-top-search .btn {
+        background: transparent !important;
+        border: none !important;
+        color: #555;
+        position: absolute;
+        right: 30px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+    }
+
+/* Cột 3: Tools (Hotline & Icons) */
+.f-header-top-tools {
+    display: flex !important; /* Bắt buộc nằm ngang */
+    align-items: center;
+    flex-shrink: 0;
+    white-space: nowrap; /* Không cho xuống hàng */
+}
+
+.f-header-top-info {
+    font-size: 14px;
+    font-weight: 600;
+    margin-right: 15px;
+}
+
+.vertical-bar {
+    color: #e0e0e0;
+    font-size: 20px;
+    margin-right: 15px;
+}
+
+.f-header-top-icons {
+    display: flex;
+    align-items: center;
+}
+
+    .f-header-top-icons a {
+        margin-left: 15px;
+        color: #212121;
+        text-decoration: none;
+    }
+
+.f-header-top-mb {
+    display: none !important; /* Ẩn icon mobile trên PC */
+}
+
+/* Sửa Giỏ hàng (Vòng tròn đỏ) */
+.f-header-top-icon-cart {
+    position: relative;
+}
+
+.cart-counter {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    background-color: #d92f2f;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+/* ----- 3. Sửa Menu ngang ----- */
+
+#f-menu {
+    background-color: #fff;
+    border-bottom: 1px solid #f0f0f0;
+    border-top: 1px solid #f0f0f0;
+}
+
+.f-menu-wrap {
+    display: flex;
+    align-items: center;
+}
+
+.f-menu-nav-btn {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #f7f7f7;
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+    .f-menu-nav-btn span {
+        margin-left: 8px;
+    }
+
+    .f-menu-nav-btn:hover {
+        text-decoration: none;
+        background-color: #eee;
+    }
+
+.f-menu-list .new-main-menu {
+    display: flex;
+    justify-content: flex-start;
+    list-style: none; /* Bỏ dấu chấm tròn */
+    margin: 0;
+    padding: 0;
+}
+
+.f-menu-list .main-menu-li a {
+    padding: 15px 20px;
+    display: block;
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+    .f-menu-list .main-menu-li a:hover {
+        text-decoration: none;
+        color: #c92f44;
+    }
+
+/* ----- 4. Sửa phần nội dung ASP.NET (body-content) ----- */
+.body-content {
+    margin-top: 30px;
+}
+
+.top-page-banner img {
+    width: 100% !important;
+    height: auto;
+    max-width: 100% !important;
+    /* Giới hạn chiều cao */
+    max-height: 120px; /* ← chỉnh nhỏ hơn nếu muốn banner mỏng hơn */
+    object-fit: cover; /* Giúp ảnh không bị méo khi bị cắt */
+}

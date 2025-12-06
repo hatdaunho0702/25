@@ -1,0 +1,202 @@
+﻿@model List<WebApplication15.Models.DonHang>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Quản lý đơn hàng";
+}
+
+<h2>📦 Quản lý đơn hàng</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>✅ Thành công!</strong> @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>⚠️ Lỗi!</strong> @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+<!-- Bộ lọc trạng thái thanh toán -->
+<div class="card mb-3">
+    <div class="card-header bg-light">
+        <h6 class="mb-0">🔍 Bộ Lọc Đơn Hàng</h6>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3">
+                <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm btn-block">
+                    📋 Tất Cả (@Model.Count)
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="javascript:void(0)" class="btn btn-outline-success btn-sm btn-block" onclick="filterByStatus('Đã thanh toán')">
+                    ✅ Đã Thanh Toán (@Model.Where(d => d.TrangThaiThanhToan == "Đã thanh toán" || d.TrangThaiThanhToan == "Paid").Count())
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="javascript:void(0)" class="btn btn-outline-warning btn-sm btn-block" onclick="filterByStatus('Chưa thanh toán')">
+                    ❌ Chưa Thanh Toán (@Model.Where(d => d.TrangThaiThanhToan == "Chưa thanh toán" || d.TrangThaiThanhToan == "Pending" || d.TrangThaiThanhToan == null).Count())
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="javascript:void(0)" class="btn btn-outline-info btn-sm btn-block" onclick="clearFilter()">
+                    🔄 Xóa Bộ Lọc
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="alert alert-info">Không có đơn hàng nào.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover" id="donHangTable">
+            <thead class="table-secondary">
+                <tr>
+                    <th>Mã ĐH</th>
+                    <th>Khách hàng</th>
+                    <th>Số điện thoại</th>
+                    <th>Ngày đặt</th>
+                    <th>Trạng Thái</th>
+                    <th class="text-end">Tổng tiền</th>
+                    <th>Thanh Toán</th>
+                    <th class="text-center">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var d in Model)
+                {
+                    string trangThai = string.IsNullOrEmpty(d.TrangThaiThanhToan) ? "Chưa thanh toán" : d.TrangThaiThanhToan;
+                    bool daTThanhToan = trangThai == "Đã thanh toán" || trangThai == "Paid";
+                    string badgeClass = daTThanhToan ? "badge-success" : "badge-warning";
+                    string statusIcon = daTThanhToan ? "✅" : "❌";
+                    
+                    <tr class="donhang-row" data-status="@trangThai">
+                        <td>
+                            <strong>#@d.MaDH</strong>
+                        </td>
+                        <td>
+                            @if (d.NguoiDung != null)
+                            {
+                                <span>@d.NguoiDung.HoTen</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
+                        <td>
+                            @if (d.NguoiDung != null)
+                            {
+                                <span>@d.NguoiDung.SoDienThoai</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
+                        <td>
+                            @if (d.NgayDat.HasValue)
+                            {
+                                <span>@d.NgayDat.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
+                        <td>
+                            <span class="badge @badgeClass">@statusIcon @trangThai</span>
+                        </td>
+                        <td class="text-end fw-bold text-danger">
+                            @if (d.TongTien.HasValue)
+                            {
+                                <span>@d.TongTien.Value.ToString("N0") đ</span>
+                            }
+                            else
+                            {
+                                <span>0 đ</span>
+                            }
+                        </td>
+                        <td>
+                            @if (d.NgayThanhToan.HasValue)
+                            {
+                                <small>@d.NgayThanhToan.Value.ToString("dd/MM/yyyy")</small><br />
+                                <span class="badge badge-info">@(d.PhuongThucThanhToan ?? "N/A")</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <a class="btn btn-sm btn-info" href="@Url.Action("Details", "DonHang", new { id = d.MaDH })" title="Xem chi tiết">
+                                👁️ Xem
+                            </a>
+                            <a class="btn btn-sm btn-danger" href="@Url.Action("Delete", "DonHang", new { id = d.MaDH })" onclick="return confirm('Bạn chắc chắn muốn xóa?')" title="Xóa đơn hàng">
+                                🗑️ Xóa
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<style>
+    .btn-block {
+        display: block;
+        width: 100%;
+    }
+    .badge-success {
+        background-color: #28a745;
+        color: white;
+    }
+    .badge-warning {
+        background-color: #ffc107;
+        color: black;
+    }
+    .badge-info {
+        background-color: #17a2b8;
+        color: white;
+    }
+    table.table-hover tbody tr:hover {
+        background-color: #f5f5f5;
+    }
+</style>
+
+<script>
+    function filterByStatus(status) {
+        var rows = document.querySelectorAll('.donhang-row');
+        rows.forEach(function (row) {
+            var rowStatus = row.getAttribute('data-status');
+            if (rowStatus === status || status === 'all') {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    function clearFilter() {
+        var rows = document.querySelectorAll('.donhang-row');
+        rows.forEach(function (row) {
+            row.style.display = '';
+        });
+    }
+</script>

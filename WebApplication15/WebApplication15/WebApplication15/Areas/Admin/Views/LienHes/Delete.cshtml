@@ -1,0 +1,26 @@
+﻿@model WebApplication15.Models.LienHe
+
+@{
+    ViewBag.Title = "Xóa liên hệ";
+}
+
+<h2>Xóa liên hệ</h2>
+
+<div class="alert alert-danger">
+    Bạn có chắc chắn muốn xóa liên hệ này không?
+</div>
+
+<ul class="list-group mb-3">
+    <li class="list-group-item"><strong>Họ tên:</strong> @Model.HoTen</li>
+    <li class="list-group-item"><strong>Email:</strong> @Model.Email</li>
+    <li class="list-group-item"><strong>SĐT:</strong> @Model.SoDienThoai</li>
+    <li class="list-group-item"><strong>Nội dung:</strong> @Model.NoiDung</li>
+</ul>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <button class="btn btn-danger">Xóa</button>
+    @Html.ActionLink("Hủy", "Index", null, new { @class = "btn btn-secondary" })
+}

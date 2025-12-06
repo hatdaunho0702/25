@@ -1,0 +1,72 @@
+﻿@model List<WebApplication15.Models.LoaiSP>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Quản lý loại sản phẩm";
+}
+
+<h2>📦 Quản lý loại sản phẩm</h2>
+
+<a href="@Url.Action("Create")" class="btn btn-success mb-3">+ Thêm loại sản phẩm</a>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>✅ Thành công!</strong> @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>⚠️ Lỗi!</strong> @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+<table class="table table-bordered table-hover">
+    <thead class="table-secondary">
+        <tr>
+            <th>Mã Loại</th>
+            <th>Tên Loại</th>
+            <th>Danh Mục</th>
+            <th>Hành Động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Count == 0)
+        {
+            <tr>
+                <td colspan="4" class="text-center text-muted">Không có loại sản phẩm nào</td>
+            </tr>
+        }
+        else
+        {
+            foreach (var loai in Model)
+            {
+                <tr>
+                    <td>@loai.MaLoai</td>
+                    <td>@loai.TenLoai</td>
+                    <td>
+                        @if (loai.DanhMuc != null)
+                        {
+                            <span class="badge badge-info" style="color: black; background-color: #d3d3d3;">@loai.DanhMuc.TenDM</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">-</span>
+                        }
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-warning" href="@Url.Action("Edit", new { id = loai.MaLoai })">✏️ Sửa</a>
+                        <a class="btn btn-sm btn-danger" href="@Url.Action("Delete", new { id = loai.MaLoai })" onclick="return confirm('Bạn chắc chắn muốn xóa?')">🗑️ Xóa</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

@@ -1,0 +1,36 @@
+﻿@model List<WebApplication15.Models.SanPham>
+<link href="~/CSS/HienSP.css" rel="stylesheet" />
+<div class="container mt-4">
+    <h3 class="fw-bold">Kết quả tìm kiếm cho: "@ViewBag.TuKhoa"</h3>
+    <hr />
+
+    <div class="row">
+        @if (!Model.Any())
+        {
+            <h5 class="text-danger mt-3">Không tìm thấy sản phẩm nào.</h5>
+        }
+
+        @foreach (var sp in Model)
+        {
+            <div class="col-md-3 mb-4">
+                <a href="@Url.Action("ChiTietSP", "Home", new { maSP = sp.MaSP })"
+                   class="text-dark text-decoration-none">
+
+                    <div class="card shadow-sm">
+                        <img src="~/Content/images/@sp.HinhAnh" class="card-img-top" />
+
+                        <div class="card-body">
+                            <h6 class="fw-bold">@sp.TenSP</h6>
+                            <p>
+                                <span class="text-danger fw-bold">
+                                    @sp.GiaBan.Value.ToString("N0") đ
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                </a>
+            </div>
+        }
+    </div>
+</div>

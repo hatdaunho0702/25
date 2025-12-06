@@ -1,0 +1,448 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|e:\\danghoc\\daominhthuan_ltweb\\dack1\\webapplication15\\webapplication15\\webapplication15\\controllers\\giohangcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\controllers\\giohangcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|e:\\danghoc\\daominhthuan_ltweb\\dack1\\webapplication15\\webapplication15\\webapplication15\\models\\donhang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\models\\donhang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|e:\\danghoc\\daominhthuan_ltweb\\dack1\\webapplication15\\webapplication15\\webapplication15\\views\\giohang\\luuthongtinnhanhang.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\views\\giohang\\luuthongtinnhanhang.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|e:\\danghoc\\daominhthuan_ltweb\\dack1\\webapplication15\\webapplication15\\webapplication15\\controllers\\chatcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\controllers\\chatcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|e:\\danghoc\\daominhthuan_ltweb\\dack1\\webapplication15\\webapplication15\\webapplication15\\views\\giohang\\paymentmethod.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\views\\giohang\\paymentmethod.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|e:\\danghoc\\daominhthuan_ltweb\\dack1\\webapplication15\\webapplication15\\webapplication15\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|e:\\danghoc\\daominhthuan_ltweb\\dack1\\webapplication15\\webapplication15\\webapplication15\\models\\db_skinfood.edmx||{C99AEA30-8E36-4515-B76F-496F5A48A6AA}|",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\models\\db_skinfood.edmx||{C99AEA30-8E36-4515-B76F-496F5A48A6AA}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|e:\\danghoc\\daominhthuan_ltweb\\dack1\\webapplication15\\webapplication15\\webapplication15\\views\\giohang\\paymentconfirm.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\views\\giohang\\paymentconfirm.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|e:\\danghoc\\daominhthuan_ltweb\\dack1\\webapplication15\\webapplication15\\webapplication15\\views\\home\\_menuchinh.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\views\\home\\_menuchinh.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|e:\\danghoc\\daominhthuan_ltweb\\dack1\\webapplication15\\webapplication15\\webapplication15\\views\\home\\_danhsachdanhgia.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\views\\home\\_danhsachdanhgia.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|e:\\danghoc\\daominhthuan_ltweb\\dack1\\webapplication15\\webapplication15\\webapplication15\\views\\home\\_menuloai.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\views\\home\\_menuloai.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|e:\\danghoc\\daominhthuan_ltweb\\dack1\\webapplication15\\webapplication15\\webapplication15\\views\\home\\_menudanhmuc.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\views\\home\\_menudanhmuc.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|e:\\danghoc\\daominhthuan_ltweb\\dack1\\webapplication15\\webapplication15\\webapplication15\\areas\\admin\\views\\nguoidungs\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\views\\nguoidungs\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\views\\nguoidungs\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\views\\nguoidungs\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\views\\nguoidungs\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\views\\nguoidungs\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\views\\nguoidungs\\delete.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\views\\nguoidungs\\delete.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\views\\nguoidungs\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\views\\nguoidungs\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\controllers\\nguoidungscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\controllers\\nguoidungscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\views\\taikhoan\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\views\\taikhoan\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\controllers\\taikhoancontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\controllers\\taikhoancontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\data\\taikhoancreatevm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\data\\taikhoancreatevm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\webapplication15\\views\\user\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\views\\user\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\views\\thuonghieu\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\views\\thuonghieu\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\views\\thuonghieu\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\views\\thuonghieu\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\views\\loaisp\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\views\\loaisp\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "LuuThongTinNhanHang.cshtml",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\GioHang\\LuuThongTinNhanHang.cshtml",
+              "RelativeDocumentMoniker": "WebApplication15\\Views\\GioHang\\LuuThongTinNhanHang.cshtml",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\GioHang\\LuuThongTinNhanHang.cshtml",
+              "RelativeToolTip": "WebApplication15\\Views\\GioHang\\LuuThongTinNhanHang.cshtml",
+              "ViewState": "AgIAACEAAAAAAAAAAAAAAAQAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-06T08:22:35.658Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ChatController.cs",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Controllers\\ChatController.cs",
+              "RelativeDocumentMoniker": "WebApplication15\\Controllers\\ChatController.cs",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Controllers\\ChatController.cs",
+              "RelativeToolTip": "WebApplication15\\Controllers\\ChatController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-06T08:22:24.943Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "GioHangController.cs",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Controllers\\GioHangController.cs",
+              "RelativeDocumentMoniker": "WebApplication15\\Controllers\\GioHangController.cs",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Controllers\\GioHangController.cs",
+              "RelativeToolTip": "WebApplication15\\Controllers\\GioHangController.cs",
+              "ViewState": "AgIAAGcBAAAAAAAAAADwv3cBAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-06T08:18:03.102Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "DonHang.cs",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Models\\DonHang.cs",
+              "RelativeDocumentMoniker": "WebApplication15\\Models\\DonHang.cs",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Models\\DonHang.cs",
+              "RelativeToolTip": "WebApplication15\\Models\\DonHang.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAACUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-06T08:15:48.526Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "DB_SkinFood.edmx [Diagram1]",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Models\\DB_SkinFood.edmx",
+              "RelativeDocumentMoniker": "WebApplication15\\Models\\DB_SkinFood.edmx",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Models\\DB_SkinFood.edmx [Diagram1]",
+              "RelativeToolTip": "WebApplication15\\Models\\DB_SkinFood.edmx [Diagram1]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001116|",
+              "WhenOpened": "2025-12-06T08:15:40.329Z",
+              "EditorCaption": " [Diagram1]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "PaymentMethod.cshtml",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\GioHang\\PaymentMethod.cshtml",
+              "RelativeDocumentMoniker": "WebApplication15\\Views\\GioHang\\PaymentMethod.cshtml",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\GioHang\\PaymentMethod.cshtml",
+              "RelativeToolTip": "WebApplication15\\Views\\GioHang\\PaymentMethod.cshtml",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAACEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-06T08:12:03.999Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "PaymentConfirm.cshtml",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\GioHang\\PaymentConfirm.cshtml",
+              "RelativeDocumentMoniker": "WebApplication15\\Views\\GioHang\\PaymentConfirm.cshtml",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\GioHang\\PaymentConfirm.cshtml",
+              "RelativeToolTip": "WebApplication15\\Views\\GioHang\\PaymentConfirm.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-06T08:11:55.631Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "_DanhSachDanhGia.cshtml",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\Home\\_DanhSachDanhGia.cshtml",
+              "RelativeDocumentMoniker": "WebApplication15\\Views\\Home\\_DanhSachDanhGia.cshtml",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\Home\\_DanhSachDanhGia.cshtml",
+              "RelativeToolTip": "WebApplication15\\Views\\Home\\_DanhSachDanhGia.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-06T08:04:39.854Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "_MenuLoai.cshtml",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\Home\\_MenuLoai.cshtml",
+              "RelativeDocumentMoniker": "WebApplication15\\Views\\Home\\_MenuLoai.cshtml",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\Home\\_MenuLoai.cshtml",
+              "RelativeToolTip": "WebApplication15\\Views\\Home\\_MenuLoai.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-06T08:04:32.677Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "_MenuChinh.cshtml",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\Home\\_MenuChinh.cshtml",
+              "RelativeDocumentMoniker": "WebApplication15\\Views\\Home\\_MenuChinh.cshtml",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\Home\\_MenuChinh.cshtml",
+              "RelativeToolTip": "WebApplication15\\Views\\Home\\_MenuChinh.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-06T08:04:23.67Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "WebApplication15\\Controllers\\HomeController.cs",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "WebApplication15\\Controllers\\HomeController.cs",
+              "ViewState": "AgIAANEAAAAAAAAAAADwv3wAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-06T08:03:09.884Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "_MenuDanhMuc.cshtml",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\Home\\_MenuDanhMuc.cshtml",
+              "RelativeDocumentMoniker": "WebApplication15\\Views\\Home\\_MenuDanhMuc.cshtml",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\Home\\_MenuDanhMuc.cshtml",
+              "RelativeToolTip": "WebApplication15\\Views\\Home\\_MenuDanhMuc.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-06T08:04:30.207Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\NguoiDungs\\Index.cshtml",
+              "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Views\\NguoiDungs\\Index.cshtml",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\NguoiDungs\\Index.cshtml",
+              "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\NguoiDungs\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-05T03:30:47.219Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Edit.cshtml",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\NguoiDungs\\Edit.cshtml",
+              "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Views\\NguoiDungs\\Edit.cshtml",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\NguoiDungs\\Edit.cshtml",
+              "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\NguoiDungs\\Edit.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-05T03:34:20.92Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "Details.cshtml",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\NguoiDungs\\Details.cshtml",
+              "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Views\\NguoiDungs\\Details.cshtml",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\NguoiDungs\\Details.cshtml",
+              "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\NguoiDungs\\Details.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-05T03:34:17.912Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "Delete.cshtml",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\NguoiDungs\\Delete.cshtml",
+              "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Views\\NguoiDungs\\Delete.cshtml",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\NguoiDungs\\Delete.cshtml",
+              "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\NguoiDungs\\Delete.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-05T03:34:17.356Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\NguoiDungs\\Create.cshtml",
+              "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Views\\NguoiDungs\\Create.cshtml",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\NguoiDungs\\Create.cshtml",
+              "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\NguoiDungs\\Create.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-05T03:34:16.626Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABUAAABQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-05T03:32:08.547Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "NguoiDungsController.cs",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Controllers\\NguoiDungsController.cs",
+              "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Controllers\\NguoiDungsController.cs",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Controllers\\NguoiDungsController.cs",
+              "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Controllers\\NguoiDungsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-05T03:30:00.121Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "TaiKhoanCreateVM.cs",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Data\\TaiKhoanCreateVM.cs",
+              "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Data\\TaiKhoanCreateVM.cs",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Data\\TaiKhoanCreateVM.cs",
+              "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Data\\TaiKhoanCreateVM.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-05T03:24:47.576Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "TaiKhoanController.cs",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Controllers\\TaiKhoanController.cs",
+              "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Controllers\\TaiKhoanController.cs",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Controllers\\TaiKhoanController.cs",
+              "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Controllers\\TaiKhoanController.cs",
+              "ViewState": "AgIAABcAAAAAAAAAAAAswBkAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-05T03:13:10.372Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "Register.cshtml",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\User\\Register.cshtml",
+              "RelativeDocumentMoniker": "WebApplication15\\Views\\User\\Register.cshtml",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\User\\Register.cshtml",
+              "RelativeToolTip": "WebApplication15\\Views\\User\\Register.cshtml",
+              "ViewState": "AgIAABUAAAAAAAAAAAAAADoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-05T03:08:26.463Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\LoaiSP\\Create.cshtml",
+              "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Views\\LoaiSP\\Create.cshtml",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\LoaiSP\\Create.cshtml",
+              "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\LoaiSP\\Create.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAwwCAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-02T15:56:10.263Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\ThuongHieu\\Create.cshtml",
+              "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Views\\ThuongHieu\\Create.cshtml",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\ThuongHieu\\Create.cshtml",
+              "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\ThuongHieu\\Create.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-02T15:56:08.248Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\TaiKhoan\\Create.cshtml",
+              "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Views\\TaiKhoan\\Create.cshtml",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\TaiKhoan\\Create.cshtml",
+              "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\TaiKhoan\\Create.cshtml",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAAD4AAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-02T15:55:47.065Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "Edit.cshtml",
+              "DocumentMoniker": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\ThuongHieu\\Edit.cshtml",
+              "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Views\\ThuongHieu\\Edit.cshtml",
+              "ToolTip": "E:\\DangHoc\\DaoMinhThuan_LTWeb\\DACK1\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\ThuongHieu\\Edit.cshtml",
+              "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\ThuongHieu\\Edit.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAABEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-02T15:55:05.046Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

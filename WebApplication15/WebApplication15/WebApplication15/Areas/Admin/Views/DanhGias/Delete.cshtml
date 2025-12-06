@@ -1,0 +1,21 @@
+﻿@model WebApplication15.Models.DanhGia
+
+@{
+    ViewBag.Title = "Xóa đánh giá";
+}
+
+<h2>Bạn có chắc muốn xóa đánh giá này?</h2>
+
+<table class="table table-bordered">
+    <tr><th>Người dùng</th><td>@Model.NguoiDung.HoTen</td></tr>
+    <tr><th>Sản phẩm</th><td>@Model.SanPham.TenSP</td></tr>
+    <tr><th>Điểm</th><td>@Model.Diem</td></tr>
+    <tr><th>Nội dung</th><td>@Model.NoiDung</td></tr>
+</table>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-danger">Xóa</button>
+    @Html.ActionLink("Hủy", "Index", null, new { @class = "btn btn-secondary ml-2" })
+}

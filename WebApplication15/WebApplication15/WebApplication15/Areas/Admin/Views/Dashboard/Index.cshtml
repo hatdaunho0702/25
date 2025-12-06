@@ -1,0 +1,490 @@
+﻿@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>📊 Dashboard Quản Lý Mỹ Phẩm</h2>
+<p>Chào mừng bạn đến trang quản trị.</p>
+
+<!-- Thống kê cơ bản -->
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title">📦 Tổng Sản Phẩm</h5>
+                <h2>@ViewBag.TotalSanPham</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">📋 Tổng Đơn Hàng</h5>
+                <h2>@ViewBag.TotalDonHang</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">👤 Tổng Tài Khoản</h5>
+                <h2>@ViewBag.TotalTaiKhoan</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <h5 class="card-title">💰 Doanh Thu Tháng</h5>
+                <h2>@String.Format(System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), "{0:c}", ViewBag.DoanhThuThangNay)</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =============================================== -->
+<!-- BIỂU ĐỒ DOANH THU -->
+<!-- =============================================== -->
+<div class="card mt-4 mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">📈 Biểu Đồ Doanh Thu</h5>
+    </div>
+    <div class="card-body">
+        <ul class="nav nav-tabs" id="chartTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="ngay-tab" data-bs-toggle="tab" data-bs-target="#ngay" type="button" role="tab">
+                    Theo Ngày (7 ngày)
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="thang-tab" data-bs-toggle="tab" data-bs-target="#thang" type="button" role="tab">
+                    Theo Tháng (12 tháng)
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="nam-tab" data-bs-toggle="tab" data-bs-target="#nam" type="button" role="tab">
+                    Theo Năm (5 năm)
+                </button>
+            </li>
+        </ul>
+        <div class="tab-content mt-3" id="chartTabsContent">
+            <div class="tab-pane fade show active" id="ngay" role="tabpanel">
+                <canvas id="chartNgay" style="max-height: 400px;"></canvas>
+            </div>
+            <div class="tab-pane fade" id="thang" role="tabpanel">
+                <canvas id="chartThang" style="max-height: 400px;"></canvas>
+            </div>
+            <div class="tab-pane fade" id="nam" role="tabpanel">
+                <canvas id="chartNam" style="max-height: 400px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =============================================== -->
+<!-- PHẦN THỐNG KÊ TỒN KHO -->
+<!-- =============================================== -->
+<div class="card mt-4 mb-4">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0">📊 Thống Kê Tồn Kho</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="alert alert-info">
+                    <h6>Tổng Số Lượng Tồn</h6>
+                    <h3 class="text-primary">@ViewBag.SoLuongTonTatCa <small>đơn vị</small></h3>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="alert alert-warning">
+                    <h6>⚠️ Sản Phẩm Hết Hàng</h6>
+                    <h3 class="text-danger">@ViewBag.SanPhamHetHang <small>sản phẩm</small></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =============================================== -->
+<!-- PHẦN THỐNG KÊ THANH TOÁN ĐƠN HÀNG -->
+<!-- =============================================== -->
+<div class="card mt-4 mb-4">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0">💳 Thống Kê Thanh Toán Đơn Hàng</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card border-success">
+                    <div class="card-body text-center">
+                        <h6>✅ Đơn Hàng Đã Thanh Toán</h6>
+                        <h2 class="text-success">@ViewBag.DonHangDaThanhToan</h2>
+                        <p class="text-muted">Tháng này: @ViewBag.DonHangDaThanhToanThangNay</p>
+                        <div class="alert alert-light mt-2">
+                            <small>Doanh Thu:</small><br />
+                            <strong>@String.Format(System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), "{0:c}", ViewBag.DoanhThuDaThanhToan)</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card border-warning">
+                    <div class="card-body text-center">
+                        <h6>❌ Đơn Hàng Chưa Thanh Toán</h6>
+                        <h2 class="text-warning">@ViewBag.DonHangChuaThanhToan</h2>
+                        <p class="text-muted">Đang chờ thanh toán</p>
+                        <div class="alert alert-light mt-2">
+                            <small>Doanh Thu:</small><br />
+                            <strong>@String.Format(System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), "{0:c}", ViewBag.DoanhThuChuaThanhToan)</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =============================================== -->
+<!-- DANH SÁCH ĐƠN HÀNG CHƯA THANH TOÁN -->
+<!-- =============================================== -->
+@if (ViewBag.DonHangChuaThanhToanTop10 != null && ViewBag.DonHangChuaThanhToanTop10.Count > 0)
+{
+    <div class="card mt-4 mb-4">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">⏰ Top 10 Đơn Hàng Chưa Thanh Toán (Cũ Nhất)</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-warning">
+                        <tr>
+                            <th>Mã ĐH</th>
+                            <th>Khách Hàng</th>
+                            <th>Ngày Đặt</th>
+                            <th>Tổng Tiền</th>
+                            <th>Địa Chỉ</th>
+                            <th>Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var dh in ViewBag.DonHangChuaThanhToanTop10)
+                        {
+                            TimeSpan thoiGianConLai = DateTime.Now - (dh.NgayDat ?? DateTime.Now);
+                            
+                            <tr>
+                                <td><strong>#@dh.MaDH</strong></td>
+                                <td>
+                                    @{
+                                        string tenKhachHang = dh.NguoiDung != null ? dh.NguoiDung.HoTen : "N/A";
+                                    }
+                                    @tenKhachHang
+                                </td>
+                                <td>
+                                    <span class="badge badge-light">@((dh.NgayDat ?? DateTime.Now).ToString("dd/MM/yyyy HH:mm"))</span><br />
+                                    <small class="text-muted">@thoiGianConLai.Days ngày trước</small>
+                                </td>
+                                <td>
+                                    <strong>@String.Format(System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), "{0:c}", dh.TongTien ?? 0)</strong>
+                                </td>
+                                <td>
+                                    <small>@dh.DiaChiGiaoHang</small>
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Details", "DonHang", new { id = dh.MaDH })" class="btn btn-sm btn-info" title="Xem Chi Tiết">
+                                        <i class="fa fa-eye"></i> Xem
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Cảnh báo hạn sử dụng -->
+@if (ViewBag.SanPhamDaHetHan != null && ViewBag.SanPhamDaHetHan.Count > 0)
+{
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <h4 class="alert-heading">🚨 CẢNH BÁO: Sản Phẩm Đã Hết Hạn!</h4>
+                <p>Có <strong>@ViewBag.SanPhamDaHetHan.Count</strong> sản phẩm đã vượt quá hạn sử dụng. Vui lòng xóa hoặc dừng bán.</p>
+                <table class="table table-sm table-striped mt-3">
+                    <thead>
+                        <tr>
+                            <th>Mã SP</th>
+                            <th>Tên Sản Phẩm</th>
+                            <th>Hạn Sử Dụng</th>
+                            <th>Tồn Kho</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var sp in ViewBag.SanPhamDaHetHan)
+                        {
+                            object hanSuDungObj = sp.HanSuDung;
+                            DateTime? hanSuDung = hanSuDungObj as DateTime?;
+                            
+                            <tr>
+                                <td>@sp.MaSP</td>
+                                <td>@sp.TenSP</td>
+                                <td>
+                                    @if (hanSuDung.HasValue)
+                                    {
+                                        <span class="badge badge-danger">@hanSuDung.Value.ToString("dd/MM/yyyy")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-secondary">N/A</span>
+                                    }
+                                </td>
+                                <td>@(sp.SoLuongTon ?? 0)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Cảnh báo sắp hết hạn -->
+@if (ViewBag.SanPhamSapHetHan != null && ViewBag.SanPhamSapHetHan.Count > 0)
+{
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <h4 class="alert-heading">⚠️ CẢNH BÁO: Sản Phẩm Sắp Hết Hạn (3 tháng nữa)</h4>
+                <p>Có <strong>@ViewBag.SanPhamSapHetHan.Count</strong> sản phẩm sắp hết hạn. Hãy chạy chương trình sale để xả hàng kịp thời.</p>
+                <table class="table table-sm table-striped mt-3">
+                    <thead>
+                        <tr>
+                            <th>Mã SP</th>
+                            <th>Tên Sản Phẩm</th>
+                            <th>Hạn Sử Dụng</th>
+                            <th>Tồn Kho</th>
+                            <th>Ngày Còn Lại</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var sp in ViewBag.SanPhamSapHetHan)
+                        {
+                            DateTime ngayHienTai = DateTime.Now;
+                            object hanSuDungObj = sp.HanSuDung;
+                            DateTime? hanSuDung = hanSuDungObj as DateTime?;
+                            int ngayConLai = 0;
+                            
+                            if (hanSuDung.HasValue)
+                            {
+                                ngayConLai = (int)(hanSuDung.Value - ngayHienTai).TotalDays;
+                            }
+                            
+                            <tr>
+                                <td>@sp.MaSP</td>
+                                <td>@sp.TenSP</td>
+                                <td>
+                                    @if (hanSuDung.HasValue)
+                                    {
+                                        <span class="badge badge-warning">@hanSuDung.Value.ToString("dd/MM/yyyy")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-secondary">N/A</span>
+                                    }
+                                </td>
+                                <td>@(sp.SoLuongTon ?? 0)</td>
+                                <td><strong>@ngayConLai</strong> ngày</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts {
+<script>
+    // Dữ liệu từ Controller
+    var doanhThuTheoNgay = @Html.Raw(ViewBag.DoanhThuTheoNgay);
+    var labelTheoNgay = @Html.Raw(ViewBag.LabelTheoNgay);
+    
+    var doanhThuTheoThang = @Html.Raw(ViewBag.DoanhThuTheoThang);
+    var labelTheoThang = @Html.Raw(ViewBag.LabelTheoThang);
+    
+    var doanhThuTheoNam = @Html.Raw(ViewBag.DoanhThuTheoNam);
+    var labelTheoNam = @Html.Raw(ViewBag.LabelTheoNam);
+
+    // Biểu đồ theo ngày
+    var ctxNgay = document.getElementById('chartNgay').getContext('2d');
+    var chartNgay = new Chart(ctxNgay, {
+        type: 'bar',
+        data: {
+            labels: labelTheoNgay,
+            datasets: [{
+                label: 'Doanh Thu (VNĐ)',
+                data: doanhThuTheoNgay,
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return new Intl.NumberFormat('vi-VN', { 
+                                style: 'currency', 
+                                currency: 'VND' 
+                            }).format(value);
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN', { 
+                                style: 'currency', 
+                                currency: 'VND' 
+                            }).format(context.parsed.y);
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Biểu đồ theo tháng
+    var ctxThang = document.getElementById('chartThang').getContext('2d');
+    var chartThang = new Chart(ctxThang, {
+        type: 'line',
+        data: {
+            labels: labelTheoThang,
+            datasets: [{
+                label: 'Doanh Thu (VNĐ)',
+                data: doanhThuTheoThang,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return new Intl.NumberFormat('vi-VN', { 
+                                style: 'currency', 
+                                currency: 'VND' 
+                            }).format(value);
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN', { 
+                                style: 'currency', 
+                                currency: 'VND' 
+                            }).format(context.parsed.y);
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Biểu đồ theo năm
+    var ctxNam = document.getElementById('chartNam').getContext('2d');
+    var chartNam = new Chart(ctxNam, {
+        type: 'bar',
+        data: {
+            labels: labelTheoNam,
+            datasets: [{
+                label: 'Doanh Thu (VNĐ)',
+                data: doanhThuTheoNam,
+                backgroundColor: 'rgba(255, 159, 64, 0.6)',
+                borderColor: 'rgba(255, 159, 64, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return new Intl.NumberFormat('vi-VN', { 
+                                style: 'currency', 
+                                currency: 'VND' 
+                            }).format(value);
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN', { 
+                                style: 'currency', 
+                                currency: 'VND' 
+                            }).format(context.parsed.y);
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+}
+
+<style>
+    .card {
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .card-header {
+        border-radius: 8px 8px 0 0;
+    }
+    .table-hover tbody tr:hover {
+        background-color: #f5f5f5;
+    }
+    .badge {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    .alert {
+        border-radius: 6px;
+    }
+    .nav-tabs .nav-link {
+        color: #495057;
+    }
+    .nav-tabs .nav-link.active {
+        color: #0d6efd;
+        font-weight: bold;
+    }
+</style>

@@ -1,0 +1,45 @@
+﻿@model List<WebApplication15.Models.TaiKhoan>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>📦 Quản lý tài khoản</h2>
+
+<a href="@Url.Action("Create")" class="btn btn-success mb-3">+ Thêm tài khoản</a>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>⚠️ Lỗi!</strong> @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+<table class="table table-bordered table-datatable">
+    <thead class="table-secondary">
+        <tr>
+            <th>Mã TK</th>
+            <th>Tên Đăng Nhập</th>
+            <th>Vai Trò</th>
+            <th>Mã Người Dùng</th>
+            <th>Hành Động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var tk in Model)
+        {
+            <tr>
+                <td>@tk.MaTK</td>
+                <td>@tk.TenDangNhap</td>
+                <td><span class="badge @(tk.VaiTro == "Admin" ? "badge-danger" : "badge-info")">@tk.VaiTro</span></td>
+                <td>@tk.MaND</td>
+                <td>
+                    <a class="btn btn-sm btn-warning" href="@Url.Action("Edit", new { id = tk.MaTK })">Sửa</a>
+                    <a class="btn btn-sm btn-danger" href="@Url.Action("Delete", new { id = tk.MaTK })" onclick="return confirm('Bạn chắc chắn muốn xóa tài khoản này?')">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

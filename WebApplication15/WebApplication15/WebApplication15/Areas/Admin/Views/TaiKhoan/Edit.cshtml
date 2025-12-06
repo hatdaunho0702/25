@@ -1,0 +1,42 @@
+﻿@model WebApplication15.Models.TaiKhoan
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>✏️ Sửa tài khoản</h2>
+
+@using (Html.BeginForm("Edit", "TaiKhoan", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(m => m.MaTK)
+
+    <div class="form-group">
+        <label>Tên Đăng Nhập</label>
+        @Html.TextBoxFor(m => m.TenDangNhap, new { @class = "form-control", required = "required" })
+    </div>
+
+    <div class="form-group">
+        <label>Mật Khẩu</label>
+        @Html.PasswordFor(m => m.MatKhauHash, new { @class = "form-control", required = "required" })
+    </div>
+
+    <div class="form-group">
+        <label>Vai Trò</label>
+        @Html.DropDownListFor(m => m.VaiTro, new List<SelectListItem>
+        {
+            new SelectListItem { Text = "Admin", Value = "Admin" },
+            new SelectListItem { Text = "User", Value = "User" }
+        }, "-- Chọn Vai Trò --", new { @class = "form-control", required = "required" })
+    </div>
+
+    <div class="form-group">
+        <label>Người Dùng</label>
+        @Html.DropDownListFor(m => m.MaND, (SelectList)ViewBag.MaND, "-- Chọn Người Dùng --", new { @class = "form-control", required = "required" })
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">💾 Cập nhật</button>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">❌ Hủy</a>
+    </div>
+}
