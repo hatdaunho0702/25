@@ -33,7 +33,7 @@ namespace WebApplication15.Models
         }
 
         // Tính tổng thành tiền
-        public double TongThanhTien()
+        public decimal TongThanhTien()
         {
             return list.Sum(sp => sp.ThanhTien);
         }

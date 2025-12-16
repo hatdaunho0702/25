@@ -1,0 +1,84 @@
+﻿@model WebApplication15.Models.PhieuNhap
+@{
+    ViewBag.Title = "Chi tiết phiếu nhập #" + Model.MaPN;
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fa-solid fa-file-invoice"></i> Thông tin phiếu nhập #@Model.MaPN
+            </h6>
+            <a href="@Url.Action("Index")" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <p><strong>Nhà cung cấp:</strong> @(Model.NhaCungCap != null ? Model.NhaCungCap.TenNCC : "N/A")</p>
+                    <p><strong>Người tạo:</strong> Admin</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <p><strong>Ngày nhập:</strong> @string.Format("{0:dd/MM/yyyy HH:mm}", Model.NgayNhap)</p>
+                    <p><strong>Ghi chú:</strong> @(string.IsNullOrEmpty(Model.GhiChu) ? "Không có" : Model.GhiChu)</p>
+                </div>
+            </div>
+
+            <h5 class="text-secondary mb-3">Danh sách sản phẩm nhập</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-center">STT</th>
+                            <th>Tên sản phẩm</th>
+                            <th class="text-center">Số lượng</th>
+                            <th class="text-end">Giá nhập</th>
+                            <th class="text-end">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.ChiTietPhieuNhaps != null && Model.ChiTietPhieuNhaps.Count > 0)
+                        {
+                            int stt = 1;
+                            foreach (var item in Model.ChiTietPhieuNhaps)
+                            {
+                                <tr>
+                                    <td class="text-center">@stt</td>
+                                    <td>
+                                        @(item.SanPham != null ? item.SanPham.TenSP : "Mã SP: " + item.MaSP)
+                                    </td>
+                                    <td class="text-center">@item.SoLuong</td>
+                                    <td class="text-end">@string.Format("{0:N0} đ", item.GiaNhap)</td>
+                                    <td class="text-end fw-bold">@string.Format("{0:N0} đ", item.ThanhTien)</td>
+                                </tr>
+                                stt++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center">Không tìm thấy chi tiết sản phẩm.</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-active">
+                            <td colspan="4" class="text-end fw-bold">TỔNG CỘNG:</td>
+                            <td class="text-end fw-bold text-danger fs-5">
+                                @string.Format("{0:N0} đ", Model.TongTien)
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="text-end mt-3">
+                <button class="btn btn-warning" onclick="window.print()">
+                    <i class="fa-solid fa-print"></i> In phiếu
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

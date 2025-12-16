@@ -25,6 +25,9 @@ namespace WebApplication15.Models
         public Nullable<System.DateTime> NgayDat { get; set; }
         public Nullable<decimal> TongTien { get; set; }
         public string DiaChiGiaoHang { get; set; }
+        public string TenNguoiNhan { get; set; }
+        public string SoDienThoai { get; set; }
+        public string GhiChu { get; set; }
         public string TrangThaiThanhToan { get; set; }
         public Nullable<System.DateTime> NgayThanhToan { get; set; }
         public string PhuongThucThanhToan { get; set; }

@@ -1,0 +1,65 @@
+﻿@model IEnumerable<WebApplication15.Models.PhieuNhap>
+@{
+    ViewBag.Title = "Quản lý nhập hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Quản lý nhập hàng</h1>
+        <a href="@Url.Action("Create", "PhieuNhap", new { area = "Admin" })" class="btn btn-primary shadow-sm">
+            <i class="fa-solid fa-plus"></i> Tạo phiếu nhập mới
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Lịch sử các lần nhập hàng</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover table-datatable" width="100%" cellspacing="0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Mã PN</th>
+                            <th>Nhà cung cấp</th>
+                            <th>Ngày nhập</th>
+                            <th>Tổng tiền</th>
+                            <th>Ghi chú</th>
+                            <th class="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>#@item.MaPN</td>
+                                    <td>@(item.NhaCungCap != null ? item.NhaCungCap.TenNCC : "Không xác định")</td>
+                                    <td>@string.Format("{0:dd/MM/yyyy HH:mm}", item.NgayNhap)</td>
+                                    <td class="text-danger fw-bold">@string.Format("{0:N0} đ", item.TongTien)</td>
+                                    <td>@item.GhiChu</td>
+                                    <td class="text-center">
+                                        <a href="@Url.Action("Details", new { id = item.MaPN })" class="btn btn-info btn-sm" title="Xem chi tiết">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

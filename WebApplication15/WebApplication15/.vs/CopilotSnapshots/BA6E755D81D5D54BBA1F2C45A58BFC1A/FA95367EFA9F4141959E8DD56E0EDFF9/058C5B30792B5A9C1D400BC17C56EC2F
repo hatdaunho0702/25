@@ -1,0 +1,161 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using WebApplication15.Areas.Admin.Data;
+using WebApplication15.Models;
+using System.Data.Entity;
+
+namespace WebApplication15.Areas.Admin.Controllers
+{
+    [AuthorizeAdmin]
+    public class DonHangController : Controller
+    {
+        private DB_SkinFood1Entities db = new DB_SkinFood1Entities();
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db?.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        // GET: Admin/DonHang
+        public ActionResult Index()
+        {
+            var donHangs = db.DonHangs.OrderByDescending(d => d.NgayDat).ToList();
+            return View(donHangs);
+        }
+
+        public ActionResult Details(int id)
+        {
+            var dh = db.DonHangs.Find(id);
+            if (dh == null)
+                return HttpNotFound();
+
+            var chiTietList = db.ChiTietDonHangs
+                .Where(c => c.MaDH == id)
+                .Include(c => c.SanPham)
+                .ToList();
+
+            ViewBag.ChiTiet = chiTietList;
+            return View(dh);
+        }
+
+        public ActionResult Delete(int id)
+        {
+            try
+            {
+                var chiTietList = db.ChiTietDonHangs.Where(c => c.MaDH == id).ToList();
+                db.ChiTietDonHangs.RemoveRange(chiTietList);
+
+                var donHang = db.DonHangs.Find(id);
+                if (donHang != null)
+                {
+                    db.DonHangs.Remove(donHang);
+                    db.SaveChanges();
+                    TempData["SuccessMessage"] = "Xóa đơn hàng thành công!";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Có lỗi xảy ra khi xóa: " + ex.Message;
+            }
+            return RedirectToAction("Index");
+        }
+
+        // AJAX: Cập nhật trạng thái thanh toán
+        [HttpPost]
+        public ActionResult UpdatePaymentStatus(int id, string status)
+        {
+            try
+            {
+                var dh = db.DonHangs.Find(id);
+                if (dh == null)
+                    return Json(new { success = false, message = "Đơn hàng không tồn tại" });
+
+                dh.TrangThaiThanhToan = status;
+                if (status == "Đã thanh toán" && !dh.NgayThanhToan.HasValue)
+                {
+                    dh.NgayThanhToan = DateTime.Now;
+                }
+                db.SaveChanges();
+
+                return Json(new { success = true, message = "Cập nhật trạng thái thành công!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi: " + ex.Message });
+            }
+        }
+
+        // POST: Duyệt đơn hàng (xuất hàng)
+        // Kiểm tra tồn kho, nếu đủ thì trừ kho và cập nhật trạng thái
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DuyetDon(int id)
+        {
+            using (var tran = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    var dh = db.DonHangs.Find(id);
+                    if (dh == null)
+                    {
+                        return Json(new { success = false, message = "Đơn hàng không tồn tại" });
+                    }
+
+                    if (dh.TrangThaiThanhToan == "Đã thanh toán")
+                    {
+                        return Json(new { success = false, message = "Đơn hàng đã được duyệt trước đó" });
+                    }
+
+                    var chiTiets = db.ChiTietDonHangs
+                        .Where(c => c.MaDH == id)
+                        .Include(c => c.SanPham)
+                        .ToList();
+
+                    // Kiểm tra tồn kho cho từng sản phẩm
+                    foreach (var ct in chiTiets)
+                    {
+                        var sp = ct.SanPham;
+                        int ton = sp?.SoLuongTon ?? 0;
+                        int need = ct.SoLuong ?? 0; // fix nullable -> int
+                        if (need > ton)
+                        {
+                            return Json(new { success = false, message = $"Sản phẩm '{sp?.TenSP}' thiếu hàng. Cần {need}, hiện có {ton}." });
+                        }
+                    }
+
+                    // Nếu đủ hàng, trừ tồn kho
+                    foreach (var ct in chiTiets)
+                    {
+                        var sp = db.SanPhams.Find(ct.MaSP);
+                        if (sp == null) continue;
+
+                        sp.SoLuongTon = (sp.SoLuongTon ?? 0) - (ct.SoLuong ?? 0);
+                        db.Entry(sp).State = EntityState.Modified;
+                    }
+
+                    // Cập nhật trạng thái đơn
+                    dh.TrangThaiThanhToan = "Đã thanh toán";
+                    dh.NgayThanhToan = DateTime.Now;
+                    db.Entry(dh).State = EntityState.Modified;
+
+                    db.SaveChanges();
+                    tran.Commit();
+
+                    return Json(new { success = true, message = "Duyệt đơn thành công và đã cập nhật tồn kho." });
+                }
+                catch (Exception ex)
+                {
+                    tran.Rollback();
+                    return Json(new { success = false, message = "Lỗi khi duyệt đơn: " + ex.Message });
+                }
+            }
+        }
+    }
+}

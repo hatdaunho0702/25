@@ -1,0 +1,58 @@
+﻿@model IEnumerable<WebApplication15.Models.PhieuXuat>
+@{
+    ViewBag.Title = "Danh sách phiếu xuất kho";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Quản lý xuất kho</h1>
+        <a href="@Url.Action("Create", "PhieuXuat", new { area = "Admin" })" class="btn btn-primary shadow-sm">
+            <i class="fa-solid fa-plus"></i> Tạo phiếu xuất mới
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Lịch sử xuất kho (Nội bộ/Hủy)</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover table-datatable" width="100%" cellspacing="0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Mã PX</th>
+                            <th>Ngày xuất</th>
+                            <th>Người nhận</th>
+                            <th>Tổng tiền</th>
+                            <th>Ghi chú</th>
+                            <th class="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null)
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>#@item.MaPX</td>
+                                    <td>@(item.NgayXuat.HasValue ? item.NgayXuat.Value.ToString("dd/MM/yyyy HH:mm") : "")</td>
+                                    <td>@item.NguoiNhan</td>
+                                    <td class="text-danger fw-bold">
+                                        @(item.TongTien.HasValue ? item.TongTien.Value.ToString("N0") : "0") đ
+                                    </td>
+                                    <td>@item.GhiChu</td>
+                                    <td class="text-center">
+                                        <a href="@Url.Action("Details", "PhieuXuat", new { area = "Admin", id = item.MaPX })" class="btn btn-info btn-sm" title="Xem chi tiết">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

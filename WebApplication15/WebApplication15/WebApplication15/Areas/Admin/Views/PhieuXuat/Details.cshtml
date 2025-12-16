@@ -1,0 +1,87 @@
+﻿@model WebApplication15.Models.PhieuXuat
+@{
+    ViewBag.Title = "Chi tiết phiếu xuất #" + Model.MaPX;
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fa-solid fa-file-invoice"></i> Thông tin phiếu xuất #@Model.MaPX
+            </h6>
+            <a href="@Url.Action("Index", "PhieuXuat", new { area = "Admin" })" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <p><strong>Người nhận:</strong> @Model.NguoiNhan</p>
+                    <p><strong>Ngày xuất:</strong> @(Model.NgayXuat.HasValue ? Model.NgayXuat.Value.ToString("dd/MM/yyyy HH:mm") : "")</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <p><strong>Ghi chú:</strong> @(string.IsNullOrEmpty(Model.GhiChu) ? "Không có" : Model.GhiChu)</p>
+                </div>
+            </div>
+
+            <h5 class="text-secondary mb-3">Danh sách sản phẩm xuất</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-center">STT</th>
+                            <th>Sản phẩm</th>
+                            <th class="text-center">Số lượng</th>
+                            <th class="text-end">Đơn giá (Vốn)</th>
+                            <th class="text-end">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.ChiTietPhieuXuats != null)
+                        {
+                            int stt = 1;
+                            decimal calcTotal = 0m;
+                            foreach (var d in Model.ChiTietPhieuXuats)
+                            {
+                                // Compute unit price and line total if DB fields are null
+                                decimal unit = d.DonGia ?? (d.SanPham != null && d.SanPham.GiaBan.HasValue ? d.SanPham.GiaBan.Value : 0m);
+                                int qty = d.SoLuong ?? 0;
+                                decimal line = d.ThanhTien ?? (unit * qty);
+                                calcTotal += line;
+                                <tr>
+                                    <td class="text-center">@stt</td>
+                                    <td>@(d.SanPham != null ? d.SanPham.TenSP : "Mã SP: " + d.MaSP)</td>
+                                    <td class="text-center">@qty</td>
+                                    <td class="text-end">@String.Format("{0:N0}", unit) đ</td>
+                                    <td class="text-end fw-bold">@String.Format("{0:N0}", line) đ</td>
+                                </tr>
+                                stt++;
+                            }
+
+                            // If Model.TongTien is not set, use calcTotal
+                            if (!(Model.TongTien.HasValue && Model.TongTien.Value > 0))
+                            {
+                                Model.TongTien = calcTotal;
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-active">
+                            <td colspan="4" class="text-end fw-bold">TỔNG CỘNG:</td>
+                            <td class="text-end fw-bold text-danger fs-5">
+                                @(Model.TongTien.HasValue ? Model.TongTien.Value.ToString("N0") : "0") đ
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="text-end mt-3">
+                <button class="btn btn-warning" onclick="window.print()">
+                    <i class="fa-solid fa-print"></i> In phiếu
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

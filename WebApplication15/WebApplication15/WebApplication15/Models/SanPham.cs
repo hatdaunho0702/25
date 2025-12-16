@@ -18,9 +18,9 @@ namespace WebApplication15.Models
         public SanPham()
         {
             this.ChiTietDonHangs = new HashSet<ChiTietDonHang>();
+            this.ChiTietPhieuNhaps = new HashSet<ChiTietPhieuNhap>();
+            this.ChiTietPhieuXuats = new HashSet<ChiTietPhieuXuat>();
             this.DanhGias = new HashSet<DanhGia>();
-            this.NhapHangs = new HashSet<NhapHang>();
-            this.XuatKhoes = new HashSet<XuatKho>();
             this.ThuocTinhMyPhams = new HashSet<ThuocTinhMyPham>();
         }
     
@@ -49,14 +49,14 @@ namespace WebApplication15.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ChiTietPhieuNhap> ChiTietPhieuNhaps { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ChiTietPhieuXuat> ChiTietPhieuXuats { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DanhGia> DanhGias { get; set; }
         public virtual DanhMuc DanhMuc { get; set; }
         public virtual LoaiSP LoaiSP { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<NhapHang> NhapHangs { get; set; }
         public virtual ThuongHieu ThuongHieu { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<XuatKho> XuatKhoes { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ThuocTinhMyPham> ThuocTinhMyPhams { get; set; }
     }

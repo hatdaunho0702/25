@@ -1,0 +1,223 @@
+﻿@model WebApplication15.Models.PhieuXuat
+@{
+    ViewBag.Title = "Tạo phiếu xuất kho";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Quản lý xuất kho</h1>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-primary">
+            <h6 class="m-0 font-weight-bold text-white">
+                <i class="fa-solid fa-file-export"></i> Lập phiếu xuất mới
+            </h6>
+        </div>
+        <div class="card-body">
+            @using (Html.BeginForm("Create", "PhieuXuat", FormMethod.Post, new { id = "formPhieuXuat" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">Người nhận hàng <span class="text-danger">*</span></label>
+                            @Html.TextBoxFor(m => m.NguoiNhan, new { @class = "form-control", required = "required", placeholder = "Ví dụ: Kho Hà Nội, Nhân viên A..." })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">Ghi chú</label>
+                            @Html.TextAreaFor(m => m.GhiChu, new { @class = "form-control", rows = 1, placeholder = "Lý do xuất kho..." })
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="sidebar-divider my-4">
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="text-secondary fw-bold">Chi tiết sản phẩm</h5>
+                    <button type="button" id="addRow" class="btn btn-success btn-sm">
+                        <i class="fa-solid fa-plus"></i> Thêm dòng
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="detailsTable">
+                        <thead class="table-light text-center">
+                            <tr>
+                                <th style="width:40%">Sản phẩm (Tồn kho)</th>
+                                <th style="width:15%">Số lượng xuất</th>
+                                <th style="width:20%">Đơn giá (VNĐ)</th>
+                                <th style="width:20%">Thành tiền</th>
+                                <th style="width:5%">Xóa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-end fw-bold align-middle">TỔNG CỘNG:</td>
+                                <td colspan="2">
+                                    <span id="grandTotal" class="fw-bold text-danger fs-5">0 đ</span>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="mt-4 text-end">
+                    <a href="@Url.Action("Index", "PhieuXuat", new { area = "Admin" })" class="btn btn-secondary me-2">
+                        <i class="fa-solid fa-arrow-left"></i> Hủy bỏ
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fa-solid fa-save"></i> Lưu phiếu xuất
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Lấy dữ liệu sản phẩm từ ViewBag (Convert sang JSON)
+        var products = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Products));
+
+        $(document).ready(function () {
+
+            // Hàm tạo danh sách option cho Dropdown
+            function renderProductOptions() {
+                var html = '<option value="">-- Chọn sản phẩm --</option>';
+                if(products) {
+                    products.forEach(function(p) {
+                        // Lấy giá vốn hoặc giá bán, lấy số lượng tồn
+                        let price = p.GiaBan || 0;
+                        let stock = p.SoLuongTon || 0; // Sửa: dùng SoLuongTon
+
+                        html += `<option value="${p.MaSP}" data-price="${price}" data-stock="${stock}">
+                                    ${p.TenSP} (Tồn: ${stock})
+                                 </option>`;
+                    });
+                }
+                return html;
+            }
+
+            // Hàm format tiền tệ VN
+            function formatNumber(num) {
+                if (num === null || num === undefined) return "0";
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+
+            // Hàm thêm dòng mới
+            function addRow() {
+                var idx = $('#detailsTable tbody tr').length;
+                var row = `
+                    <tr>
+                        <td>
+                            <select name="details[${idx}].MaSP" class="form-select product-select" required>
+                                ${renderProductOptions()}
+                            </select>
+                            <small class="text-danger stock-alert" style="display:none;">Vượt quá tồn kho!</small>
+                        </td>
+                        <td>
+                            <input type="number" name="details[${idx}].SoLuong" class="form-control qty text-center" min="1" value="1" required />
+                        </td>
+                        <td>
+                            <input type="number" name="details[${idx}].DonGia" class="form-control price text-end" min="0" required />
+                        </td>
+                        <td>
+                            <input type="text" class="form-control amount-display text-end bg-light" readonly value="0" />
+                            <input type="hidden" name="details[${idx}].ThanhTien" class="amount-raw" value="0" />
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-danger btn-sm remove">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+                $('#detailsTable tbody').append(row);
+            }
+
+            // Sự kiện: Khi chọn sản phẩm -> Tự điền giá và check tồn kho
+            $('#detailsTable').on('change', '.product-select', function() {
+                var $row = $(this).closest('tr');
+                var $option = $(this).find(':selected');
+
+                var price = parseFloat($option.data('price')) || 0;
+                var stock = parseInt($option.data('stock')) || 0;
+
+                // Tự điền giá
+                $row.find('.price').val(price);
+
+                // Lưu trữ tồn kho vào attribute để check sau
+                $row.find('.qty').attr('max', stock);
+
+                updateRowAmount($row);
+            });
+
+            // Sự kiện: Khi nhập số lượng hoặc giá -> Tính thành tiền
+            $('#detailsTable').on('input', '.qty, .price', function() {
+                var $row = $(this).closest('tr');
+                var qty = parseInt($row.find('.qty').val()) || 0;
+                var maxStock = parseInt($row.find('.qty').attr('max')) || 9999;
+                var $alert = $row.find('.stock-alert');
+
+                // Logic check tồn kho UI
+                if(qty > maxStock) {
+                    $row.find('.qty').addClass('is-invalid');
+                    $alert.show();
+                } else {
+                    $row.find('.qty').removeClass('is-invalid');
+                    $alert.hide();
+                }
+
+                updateRowAmount($row);
+            });
+
+            // Hàm tính tiền 1 dòng
+            function updateRowAmount($row) {
+                var qty = parseInt($row.find('.qty').val()) || 0;
+                var price = parseFloat($row.find('.price').val()) || 0;
+                var amt = qty * price;
+                $row.find('.amount-display').val(formatNumber(amt));
+                $row.find('.amount-raw').val(amt);
+                updateGrandTotal();
+            }
+
+            // Hàm tính tổng phiếu
+            function updateGrandTotal() {
+                var total = 0;
+                $('#detailsTable .amount-raw').each(function() {
+                    var val = parseFloat($(this).val()) || 0;
+                    total += val;
+                });
+                $('#grandTotal').text(formatNumber(total) + " đ");
+            }
+
+            // Xóa dòng
+            $('#detailsTable').on('click', '.remove', function() {
+                if($('#detailsTable tbody tr').length > 1) {
+                    $(this).closest('tr').remove();
+
+                    // Re-index lại name để MVC hiểu
+                    $('#detailsTable tbody tr').each(function(i) {
+                       $(this).find('select.product-select').attr('name', `details[${i}].MaSP`);
+                       $(this).find('.qty').attr('name', `details[${i}].SoLuong`);
+                       $(this).find('.price').attr('name', `details[${i}].DonGia`);
+                       $(this).find('.amount-raw').attr('name', `details[${i}].ThanhTien`);
+                    });
+
+                    updateGrandTotal();
+                } else {
+                    alert("Phải có ít nhất 1 dòng!");
+                }
+            });
+
+            // Khởi tạo 1 dòng đầu tiên
+            addRow();
+        });
+    </script>
+}

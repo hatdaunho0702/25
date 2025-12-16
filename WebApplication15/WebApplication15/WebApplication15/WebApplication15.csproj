@@ -136,6 +136,8 @@
     <Compile Include="Areas\Admin\Controllers\LienHesController.cs" />
     <Compile Include="Areas\Admin\Controllers\LoaiSPController.cs" />
     <Compile Include="Areas\Admin\Controllers\NguoiDungsController.cs" />
+    <Compile Include="Areas\Admin\Controllers\PhieuNhapController.cs" />
+    <Compile Include="Areas\Admin\Controllers\PhieuXuatController.cs" />
     <Compile Include="Areas\Admin\Controllers\SanPhamController.cs" />
     <Compile Include="Areas\Admin\Controllers\TaiKhoanController.cs" />
     <Compile Include="Areas\Admin\Controllers\ThuongHieuController.cs" />
@@ -152,64 +154,74 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Cart.cs" />
     <Compile Include="Models\ChiTietDonHang.cs">
-      <DependentUpon>DB_SkinFood.tt</DependentUpon>
+      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ChiTietPhieuNhap.cs">
+      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ChiTietPhieuXuat.cs">
+      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DanhGia.cs">
-      <DependentUpon>DB_SkinFood.tt</DependentUpon>
+      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DanhMuc.cs">
-      <DependentUpon>DB_SkinFood.tt</DependentUpon>
+      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\DB_SkinFood.Context.cs">
+    <Compile Include="Models\DB_SkinFood1.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>DB_SkinFood.Context.tt</DependentUpon>
+      <DependentUpon>DB_SkinFood1.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\DB_SkinFood.cs">
+    <Compile Include="Models\DB_SkinFood1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>DB_SkinFood.tt</DependentUpon>
+      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\DB_SkinFood.Designer.cs">
+    <Compile Include="Models\DB_SkinFood1.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>DB_SkinFood.edmx</DependentUpon>
+      <DependentUpon>DB_SkinFood1.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\DB_SkinFood1Alias.cs" />
     <Compile Include="Models\DonHang.cs">
-      <DependentUpon>DB_SkinFood.tt</DependentUpon>
+      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\DonHang.Partial.cs" />
     <Compile Include="Models\GioHang.cs" />
     <Compile Include="Models\HomeViewModel.cs" />
     <Compile Include="Models\LienHe.cs">
-      <DependentUpon>DB_SkinFood.tt</DependentUpon>
+      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\LoaiSP.cs">
-      <DependentUpon>DB_SkinFood.tt</DependentUpon>
+      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\NguoiDung.cs">
-      <DependentUpon>DB_SkinFood.tt</DependentUpon>
+      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\NhapHang.cs">
-      <DependentUpon>DB_SkinFood.tt</DependentUpon>
+    <Compile Include="Models\NhaCungCap.cs">
+      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\PhieuNhap.cs">
+      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\PhieuXuat.cs">
+      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\PhieuXuat.Partial.cs" />
     <Compile Include="Models\SanPham.cs">
-      <DependentUpon>DB_SkinFood.tt</DependentUpon>
+      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\TaiKhoan.cs">
-      <DependentUpon>DB_SkinFood.tt</DependentUpon>
+      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ThuocTinhMyPham.cs">
-      <DependentUpon>DB_SkinFood.tt</DependentUpon>
+      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ThuongHieu.cs">
-      <DependentUpon>DB_SkinFood.tt</DependentUpon>
+      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\UserOrdersViewModel.cs" />
     <Compile Include="Models\UserProfileViewModel.cs" />
-    <Compile Include="Models\XuatKho.cs">
-      <DependentUpon>DB_SkinFood.tt</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -241,15 +253,15 @@
     <Content Include="Content\Site.css" />
     <Content Include="CSS\HienSP.css" />
     <Content Include="CSS\SaoRoi.css" />
-    <Content Include="Models\DB_SkinFood.Context.tt">
+    <Content Include="Models\DB_SkinFood1.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>DB_SkinFood.edmx</DependentUpon>
-      <LastGenOutput>DB_SkinFood.Context.cs</LastGenOutput>
+      <DependentUpon>DB_SkinFood1.edmx</DependentUpon>
+      <LastGenOutput>DB_SkinFood1.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="Models\DB_SkinFood.tt">
+    <Content Include="Models\DB_SkinFood1.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>DB_SkinFood.edmx</DependentUpon>
-      <LastGenOutput>DB_SkinFood.cs</LastGenOutput>
+      <DependentUpon>DB_SkinFood1.edmx</DependentUpon>
+      <LastGenOutput>DB_SkinFood1.cs</LastGenOutput>
     </Content>
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
@@ -274,13 +286,6 @@
     <Content Include="Areas\Admin\Views\LoaiSP\Create.cshtml" />
     <Content Include="Areas\Admin\Views\LoaiSP\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\DonHang\Details.cshtml" />
-    <EntityDeploy Include="Models\DB_SkinFood.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>DB_SkinFood.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <Content Include="Models\DB_SkinFood.edmx.diagram">
-      <DependentUpon>DB_SkinFood.edmx</DependentUpon>
-    </Content>
     <Content Include="Areas\Admin\Views\LienHes\Create.cshtml" />
     <Content Include="Areas\Admin\Views\LienHes\Delete.cshtml" />
     <Content Include="Areas\Admin\Views\LienHes\Details.cshtml" />
@@ -299,6 +304,19 @@
     <Content Include="Areas\Admin\Views\NguoiDungs\Index.cshtml" />
     <Content Include="OPTIMIZATION_REPORT.md" />
     <Content Include="CSRF_FIX_REPORT.md" />
+    <EntityDeploy Include="Models\DB_SkinFood1.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>DB_SkinFood1.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\DB_SkinFood1.edmx.diagram">
+      <DependentUpon>DB_SkinFood1.edmx</DependentUpon>
+    </Content>
+    <Content Include="Areas\Admin\Views\PhieuNhap\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\PhieuNhap\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\PhieuNhap\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\PhieuXuat\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\PhieuXuat\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\PhieuXuat\Details.cshtml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -312,6 +330,7 @@
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="CSS\StyleSheet1.css" />
     <Content Include="CSS\ThemDanhGia.css" />
+    <Content Include="UPDATE_IMAGE_NAMES.sql" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
