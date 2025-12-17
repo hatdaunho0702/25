@@ -86,34 +86,87 @@ namespace WebApplication15.Areas.Admin.Controllers
             return View();
         }
 
+        // Unified Save action: Insert when MaSP <= 0, Update when MaSP > 0
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(SanPham sp, HttpPostedFileBase imageFile)
+        public ActionResult Save(SanPham sp, HttpPostedFileBase imageFile)
         {
             try
             {
-                if (imageFile != null && imageFile.ContentLength > 0)
+                if (sp == null)
                 {
-                    sp.HinhAnh = SaveUploadedFile(imageFile);
+                    ModelState.AddModelError("", "Dữ liệu sản phẩm không hợp lệ.");
                 }
 
-                if (ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
+                    ViewBag.MaLoai = new SelectList(db.LoaiSPs, "MaLoai", "TenLoai", sp?.MaLoai);
+                    ViewBag.MaTH = new SelectList(db.ThuongHieux, "MaTH", "TenTH", sp?.MaTH);
+                    ViewBag.MaDM = new SelectList(db.DanhMucs, "MaDM", "TenDM", sp?.MaDM);
+                    return View(sp == null || sp.MaSP <= 0 ? "Create" : "Edit", sp);
+                }
+
+                // Insert
+                if (sp.MaSP <= 0)
+                {
+                    if (imageFile != null && imageFile.ContentLength > 0)
+                    {
+                        sp.HinhAnh = SaveUploadedFile(imageFile);
+                    }
+
                     db.SanPhams.Add(sp);
                     db.SaveChanges();
                     TempData["SuccessMessage"] = "Thêm sản phẩm thành công!";
                     return RedirectToAction("Index");
                 }
+
+                // Update
+                var existingSp = db.SanPhams.Find(sp.MaSP);
+                if (existingSp == null)
+                {
+                    ModelState.AddModelError("", "Không tìm thấy sản phẩm để cập nhật.");
+                    ViewBag.MaLoai = new SelectList(db.LoaiSPs, "MaLoai", "TenLoai", sp.MaLoai);
+                    ViewBag.MaTH = new SelectList(db.ThuongHieux, "MaTH", "TenTH", sp.MaTH);
+                    ViewBag.MaDM = new SelectList(db.DanhMucs, "MaDM", "TenDM", sp.MaDM);
+                    return View("Edit", sp);
+                }
+
+                if (imageFile != null && imageFile.ContentLength > 0)
+                {
+                    if (!string.IsNullOrEmpty(existingSp.HinhAnh))
+                        DeleteUploadedFile(existingSp.HinhAnh);
+
+                    sp.HinhAnh = SaveUploadedFile(imageFile);
+                }
+                else
+                {
+                    // keep existing image
+                    sp.HinhAnh = existingSp.HinhAnh;
+                }
+
+                db.Entry(existingSp).CurrentValues.SetValues(sp);
+                db.SaveChanges();
+                TempData["SuccessMessage"] = "Cập nhật sản phẩm thành công!";
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Lỗi khi tải lên: " + ex.Message);
+                ModelState.AddModelError("", "Lỗi khi lưu sản phẩm: " + ex.Message);
             }
 
-            ViewBag.MaLoai = new SelectList(db.LoaiSPs, "MaLoai", "TenLoai", sp.MaLoai);
-            ViewBag.MaTH = new SelectList(db.ThuongHieux, "MaTH", "TenTH", sp.MaTH);
-            ViewBag.MaDM = new SelectList(db.DanhMucs, "MaDM", "TenDM", sp.MaDM);
-            return View(sp);
+            ViewBag.MaLoai = new SelectList(db.LoaiSPs, "MaLoai", "TenLoai", sp?.MaLoai);
+            ViewBag.MaTH = new SelectList(db.ThuongHieux, "MaTH", "TenTH", sp?.MaTH);
+            ViewBag.MaDM = new SelectList(db.DanhMucs, "MaDM", "TenDM", sp?.MaDM);
+            return View(sp == null || sp.MaSP <= 0 ? "Create" : "Edit", sp);
+        }
+
+        // Keep existing Create/Edit/Delete actions for backward compatibility (they will still work)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(SanPham sp, HttpPostedFileBase imageFile)
+        {
+            // delegate to Save to keep logic consistent
+            return Save(sp, imageFile);
         }
 
         public ActionResult Edit(int id)
@@ -132,38 +185,8 @@ namespace WebApplication15.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(SanPham sp, HttpPostedFileBase imageFile)
         {
-            try
-            {
-                var existingSp = db.SanPhams.Find(sp.MaSP);
-                if (existingSp != null)
-                {
-                    if (imageFile != null && imageFile.ContentLength > 0)
-                    {
-                        if (!string.IsNullOrEmpty(existingSp.HinhAnh))
-                            DeleteUploadedFile(existingSp.HinhAnh);
-
-                        sp.HinhAnh = SaveUploadedFile(imageFile);
-                    }
-                    else
-                    {
-                        sp.HinhAnh = existingSp.HinhAnh;
-                    }
-
-                    db.Entry(existingSp).CurrentValues.SetValues(sp);
-                    db.SaveChanges();
-                    TempData["SuccessMessage"] = "Cập nhật sản phẩm thành công!";
-                    return RedirectToAction("Index");
-                }
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", "Lỗi khi cập nhật: " + ex.Message);
-            }
-
-            ViewBag.MaLoai = new SelectList(db.LoaiSPs, "MaLoai", "TenLoai", sp.MaLoai);
-            ViewBag.MaTH = new SelectList(db.ThuongHieux, "MaTH", "TenTH", sp.MaTH);
-            ViewBag.MaDM = new SelectList(db.DanhMucs, "MaDM", "TenDM", sp.MaDM);
-            return View(sp);
+            // delegate to Save
+            return Save(sp, imageFile);
         }
 
         public ActionResult Delete(int id)

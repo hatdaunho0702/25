@@ -14,12 +14,9 @@ namespace WebApplication15.Models
     
     public partial class ChiTietPhieuXuat
     {
-        public int MaCTPX { get; set; } // Primary key for chi ti?t phi?u xu?t
         public int MaPX { get; set; }
         public int MaSP { get; set; }
         public Nullable<int> SoLuong { get; set; }
-        public Nullable<decimal> DonGia { get; set; } // Giá v?n ho?c giá bán tùy ch?n
-        public Nullable<decimal> ThanhTien { get; set; }
     
         public virtual PhieuXuat PhieuXuat { get; set; }
         public virtual SanPham SanPham { get; set; }

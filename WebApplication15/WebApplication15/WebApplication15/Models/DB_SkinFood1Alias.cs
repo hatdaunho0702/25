@@ -1,13 +1,6 @@
 namespace WebApplication15.Models
 {
-    // Compatibility alias: some code references `DB_SkinFood1Entities` (generated earlier)
-    // while the current generated context class is `DB_SkinFood1Entities1`.
-    // Provide a thin subclass to keep existing code working.
-    public partial class DB_SkinFood1Entities : DB_SkinFood1Entities1
-    {
-        public DB_SkinFood1Entities()
-            : base()
-        {
-        }
-    }
+    // Provide a type alias so any code referencing `DB_SkinFood_FinalEntities`
+    // resolves to the generated `DB_SkinFood1Entities` context.
+    using DB_SkinFood_FinalEntities = DB_SkinFood1Entities;
 }

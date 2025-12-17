@@ -13,10 +13,10 @@ namespace WebApplication15.Models
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class DB_SkinFood1Entities1 : DbContext
+    public partial class DB_SkinFood1Entities : DbContext
     {
-        public DB_SkinFood1Entities1()
-            : base("name=DB_SkinFood1Entities1")
+        public DB_SkinFood1Entities()
+            : base("name=DB_SkinFood1Entities")
         {
         }
     
