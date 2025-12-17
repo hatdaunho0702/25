@@ -1,6 +1,14 @@
 ﻿@model WebApplication15.Models.SanPham
 @{
     ViewBag.Title = Model.TenSP;
+
+    // Precompute price after discount to avoid nested code blocks inside markup
+    decimal giaGiam = Model.GiaBan ?? 0m;
+    bool hasDiscount = (Model.GiamGia ?? 0m) > 0m;
+    if (hasDiscount)
+    {
+        giaGiam = (Model.GiaBan ?? 0m) * (1m - ((Model.GiamGia ?? 0m) / 100m));
+    }
 }
 <link href="~/CSS/DanhGiaSoSao.css" rel="stylesheet" />
 <div class="container my-5">
@@ -18,13 +26,11 @@
             <p><strong>Danh mục:</strong> @ViewBag.TenDanhMuc</p>
             <p><strong>Loại:</strong> @Model.LoaiSP.TenLoai</p>
 
-            @if (Model.GiamGia > 0)
+            @if (hasDiscount)
             {
                 <p class="text-danger lead">
                     <del>Giá gốc: @String.Format("{0:N0} VNĐ", Model.GiaBan)</del>
                 </p>
-                // Tính giá sau khi giảm giá (ví dụ: GiamGia là % giảm)
-                decimal giaGiam = (decimal)(Model.GiaBan * (1/*1 - Model.GiamGia*/));
                 <h4 class="text-success">
                     Giá bán: @String.Format("{0:N0} VNĐ", giaGiam)
                 </h4>
@@ -34,13 +40,51 @@
                 <h4 class="text-success">Giá bán: @String.Format("{0:N0} VNĐ", Model.GiaBan)</h4>
             }
 
-            <p><strong>Tình trạng:</strong> @(Model.SoLuongTon > 0 ? "Còn hàng" : "Hết hàng")</p>
+            @* Use product's TrangThaiSanPham if available; fallback to SoLuongTon *@
+            @{ 
+                string trangThai = !string.IsNullOrEmpty(Model.TrangThaiSanPham) ? Model.TrangThaiSanPham : ((Model.SoLuongTon ?? 0) > 0 ? "Còn hàng" : "Hết hàng");
+                bool canBuy = true;
+
+                // Treat specific statuses as not available for sale
+                if (!string.IsNullOrEmpty(Model.TrangThaiSanPham))
+                {
+                    var tt = Model.TrangThaiSanPham.Trim().ToLower();
+                    if (tt == "hết hàng" || tt == "ngừng kinh doanh" || tt == "ngừng bán")
+                    {
+                        canBuy = false;
+                    }
+                }
+                else
+                {
+                    // Fallback: if no status saved but quantity <= 0, cannot buy
+                    if ((Model.SoLuongTon ?? 0) <= 0)
+                    {
+                        canBuy = false;
+                    }
+                }
+
+                // Expose variables to the markup below
+                ViewBag._TrangThai = trangThai;
+                ViewBag._CanBuy = canBuy;
+            }
+
+            <p><strong>Tình trạng:</strong> @ViewBag._TrangThai</p>
 
             <div class="mt-4">
-                <a href="@Url.Action("AddToCart", "GioHang", new { id = Model.MaSP })"
-                   class="btn btn-success btn-lg me-2">
-                    <i class="bi bi-cart-plus"></i> Thêm vào giỏ
-                </a>
+                @if ((bool)ViewBag._CanBuy)
+                {
+                    <a href="@Url.Action("AddToCart", "GioHang", new { id = Model.MaSP })"
+                       class="btn btn-success btn-lg me-2">
+                        <i class="bi bi-cart-plus"></i> Thêm vào giỏ
+                    </a>
+                }
+                else
+                {
+                    <button class="btn btn-secondary btn-lg me-2" disabled>
+                        🛑 Không thể mua - @ViewBag._TrangThai
+                    </button>
+                }
+
                 <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary btn-lg">
                     <i class="bi bi-arrow-left"></i> Quay lại
                 </a>
@@ -114,7 +158,6 @@
         </div>
     </div>
 
-   
 
 
             @if (ViewBag.SanPhamLienQuan is List<WebApplication15.Models.SanPham> spLienQuanList && spLienQuanList.Any())

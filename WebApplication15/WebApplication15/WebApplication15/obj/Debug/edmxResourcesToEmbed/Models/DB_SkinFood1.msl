@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-  <EntityContainerMapping StorageEntityContainer="DB_SkinFood1ModelStoreContainer" CdmEntityContainer="DB_SkinFood1Entities">
+  <EntityContainerMapping StorageEntityContainer="DB_SkinFood1ModelStoreContainer" CdmEntityContainer="DB_SkinFood1Entities1">
     <EntitySetMapping Name="ChiTietDonHangs">
       <EntityTypeMapping TypeName="DB_SkinFood1Model.ChiTietDonHang">
         <MappingFragment StoreEntitySet="ChiTietDonHangs">
@@ -19,6 +19,8 @@
           <ScalarProperty Name="SoLuong" ColumnName="SoLuong" />
           <ScalarProperty Name="GiaNhap" ColumnName="GiaNhap" />
           <ScalarProperty Name="ThanhTien" ColumnName="ThanhTien" />
+          <ScalarProperty Name="NgaySanXuat" ColumnName="NgaySanXuat" />
+          <ScalarProperty Name="HanSuDung" ColumnName="HanSuDung" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -153,8 +155,7 @@
           <ScalarProperty Name="MaDM" ColumnName="MaDM" />
           <ScalarProperty Name="MaTH" ColumnName="MaTH" />
           <ScalarProperty Name="MaLoai" ColumnName="MaLoai" />
-          <ScalarProperty Name="NgaySanXuat" ColumnName="NgaySanXuat" />
-          <ScalarProperty Name="HanSuDung" ColumnName="HanSuDung" />
+          <ScalarProperty Name="MaNCC" ColumnName="MaNCC" />
           <ScalarProperty Name="LoaiDa" ColumnName="LoaiDa" />
           <ScalarProperty Name="VanDeChiRi" ColumnName="VanDeChiRi" />
           <ScalarProperty Name="TonDaMau" ColumnName="TonDaMau" />

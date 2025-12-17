@@ -34,8 +34,7 @@ namespace WebApplication15.Models
         public Nullable<int> MaDM { get; set; }
         public Nullable<int> MaTH { get; set; }
         public Nullable<int> MaLoai { get; set; }
-        public Nullable<System.DateTime> NgaySanXuat { get; set; }
-        public Nullable<System.DateTime> HanSuDung { get; set; }
+        public Nullable<int> MaNCC { get; set; }
         public string LoaiDa { get; set; }
         public string VanDeChiRi { get; set; }
         public string TonDaMau { get; set; }
@@ -56,6 +55,7 @@ namespace WebApplication15.Models
         public virtual ICollection<DanhGia> DanhGias { get; set; }
         public virtual DanhMuc DanhMuc { get; set; }
         public virtual LoaiSP LoaiSP { get; set; }
+        public virtual NhaCungCap NhaCungCap { get; set; }
         public virtual ThuongHieu ThuongHieu { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ThuocTinhMyPham> ThuocTinhMyPhams { get; set; }

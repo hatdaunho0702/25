@@ -18,6 +18,7 @@ namespace WebApplication15.Models
         public NhaCungCap()
         {
             this.PhieuNhaps = new HashSet<PhieuNhap>();
+            this.SanPhams = new HashSet<SanPham>();
         }
     
         public int MaNCC { get; set; }
@@ -29,5 +30,7 @@ namespace WebApplication15.Models
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PhieuNhap> PhieuNhaps { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<SanPham> SanPhams { get; set; }
     }
 }

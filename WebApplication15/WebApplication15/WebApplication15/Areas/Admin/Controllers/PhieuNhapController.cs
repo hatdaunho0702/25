@@ -54,8 +54,23 @@ namespace WebApplication15.Areas.Admin.Controllers
         public ActionResult Create()
         {
             ViewBag.MaNCC = new SelectList(db.NhaCungCaps.ToList(), "MaNCC", "TenNCC");
-            // Lấy danh sách sản phẩm đưa sang View để hiện trong dropdown chọn hàng
-            ViewBag.Products = db.SanPhams.ToList();
+
+            // Truyền danh sách sản phẩm đã được project để tránh vòng tham chiếu khi serialize JSON
+            var safeProducts = db.SanPhams
+                .Select(p => new
+                {
+                    p.MaSP,
+                    p.TenSP,
+                    GiaBan = p.GiaBan ?? 0m,
+                    SoLuongTon = p.SoLuongTon ?? 0,
+                    MaNCC = p.MaNCC
+                })
+                .ToList();
+
+            ViewBag.Products = safeProducts;
+
+            // Thêm danh sách suppliers để dùng trong JS (cascading dropdown)
+            ViewBag.Suppliers = db.NhaCungCaps.ToList();
             return View();
         }
 
@@ -64,90 +79,82 @@ namespace WebApplication15.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(PhieuNhap phieuNhap, List<ChiTietPhieuNhap> details)
         {
-            // Xóa các dòng detail rỗng hoặc không hợp lệ
+            // --- 1. Lọc và kiểm tra danh sách chi tiết ---
             if (details != null)
             {
                 details.RemoveAll(x => (x.MaSP <= 0) || ((x.SoLuong ?? 0) <= 0));
             }
 
-            // Sau khi loại bỏ, kiểm tra lại danh sách
             if (details == null || details.Count == 0)
             {
                 ModelState.AddModelError("", "Phiếu nhập phải có ít nhất 1 sản phẩm hợp lệ.");
             }
 
-            if (!ModelState.IsValid)
+            // --- 2. Nếu dữ liệu hợp lệ thì thực hiện Transaction ---
+            if (ModelState.IsValid)
             {
-                ViewBag.MaNCC = new SelectList(db.NhaCungCaps.ToList(), "MaNCC", "TenNCC", phieuNhap?.MaNCC);
-                ViewBag.Products = db.SanPhams.ToList();
-                return View(phieuNhap);
-            }
-
-            using (var tran = db.Database.BeginTransaction())
-            {
-                try
+                using (var tran = db.Database.BeginTransaction())
                 {
-                    phieuNhap.NgayNhap = DateTime.Now;
-
-                    // Lưu phiếu nhập trước để lấy ID (MaPN)
-                    db.PhieuNhaps.Add(phieuNhap);
-                    db.SaveChanges();
-
-                    decimal tong = 0m;
-
-                    foreach (var d in details)
+                    try
                     {
-                        d.MaPN = phieuNhap.MaPN; // Gán ID phiếu nhập vừa tạo
+                        // Lưu Header
+                        phieuNhap.NgayNhap = DateTime.Now; // (Optional) Gán ngày nhập nếu cần
+                        db.PhieuNhaps.Add(phieuNhap);
+                        db.SaveChanges(); // Save để lấy MaPN tự tăng
 
-                        int qty = d.SoLuong ?? 0;
-                        decimal price = d.GiaNhap ?? 0;
-
-                        // Tính thành tiền từng dòng
-                        d.ThanhTien = qty * price;
-
-                        db.ChiTietPhieuNhaps.Add(d);
-
-                        // --- CẬP NHẬT KHO (Lưu ý: Nếu dùng Trigger SQL thì xóa đoạn này đi) ---
-                        var sp = db.SanPhams.Find(d.MaSP);
-                        if (sp != null)
+                        foreach (var d in details)
                         {
-                            // Cộng dồn số lượng
-                            sp.SoLuongTon = (sp.SoLuongTon ?? 0) + qty;
+                            d.MaPN = phieuNhap.MaPN; // Gán MaPN vừa sinh ra
+                            d.ThanhTien = (d.SoLuong ?? 0) * (d.GiaNhap ?? 0);
 
-                            // Cập nhật giá nhập mới nhất (nếu cần)
-                            // sp.GiaNhap = price; 
+                            db.ChiTietPhieuNhaps.Add(d);
 
-                            db.Entry(sp).State = EntityState.Modified;
+                            // Cập nhật số lượng tồn vào bảng SanPham (nếu không dùng Trigger)
+                            var sp = db.SanPhams.Find(d.MaSP);
+                            if (sp != null)
+                            {
+                                sp.SoLuongTon = (sp.SoLuongTon ?? 0) + (d.SoLuong ?? 0);
+                            }
                         }
-                        // ----------------------------------------------------------------------
 
-                        tong += d.ThanhTien ?? 0m;
+                        db.SaveChanges();
+                        tran.Commit();
+
+                        // >>> THÀNH CÔNG: Chuyển hướng
+                        return RedirectToAction("Index");
                     }
-
-                    // Cập nhật lại Tổng tiền cho phiếu nhập
-                    phieuNhap.TongTien = tong;
-                    db.Entry(phieuNhap).State = EntityState.Modified;
-                    db.SaveChanges();
-
-                    tran.Commit();
-
-                    TempData["SuccessMessage"] = $"Đã lưu phiếu nhập #{phieuNhap.MaPN} thành công.";
-
-                    // Sửa lại: Quay về trang danh sách phiếu nhập
-                    return RedirectToAction("Index");
-                }
-                catch (Exception ex)
-                {
-                    tran.Rollback();
-                    ModelState.AddModelError("", "Lỗi hệ thống: " + ex.Message);
-
-                    TempData["ErrorMessage"] = "Lỗi khi lưu phiếu nhập: " + ex.Message;
-
-                    ViewBag.MaNCC = new SelectList(db.NhaCungCaps.ToList(), "MaNCC", "TenNCC", phieuNhap?.MaNCC);
-                    ViewBag.Products = db.SanPhams.ToList();
-                    return View(phieuNhap);
+                    catch (Exception ex)
+                    {
+                        tran.Rollback();
+                        // Ghi lỗi vào ModelState để hiển thị ra View
+                        ModelState.AddModelError("", "Có lỗi xảy ra khi lưu: " + ex.Message);
+                    }
                 }
             }
+
+            // --- 3. XỬ LÝ KHI CÓ LỖI (Validation sai HOẶC Exception) ---
+            // Code sẽ chạy xuống đây nếu:
+            // a. ModelState.IsValid == false
+            // b. Bị nhảy vào catch (Exception)
+
+            // Phải nạp lại ViewBag để Dropdown không bị lỗi null
+            ViewBag.MaNCC = new SelectList(db.NhaCungCaps.ToList(), "MaNCC", "TenNCC", phieuNhap?.MaNCC);
+
+            ViewBag.Products = db.SanPhams
+                .Select(p => new
+                {
+                    p.MaSP,
+                    p.TenSP,
+                    GiaBan = p.GiaBan ?? 0m,
+                    SoLuongTon = p.SoLuongTon ?? 0,
+                    MaNCC = p.MaNCC
+                })
+                .ToList();
+
+            ViewBag.Suppliers = db.NhaCungCaps.ToList();
+
+            // >>> TRẢ VỀ VIEW ĐỂ SỬA LỖI
+            return View(phieuNhap);
         }
     }
 }

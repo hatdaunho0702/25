@@ -1,0 +1,56 @@
+﻿@model WebApplication15.Models.NhaCungCap
+@{
+    ViewBag.Title = "Thêm Nhà cung cấp";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Thêm Nhà cung cấp</h1>
+
+    @using (Html.BeginForm("Create", "NhaCungCap", FormMethod.Post, new { @class = "row g-3" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Thông tin nhà cung cấp</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.TenNCC)
+                        @Html.TextBoxFor(m => m.TenNCC, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.DiaChi)
+                        @Html.TextBoxFor(m => m.DiaChi, new { @class = "form-control" })
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            @Html.LabelFor(m => m.SoDienThoai)
+                            @Html.TextBoxFor(m => m.SoDienThoai, new { @class = "form-control" })
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            @Html.LabelFor(m => m.Email)
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.NguoiLienHe)
+                        @Html.TextBoxFor(m => m.NguoiLienHe, new { @class = "form-control" })
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Lưu Nhà Cung Cấp</button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">Hủy</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> <strong>Lưu ý:</strong><br />
+                Sau khi tạo Nhà cung cấp, vui lòng sang chức năng <strong>"Nhập Hàng"</strong> để nhập sản phẩm, số lượng và hạn sử dụng cụ thể.
+            </div>
+        </div>
+    }
+</div>

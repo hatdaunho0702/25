@@ -1,114 +1,77 @@
 ﻿@model WebApplication15.Models.PhieuNhap
+
 @{
     ViewBag.Title = "Tạo phiếu nhập kho";
+    // Bạn kiểm tra lại Layout, thường Admin sẽ dùng _LayoutAdmin.cshtml
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
-
-    // Xử lý danh sách Option sản phẩm ngay tại đây để dùng cho JS
-    var products = (List<WebApplication15.Models.SanPham>)ViewBag.Products;
-    var prodOptions = "";
-    if (products != null)
-    {
-        prodOptions = string.Join("", products.Select(p => $"<option value=\"{p.MaSP}\">{p.TenSP}</option>"));
-    }
 }
 
 <div class="container-fluid">
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Quản lý nhập hàng</h1>
-    </div>
-
     <div class="card shadow mb-4">
         <div class="card-header py-3 bg-primary">
-            <h6 class="m-0 font-weight-bold text-white">
-                <i class="fa-solid fa-file-circle-plus"></i> Tạo phiếu nhập mới
-            </h6>
+            <h6 class="m-0 font-weight-bold text-white"><i class="fa-solid fa-file-circle-plus"></i> Nhập Hàng & Hạn Sử Dụng</h6>
         </div>
         <div class="card-body">
             @using (Html.BeginForm("Create", "PhieuNhap", new { area = "Admin" }, FormMethod.Post, new { id = "formPhieuNhap" }))
             {
                 @Html.AntiForgeryToken()
-
-                @* Hiển thị ValidationSummary để người dùng biết lý do nếu không lưu được *@
                 @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
 
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            <label class="form-label fw-bold">Nhà cung cấp <span class="text-danger">*</span></label>
-                            @Html.DropDownListFor(m => m.MaNCC, (SelectList)ViewBag.MaNCC, "-- Chọn Nhà Cung Cấp --", new { @class = "form-select", required = "required" })
-                        </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="fw-bold">Nhà cung cấp <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(m => m.MaNCC, (SelectList)ViewBag.MaNCC, "-- Chọn Nhà Cung Cấp --", new { @class = "form-control", required = "required", id = "supplierSelect" })
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            <label class="form-label fw-bold">Ghi chú</label>
-                            @Html.TextAreaFor(m => m.GhiChu, new { @class = "form-control", rows = 1, placeholder = "Nhập ghi chú cho phiếu nhập..." })
-                        </div>
+                    <div class="col-md-8">
+                        <label class="fw-bold">Ghi chú</label>
+                        @Html.TextAreaFor(m => m.GhiChu, new { @class = "form-control", rows = 1 })
                     </div>
                 </div>
 
-                <hr class="sidebar-divider my-4">
-
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="text-secondary fw-bold">Danh sách sản phẩm</h5>
-                    <button type="button" id="addRow" class="btn btn-success btn-sm">
-                        <i class="fa-solid fa-plus"></i> Thêm sản phẩm
-                    </button>
-                </div>
+                <hr />
 
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover" id="detailsTable">
+                    <table class="table table-bordered" id="detailsTable">
                         <thead class="table-light text-center">
                             <tr>
-                                <th style="width: 40%">Sản phẩm</th>
-                                <th style="width: 15%">Số lượng</th>
-                                <th style="width: 20%">Giá nhập</th>
-                                <th style="width: 20%">Thành tiền</th>
-                                <th style="width: 5%">Hành động</th>
+                                <th style="width: 25%">Sản phẩm</th>
+                                <th style="width: 10%">Số lượng</th>
+                                <th style="width: 15%">Giá nhập</th>
+                                <th style="width: 15%">Ngày SX</th>
+                                <th style="width: 15%">Hạn SD</th>
+                                <th style="width: 15%">Thành tiền</th>
+                                <th style="width: 5%">Xóa</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>
-                                    <select name="details[0].MaSP" class="form-select" required>
+                                    <select name="details[0].MaSP" class="form-control product-select" required>
                                         <option value="">-- Chọn sản phẩm --</option>
-                                        @Html.Raw(prodOptions)
                                     </select>
                                 </td>
-                                <td>
-                                    <input type="number" name="details[0].SoLuong" class="form-control qty text-center" value="1" min="1" required />
-                                </td>
-                                <td>
-                                    <input type="number" name="details[0].GiaNhap" class="form-control price text-end" step="1000" value="0" min="0" required />
-                                </td>
-                                <td>
-                                    @* Không đặt name cho trường ThanhTien để tránh lỗi binding do định dạng hiển thị *@
-                                    <input type="text" class="form-control total text-end bg-light" readonly value="0" />
-                                </td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-danger btn-sm remove-row">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </td>
+                                <td><input type="number" name="details[0].SoLuong" class="form-control qty text-center" value="1" min="1" required /></td>
+                                <td><input type="number" name="details[0].GiaNhap" class="form-control price text-end" value="0" min="0" required /></td>
+                                <td><input type="date" name="details[0].NgaySanXuat" class="form-control" required /></td>
+                                <td><input type="date" name="details[0].HanSuDung" class="form-control" required /></td>
+                                <td><input type="text" class="form-control total text-end bg-light" readonly value="0" /></td>
+                                <td class="text-center"><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fa-solid fa-trash"></i></button></td>
                             </tr>
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="3" class="text-end fw-bold align-middle">TỔNG CỘNG:</td>
-                                <td colspan="2">
-                                    <span id="grandTotal" class="fw-bold text-danger fs-5">0</span>
+                                <td colspan="7">
+                                    <button type="button" id="addRow" class="btn btn-success btn-sm"><i class="fa-solid fa-plus"></i> Thêm dòng</button>
+                                    <span class="float-end fw-bold text-danger fs-5" id="grandTotal">0 VNĐ</span>
                                 </td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
 
-                <div class="mt-4 text-end">
-                    <a href='@Url.Action("Index", "Dashboard")' class="btn btn-secondary me-2">
-                        <i class="fa-solid fa-arrow-left"></i> Quay lại
-                    </a>
-                    <button type="submit" class="btn btn-primary px-4">
-                        <i class="fa-solid fa-floppy-disk"></i> Lưu phiếu nhập
-                    </button>
+                <div class="text-end mt-3">
+                    <button type="submit" class="btn btn-primary px-4"><i class="fa-solid fa-floppy-disk"></i> Lưu Phiếu Nhập</button>
+                    @Html.ActionLink("Quay lại", "Index", null, new { @class = "btn btn-secondary" })
                 </div>
             }
         </div>
@@ -117,90 +80,90 @@
 
 @section scripts {
     <script>
-        $(document).ready(function () {
-            // Lấy chuỗi options từ Server về biến JS
-            var productOptions = '@Html.Raw(prodOptions.Replace("'", "\\'"))';
+        // --- SỬA LỖI TẠI ĐÂY ---
+        // Lấy dữ liệu trực tiếp từ ViewBag (Anonymous Object) mà không cần ép kiểu
+        var products = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Products));
 
-            // Hàm định dạng tiền tệ (VD: 100,000)
-            function formatNumber(num) {
-                return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+        $(document).ready(function () {
+            // Hàm render option sản phẩm theo NCC
+            function renderProductOptions(supplierId) {
+                var html = '<option value="">-- Chọn sản phẩm --</option>';
+                if(products && products.length > 0){
+                    products.forEach(function(p) {
+                        var pNcc = p.MaNCC || 0;
+                        // Nếu chưa chọn NCC (supplierId rỗng) hoặc NCC trùng khớp
+                        if (!supplierId || supplierId == 0 || pNcc == supplierId) {
+                            html += '<option value="' + p.MaSP + '">' + p.TenSP + '</option>';
+                        }
+                    });
+                }
+                return html;
             }
 
-            // Hàm tính toán tổng tiền
+            // Khi chọn NCC -> lọc lại sản phẩm ở dòng 1
+            $('#supplierSelect').change(function() {
+                var nccId = $(this).val();
+                $('.product-select').each(function() {
+                    $(this).html(renderProductOptions(nccId));
+                });
+            });
+
+            // Khởi tạo dòng đầu tiên
+            $('.product-select').html(renderProductOptions($('#supplierSelect').val()));
+
+            // Tính tiền
             function updateTotals() {
                 var grandTotal = 0;
                 $('#detailsTable tbody tr').each(function () {
                     var qty = parseFloat($(this).find('.qty').val()) || 0;
                     var price = parseFloat($(this).find('.price').val()) || 0;
                     var total = qty * price;
-
-                    // Cập nhật thành tiền của dòng (định dạng số cho đẹp)
-                    $(this).find('.total').val(formatNumber(total));
-
+                    $(this).find('.total').val(total.toLocaleString('vi-VN') + ' đ');
                     grandTotal += total;
                 });
-
-                // Cập nhật Tổng cộng phiếu nhập
-                $('#grandTotal').text(formatNumber(grandTotal) + " VNĐ");
+                $('#grandTotal').text(grandTotal.toLocaleString('vi-VN') + " VNĐ");
             }
 
-            // Sự kiện: Click nút Thêm dòng
+            $(document).on('input', '.qty, .price', updateTotals);
+
+            // Thêm dòng mới
             $('#addRow').click(function () {
                 var index = $('#detailsTable tbody tr').length;
-                var row = `
-                    <tr>
-                        <td>
-                            <select name="details[${index}].MaSP" class="form-select" required>
-                                <option value="">-- Chọn sản phẩm --</option>
-                                ${productOptions}
-                            </select>
-                        </td>
-                        <td>
-                            <input type="number" name="details[${index}].SoLuong" class="form-control qty text-center" value="1" min="1" required />
-                        </td>
-                        <td>
-                            <input type="number" name="details[${index}].GiaNhap" class="form-control price text-end" step="1000" value="0" min="0" required />
-                        </td>
-                        <td>
-                            <input type="text" class="form-control total text-end bg-light" readonly value="0" />
-                        </td>
-                        <td class="text-center">
-                            <button type="button" class="btn btn-danger btn-sm remove-row">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>`;
-
+                var nccId = $('#supplierSelect').val();
+                var row = `<tr>
+                    <td><select name="details[${index}].MaSP" class="form-control product-select" required>${renderProductOptions(nccId)}</select></td>
+                    <td><input type="number" name="details[${index}].SoLuong" class="form-control qty text-center" value="1" min="1" required /></td>
+                    <td><input type="number" name="details[${index}].GiaNhap" class="form-control price text-end" value="0" min="0" required /></td>
+                    <td><input type="date" name="details[${index}].NgaySanXuat" class="form-control" required /></td>
+                    <td><input type="date" name="details[${index}].HanSuDung" class="form-control" required /></td>
+                    <td><input type="text" class="form-control total text-end bg-light" readonly value="0" /></td>
+                    <td class="text-center"><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fa-solid fa-trash"></i></button></td>
+                </tr>`;
                 $('#detailsTable tbody').append(row);
             });
 
-            // Sự kiện: Click nút Xóa dòng
-            $('#detailsTable').on('click', '.remove-row', function () {
-                // Kiểm tra nếu còn nhiều hơn 1 dòng mới cho xóa
-                if ($('#detailsTable tbody tr').length > 1) {
+            // Xóa dòng
+            $(document).on('click', '.remove-row', function () {
+                if($('#detailsTable tbody tr').length > 1) {
                     $(this).closest('tr').remove();
-
-                    // Re-index lại name attribute để Model Binding không bị lỗi (quan trọng)
-                    $('#detailsTable tbody tr').each(function (i) {
-                        $(this).find('select[name^="details["]').attr('name', `details[${i}].MaSP`);
-                        $(this).find('input.qty').attr('name', `details[${i}].SoLuong`);
-                        $(this).find('input.price').attr('name', `details[${i}].GiaNhap`);
-                        // total không có name để tránh lỗi binding
-                    });
-
+                    // Cập nhật lại index (quan trọng để MVC nhận được List)
+                    updateIndexes();
                     updateTotals();
                 } else {
-                    alert("Không thể xóa dòng cuối cùng!");
+                    alert("Phải có ít nhất 1 dòng sản phẩm!");
                 }
             });
 
-            // Sự kiện: Thay đổi số lượng hoặc giá
-            $('#detailsTable').on('input', '.qty, .price', function () {
-                updateTotals();
-            });
-
-            // Tính toán lần đầu khi load trang
-            updateTotals();
+            // Hàm cập nhật lại index cho name="details[0]..." sau khi xóa
+            function updateIndexes() {
+                $('#detailsTable tbody tr').each(function(index) {
+                    $(this).find('select[name^="details"]').attr('name', 'details[' + index + '].MaSP');
+                    $(this).find('input[name^="details"][name$="SoLuong"]').attr('name', 'details[' + index + '].SoLuong');
+                    $(this).find('input[name^="details"][name$="GiaNhap"]').attr('name', 'details[' + index + '].GiaNhap');
+                    $(this).find('input[name^="details"][name$="NgaySanXuat"]').attr('name', 'details[' + index + '].NgaySanXuat');
+                    $(this).find('input[name^="details"][name$="HanSuDung"]').attr('name', 'details[' + index + '].HanSuDung');
+                });
+            }
         });
     </script>
 }

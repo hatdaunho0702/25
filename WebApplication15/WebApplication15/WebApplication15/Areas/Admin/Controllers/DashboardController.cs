@@ -31,11 +31,13 @@ namespace WebApplication15.Areas.Admin.Controllers
                 var totalSanPham = db.SanPhams.Count();
                 var totalDonHang = db.DonHangs.Count();
                 var totalTaiKhoan = db.TaiKhoans.Count();
+                var totalNhaCungCap = db.NhaCungCaps.Count();
                 var totalNguoiDung = db.NguoiDungs.Count();
 
                 ViewBag.TotalSanPham = totalSanPham;
                 ViewBag.TotalDonHang = totalDonHang;
                 ViewBag.TotalTaiKhoan = totalTaiKhoan;
+                ViewBag.TotalNhaCungCap = totalNhaCungCap;
                 ViewBag.TotalNguoiDung = totalNguoiDung;
 
                 // Cảnh báo sản phẩm sắp hết hạn (còn 3 tháng)
@@ -200,6 +202,7 @@ namespace WebApplication15.Areas.Admin.Controllers
                 ViewBag.TotalSanPham = 0;
                 ViewBag.TotalDonHang = 0;
                 ViewBag.TotalTaiKhoan = 0;
+                ViewBag.TotalNhaCungCap = 0;
                 ViewBag.TotalNguoiDung = 0;
                 ViewBag.SanPhamSapHetHan = new List<SanPham>();
                 ViewBag.SanPhamDaHetHan = new List<SanPham>();

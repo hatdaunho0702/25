@@ -33,12 +33,12 @@
     </div>
 }
 
-<!-- Thống Kê Tồn Kho -->
+<!-- Thống Kê Tồn Kho & Hạn Sử Dụng -->
 <div class="row mb-3">
     <div class="col-md-12">
         <div class="card">
             <div class="card-header bg-info text-white">
-                <strong>📊 Thống Kê Tồn Kho</strong>
+                <strong>📊 Thống Kê Tồn Kho & Hạn Dùng</strong>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -51,12 +51,12 @@
                         <h3 class="text-danger">@Model.Count(s => (s.SoLuongTon ?? 0) <= 0)</h3>
                     </div>
                     <div class="col-md-3">
-                        <h5>Sắp Hết Hàng (< 10)</h5>
-                        <h3 class="text-warning">@Model.Count(s => (s.SoLuongTon ?? 0) > 0 && (s.SoLuongTon ?? 0) < 10)</h3>
+                        <h5>Sắp Hết Hạn (&lt; 3 tháng)</h5>
+                        <h3 class="text-warning">@Model.Count(s => s.HanSuDung.HasValue && s.HanSuDung <= DateTime.Now.AddMonths(3) && s.HanSuDung > DateTime.Now)</h3>
                     </div>
                     <div class="col-md-3">
-                        <h5>Sắp Hết Hạn (< 3 tháng)</h5>
-                        <h3 class="text-danger">@Model.Count(s => s.HanSuDung.HasValue && s.HanSuDung <= DateTime.Now.AddMonths(3) && s.HanSuDung > DateTime.Now)</h3>
+                        <h5>Tổng Sản Phẩm</h5>
+                        <h3 class="text-primary">@Model.Count</h3>
                     </div>
                 </div>
             </div>
@@ -152,11 +152,9 @@
                             <span class="text-muted">-</span>
                         }
                     </td>
-                    <td>
-                        <span class="badge @tonKhoClass" style="font-size: 14px; padding: 8px 12px;">
-                            @tonKhoText
-                        </span>
-                    </td>
++                    <td>
++                        <span class="badge @tonKhoClass" style="font-size: 14px; padding: 8px 12px;">@tonKhoText</span>
++                    </td>
                     <td>
                         <span class="badge @hanSuDungClass" style="font-size: 12px; padding: 6px 10px;">
                             @hanSuDungIcon @hanSuDungText

@@ -19,6 +19,8 @@ namespace WebApplication15.Models
         public Nullable<int> SoLuong { get; set; }
         public Nullable<decimal> GiaNhap { get; set; }
         public Nullable<decimal> ThanhTien { get; set; }
+        public Nullable<System.DateTime> NgaySanXuat { get; set; }
+        public Nullable<System.DateTime> HanSuDung { get; set; }
     
         public virtual PhieuNhap PhieuNhap { get; set; }
         public virtual SanPham SanPham { get; set; }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -47,18 +47,21 @@ namespace WebApplication15.Areas.Admin.Controllers
         }
 
         // POST: Admin/PhieuXuat/Create
+        // POST: Admin/PhieuXuat/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(PhieuXuat phieuXuat, List<ChiTietPhieuXuat> details)
         {
+            // 1. Lọc dữ liệu rác (Sản phẩm không hợp lệ hoặc số lượng <= 0)
             if (details != null)
             {
                 details.RemoveAll(x => x.MaSP <= 0 || (x.SoLuong ?? 0) <= 0);
             }
 
+            // 2. Validate danh sách chi tiết
             if (details == null || details.Count == 0)
             {
-                ModelState.AddModelError("", "Phi?u xu?t ph?i c� �t nh?t 1 s?n ph?m h?p l?.");
+                ModelState.AddModelError("", "Phiếu xuất phải có ít nhất 1 sản phẩm hợp lệ.");
             }
 
             if (!ModelState.IsValid)
@@ -73,68 +76,80 @@ namespace WebApplication15.Areas.Admin.Controllers
                 {
                     phieuXuat.NgayXuat = DateTime.Now;
 
-                    // Ki?m tra t?n kho tr�?c khi l�u
+                    // -----------------------------------------------------------------
+                    // BƯỚC 1: KIỂM TRA TỒN KHO (CHỈ KIỂM TRA, KHÔNG TRỪ)
+                    // -----------------------------------------------------------------
                     foreach (var d in details)
                     {
                         var sp = db.SanPhams.Find(d.MaSP);
                         int qty = d.SoLuong ?? 0;
+
                         if (sp == null)
                         {
                             tran.Rollback();
-                            ModelState.AddModelError("", "S?n ph?m kh�ng t?n t?i.");
+                            ModelState.AddModelError("", $"Sản phẩm ID {d.MaSP} không tồn tại.");
                             ViewBag.Products = GetProductsForView();
                             return View(phieuXuat);
                         }
 
+                        // Nếu số lượng muốn xuất lớn hơn tồn kho hiện tại -> Báo lỗi ngay
                         if ((sp.SoLuongTon ?? 0) < qty)
                         {
                             tran.Rollback();
-                            ModelState.AddModelError("", $"Kh�ng �? t?n kho cho s?n ph?m {sp.TenSP}. (C?n: {sp.SoLuongTon ?? 0})");
+                            ModelState.AddModelError("", $"Sản phẩm '{sp.TenSP}' không đủ hàng. (Tồn: {sp.SoLuongTon ?? 0}, Muốn xuất: {qty})");
                             ViewBag.Products = GetProductsForView();
                             return View(phieuXuat);
                         }
                     }
 
+                    // -----------------------------------------------------------------
+                    // BƯỚC 2: LƯU PHIẾU XUẤT (HEADER)
+                    // -----------------------------------------------------------------
                     db.PhieuXuats.Add(phieuXuat);
-                    db.SaveChanges();
+                    db.SaveChanges(); // Lưu để lấy MaPX tự tăng
 
                     decimal tong = 0m;
 
+                    // -----------------------------------------------------------------
+                    // BƯỚC 3: LƯU CHI TIẾT (DETAILS)
+                    // -----------------------------------------------------------------
                     foreach (var d in details)
                     {
-                        d.MaPX = phieuXuat.MaPX;
+                        d.MaPX = phieuXuat.MaPX; // Gán ID phiếu vừa tạo
                         int qty = d.SoLuong ?? 0;
-                        // Ensure DonGia is set (fallback to product GiaBan)
-                        var spFallback = db.SanPhams.Find(d.MaSP);
-                        decimal price = d.DonGia ?? (spFallback?.GiaBan ?? 0m);
+
+                        // Lấy giá bán hiện tại làm đơn giá xuất (nếu form không gửi lên)
+                        var spCurrent = db.SanPhams.Find(d.MaSP);
+                        decimal price = d.DonGia ?? (spCurrent?.GiaBan ?? 0m);
+
                         d.DonGia = price;
                         d.ThanhTien = qty * price;
 
                         db.ChiTietPhieuXuats.Add(d);
 
-                        var sp = db.SanPhams.Find(d.MaSP);
-                        if (sp != null)
-                        {
-                            sp.SoLuongTon = (sp.SoLuongTon ?? 0) - qty;
-                            db.Entry(sp).State = EntityState.Modified;
-                        }
+                        // *** QUAN TRỌNG: ĐÃ XÓA CODE TRỪ KHO Ở ĐÂY ***
+                        // Lý do: Trigger SQL (trg_CapNhatKho_Xuat) sẽ tự động trừ khi dòng này được lưu xuống DB.
+                        // Nếu để code C# trừ nữa sẽ bị trừ 2 lần -> Gây lỗi âm kho (-50).
 
                         tong += d.ThanhTien ?? 0m;
                     }
 
+                    // -----------------------------------------------------------------
+                    // BƯỚC 4: CẬP NHẬT TỔNG TIỀN VÀ COMMIT
+                    // -----------------------------------------------------------------
                     phieuXuat.TongTien = tong;
                     db.Entry(phieuXuat).State = EntityState.Modified;
-                    db.SaveChanges();
 
+                    db.SaveChanges(); // Lúc này Trigger SQL sẽ chạy và trừ kho chính xác
                     tran.Commit();
 
-                    TempData["SuccessMessage"] = $"�? l�u phi?u xu?t #{phieuXuat.MaPX} th�nh c�ng.";
+                    TempData["SuccessMessage"] = $"Đã tạo phiếu xuất #{phieuXuat.MaPX} thành công!";
                     return RedirectToAction("Index");
                 }
                 catch (Exception ex)
                 {
                     tran.Rollback();
-                    ModelState.AddModelError("", "L?i h? th?ng: " + ex.Message);
+                    ModelState.AddModelError("", "Lỗi hệ thống: " + ex.Message);
                     ViewBag.Products = GetProductsForView();
                     return View(phieuXuat);
                 }

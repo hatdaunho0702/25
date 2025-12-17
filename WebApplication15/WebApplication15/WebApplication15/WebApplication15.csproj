@@ -136,6 +136,7 @@
     <Compile Include="Areas\Admin\Controllers\LienHesController.cs" />
     <Compile Include="Areas\Admin\Controllers\LoaiSPController.cs" />
     <Compile Include="Areas\Admin\Controllers\NguoiDungsController.cs" />
+    <Compile Include="Areas\Admin\Controllers\NhaCungCapController.cs" />
     <Compile Include="Areas\Admin\Controllers\PhieuNhapController.cs" />
     <Compile Include="Areas\Admin\Controllers\PhieuXuatController.cs" />
     <Compile Include="Areas\Admin\Controllers\SanPhamController.cs" />
@@ -184,6 +185,7 @@
       <DependentUpon>DB_SkinFood1.edmx</DependentUpon>
     </Compile>
     <Compile Include="Models\DB_SkinFood1Alias.cs" />
+    <Compile Include="Models\DB_SkinFood1Compat.cs" />
     <Compile Include="Models\DonHang.cs">
       <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
@@ -212,6 +214,7 @@
     <Compile Include="Models\SanPham.cs">
       <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\SanPham.Extension.cs" />
     <Compile Include="Models\TaiKhoan.cs">
       <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
@@ -311,6 +314,8 @@
     <Content Include="Areas\Admin\Views\PhieuXuat\Create.cshtml" />
     <Content Include="Areas\Admin\Views\PhieuXuat\Index.cshtml" />
     <Content Include="Areas\Admin\Views\PhieuXuat\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\NhaCungCap\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\NhaCungCap\Create.cshtml" />
     <EntityDeploy Include="Models\DB_SkinFood1.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>DB_SkinFood1.Designer.cs</LastGenOutput>
