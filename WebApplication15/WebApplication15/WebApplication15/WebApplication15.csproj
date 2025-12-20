@@ -233,9 +233,6 @@
     <Compile Include="Models\TaiKhoan.cs">
       <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\ThuocTinhMyPham.cs">
-      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\ThuongHieu.cs">
       <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>

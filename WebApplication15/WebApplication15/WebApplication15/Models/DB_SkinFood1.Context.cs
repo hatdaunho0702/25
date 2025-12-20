@@ -42,7 +42,6 @@ namespace WebApplication15.Models
         public virtual DbSet<SanPham> SanPhams { get; set; }
         public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
         public virtual DbSet<TaiKhoan> TaiKhoans { get; set; }
-        public virtual DbSet<ThuocTinhMyPham> ThuocTinhMyPhams { get; set; }
         public virtual DbSet<ThuongHieu> ThuongHieux { get; set; }
         public virtual DbSet<KhuyenMai> KhuyenMais { get; set; }
     

@@ -29,6 +29,7 @@ CREATE TABLE NguoiDung (
     DiaChi NVARCHAR(255),
     GioiTinh NVARCHAR(10),
     NgaySinh DATE,
+    Avatar NVARCHAR(50) NULL,
     NgayTao DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 GO
@@ -72,7 +73,7 @@ CREATE TABLE NhaCungCap (
 );
 GO
 
--- 7. SẢN PHẨM (ĐÃ XÓA MaNCC, NSX, HSD)
+-- 7. SẢN PHẨM
 CREATE TABLE SanPham (
     MaSP INT PRIMARY KEY IDENTITY(1,1),
     TenSP NVARCHAR(200),
@@ -86,9 +87,8 @@ CREATE TABLE SanPham (
     MaDM INT, 
     MaTH INT, 
     MaLoai INT,
-    -- ĐÃ XÓA MaNCC TẠI ĐÂY
 
-    -- Thuộc tính chi tiết
+    -- Thuộc tính chi tiết (Giữ lại các cột này trong bảng SP, chỉ xóa bảng phụ ThuocTinh)
     LoaiDa NVARCHAR(50), 
     VanDeChiRi NVARCHAR(255), 
     TonDaMau NVARCHAR(50),
@@ -102,11 +102,27 @@ CREATE TABLE SanPham (
     FOREIGN KEY (MaDM) REFERENCES DanhMuc(MaDM),
     FOREIGN KEY (MaTH) REFERENCES ThuongHieu(MaTH),
     FOREIGN KEY (MaLoai) REFERENCES LoaiSP(MaLoai)
-    -- ĐÃ XÓA CONSTRAINT REFERENCES NhaCungCap
 );
 GO
 
--- 8. ĐƠN HÀNG
+-- 8. KHUYẾN MÃI
+CREATE TABLE KhuyenMai (
+    MaKM INT PRIMARY KEY IDENTITY(1,1),
+    TenChuongTrinh NVARCHAR(200) NOT NULL,
+    MaCode VARCHAR(50) UNIQUE NOT NULL,    
+    LoaiGiamGia NVARCHAR(20) CHECK (LoaiGiamGia IN ('PhanTram', 'TienMat')) DEFAULT 'PhanTram',
+    GiaTriGiam DECIMAL(18,2) NOT NULL,
+    GiamToiDa DECIMAL(18,2) NULL, 
+    DonHangToiThieu DECIMAL(18,2) DEFAULT 0, 
+    SoLuongPhatHanh INT DEFAULT 1000,        
+    SoLuongDaDung INT DEFAULT 0,             
+    NgayBatDau DATETIME DEFAULT GETDATE(),
+    NgayKetThuc DATETIME,
+    TrangThai BIT DEFAULT 1
+);
+GO
+
+-- 9. ĐƠN HÀNG
 CREATE TABLE DonHang (
     MaDH INT PRIMARY KEY IDENTITY(1,1), 
     MaND INT, 
@@ -119,11 +135,17 @@ CREATE TABLE DonHang (
     TrangThaiThanhToan NVARCHAR(50) DEFAULT N'Chưa thanh toán', 
     NgayThanhToan DATETIME NULL, 
     PhuongThucThanhToan NVARCHAR(100) NULL,
-    FOREIGN KEY (MaND) REFERENCES NguoiDung(MaND)
+    
+    -- Các trường khuyến mãi
+    MaKM INT NULL, 
+    SoTienGiam DECIMAL(18,2) DEFAULT 0,
+
+    FOREIGN KEY (MaND) REFERENCES NguoiDung(MaND),
+    FOREIGN KEY (MaKM) REFERENCES KhuyenMai(MaKM)
 );
 GO
 
--- 9. CHI TIẾT ĐƠN HÀNG
+-- 10. CHI TIẾT ĐƠN HÀNG
 CREATE TABLE ChiTietDonHangs (
     MaDH INT, 
     MaSP INT, 
@@ -135,11 +157,11 @@ CREATE TABLE ChiTietDonHangs (
 );
 GO
 
--- 10. PHIẾU NHẬP (Nhà cung cấp sẽ gắn với phiếu nhập)
+-- 11. PHIẾU NHẬP
 CREATE TABLE PhieuNhap (
     MaPN INT PRIMARY KEY IDENTITY(1,1), 
     MaND INT, 
-    MaNCC INT, -- Nhà cung cấp nằm ở đây là đúng chuẩn
+    MaNCC INT, 
     NgayNhap DATETIME DEFAULT GETDATE(), 
     TongTien DECIMAL(18,2) DEFAULT 0, 
     GhiChu NVARCHAR(500),
@@ -148,25 +170,22 @@ CREATE TABLE PhieuNhap (
 );
 GO
 
--- 11. CHI TIẾT PHIẾU NHẬP (NSX và HSD nằm ở đây để quản lý Lô hàng)
+-- 12. CHI TIẾT PHIẾU NHẬP
 CREATE TABLE ChiTietPhieuNhap (
     MaPN INT, 
     MaSP INT, 
     SoLuong INT CHECK (SoLuong > 0), 
     GiaNhap DECIMAL(18,2) CHECK (GiaNhap >= 0), 
     ThanhTien DECIMAL(18,2),
-    
-    -- Date gắn liền với lô hàng nhập
     NgaySanXuat DATE,
     HanSuDung DATE,
-
     PRIMARY KEY (MaPN, MaSP), 
     FOREIGN KEY (MaPN) REFERENCES PhieuNhap(MaPN) ON DELETE CASCADE, 
     FOREIGN KEY (MaSP) REFERENCES SanPham(MaSP)
 );
 GO
 
--- 12. PHIẾU XUẤT & CHI TIẾT
+-- 13. PHIẾU XUẤT & CHI TIẾT
 CREATE TABLE PhieuXuat (
     MaPX INT PRIMARY KEY IDENTITY(1,1), 
     MaND INT, 
@@ -186,18 +205,26 @@ CREATE TABLE ChiTietPhieuXuat (
 );
 GO
 
--- 13. CÁC BẢNG PHỤ
+-- 14. CÁC BẢNG PHỤ (ĐÃ XÓA THUOCTINHMYPHAM & SANPHAM_THUOCTINH)
 CREATE TABLE DanhGia (
     MaDG INT PRIMARY KEY IDENTITY(1,1), MaSP INT, MaND INT, NoiDung NVARCHAR(500), Diem INT, NgayDanhGia DATETIME DEFAULT GETDATE(), DuocApprove BIT DEFAULT 0, TraLoiAdmin NVARCHAR(500), ThoiGianTraLoi DATETIME, FOREIGN KEY (MaSP) REFERENCES SanPham(MaSP), FOREIGN KEY (MaND) REFERENCES NguoiDung(MaND)
 );
 
-CREATE TABLE ThuocTinhMyPham (MaThuocTinh INT PRIMARY KEY IDENTITY(1,1), TenThuocTinh NVARCHAR(100), LoaiThuocTinh NVARCHAR(50), MoTa NVARCHAR(255));
-CREATE TABLE SanPham_ThuocTinh (MaSP INT, MaThuocTinh INT, PRIMARY KEY (MaSP, MaThuocTinh), FOREIGN KEY (MaSP) REFERENCES SanPham(MaSP) ON DELETE CASCADE, FOREIGN KEY (MaThuocTinh) REFERENCES ThuocTinhMyPham(MaThuocTinh));
 CREATE TABLE LienHe (MaLH INT IDENTITY(1,1) PRIMARY KEY, HoTen NVARCHAR(100), Email NVARCHAR(100), SoDienThoai NVARCHAR(20), NoiDung NVARCHAR(1000), NgayGui DATETIME DEFAULT GETDATE());
 GO
 
+-- 15. CHI TIẾT SẢN PHẨM ĐƯỢC ÁP DỤNG MÃ
+CREATE TABLE KhuyenMai_SanPham (
+    MaKM INT,
+    MaSP INT,
+    PRIMARY KEY (MaKM, MaSP),
+    FOREIGN KEY (MaKM) REFERENCES KhuyenMai(MaKM) ON DELETE CASCADE,
+    FOREIGN KEY (MaSP) REFERENCES SanPham(MaSP) ON DELETE CASCADE
+);
+GO
+
 -- ==================================================================================
--- 3. TRIGGERS (GIỮ NGUYÊN)
+-- 3. TRIGGERS
 -- ==================================================================================
 
 -- A. Trigger Nhập Kho
@@ -260,7 +287,7 @@ END
 GO
 
 -- ==================================================================================
--- 4. DỮ LIỆU MẪU (ĐÃ CẬP NHẬT INSERT)
+-- 4. DỮ LIỆU MẪU
 -- ==================================================================================
 
 -- 1. Admin & User
@@ -275,7 +302,7 @@ INSERT INTO ThuongHieu (TenTH, QuocGia) VALUES (N'Innisfree', N'Hàn Quốc'), (
 INSERT INTO NhaCungCap (TenNCC, DiaChi) VALUES (N'Innisfree VN', N'HCM');
 INSERT INTO LoaiSP (TenLoai, MaDM) VALUES (N'Serum', 1), (N'Kem dưỡng', 1), (N'Son môi', 2), (N'Dầu gội', 3);
 
--- 3. Sản Phẩm (Đã xóa cột MaNCC trong câu lệnh Insert)
+-- 3. Sản Phẩm
 INSERT INTO SanPham (TenSP, GiaBan, MaDM, MaTH, MaLoai, HinhAnh, MoTa) VALUES
 (N'Serum The Ordinary Niacinamide', 250000, 1, 3, 1, '1.jpg', N'Giảm mụn.'),
 (N'Bộ dưỡng da Trà Xanh', 1200000, 1, 1, 2, '2.jpg', N'Cấp ẩm.'),
@@ -292,7 +319,7 @@ INSERT INTO SanPham (TenSP, GiaBan, MaDM, MaTH, MaLoai, HinhAnh, MoTa) VALUES
 -- Phiếu 1
 INSERT INTO PhieuNhap (MaND, MaNCC, TongTien) VALUES (1, 1, 50000000);
 
--- Chi tiết phiếu 1 (Vẫn giữ Date ở đây)
+-- Chi tiết phiếu 1
 INSERT INTO ChiTietPhieuNhap (MaPN, MaSP, SoLuong, GiaNhap, ThanhTien, NgaySanXuat, HanSuDung) VALUES 
 (1, 1, 100, 200000, 20000000, '2023-01-01', '2026-01-01'),
 (1, 2, 50, 800000, 40000000, '2023-05-15', '2026-05-15'),
@@ -314,62 +341,5 @@ INSERT INTO ChiTietPhieuNhap (MaPN, MaSP, SoLuong, GiaNhap, ThanhTien, NgaySanXu
 -- 5. KIỂM TRA KẾT QUẢ
 -- ==================================================================================
 PRINT N'✅ Database DB_SkinFood1 đã được khởi tạo thành công!';
-PRINT N'--- Kiểm tra cấu trúc bảng SanPham (Không còn MaNCC, NSX, HSD) ---';
-SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'SanPham';
-
-PRINT N'--- Kiểm tra dữ liệu SanPham ---';
-SELECT MaSP, TenSP, SoLuongTon FROM SanPham;
-
-
--- 14. BẢNG KHUYẾN MÃI (MÃ GIẢM GIÁ)
-CREATE TABLE KhuyenMai (
-    MaKM INT PRIMARY KEY IDENTITY(1,1),
-    TenChuongTrinh NVARCHAR(200) NOT NULL, -- Tên đợt KM
-    MaCode VARCHAR(50) UNIQUE NOT NULL,    -- Mã user nhập vào (VD: SALE10, TET2025)
-    
-    -- Loại giảm: 1 là % (PhanTram), 2 là Tiền mặt (TienMat)
-    LoaiGiamGia NVARCHAR(20) CHECK (LoaiGiamGia IN ('PhanTram', 'TienMat')) DEFAULT 'PhanTram',
-    
-    -- Giá trị giảm: VD 10 (là 10%) hoặc 50000 (là 50k)
-    GiaTriGiam DECIMAL(18,2) NOT NULL,
-
-    -- Số tiền giảm tối đa (Chỉ dùng cho loại %)
-    -- VD: Giảm 10% nhưng tối đa chỉ giảm 50k
-    GiamToiDa DECIMAL(18,2) NULL, 
-
-    -- Điều kiện áp dụng
-    DonHangToiThieu DECIMAL(18,2) DEFAULT 0, -- Đơn tối thiểu để áp mã
-    
-    -- Quản lý thời gian & Số lượng
-    SoLuongPhatHanh INT DEFAULT 1000,        -- Tổng số mã tung ra
-    SoLuongDaDung INT DEFAULT 0,             -- Số mã đã được dùng
-    NgayBatDau DATETIME DEFAULT GETDATE(),
-    NgayKetThuc DATETIME,
-    
-    TrangThai BIT DEFAULT 1 -- 1: Đang hoạt động, 0: Ngưng
-);
-GO
-
--- 15. BẢNG CHI TIẾT SẢN PHẨM ĐƯỢC ÁP DỤNG MÃ
-CREATE TABLE KhuyenMai_SanPham (
-    MaKM INT,
-    MaSP INT,
-    PRIMARY KEY (MaKM, MaSP),
-    FOREIGN KEY (MaKM) REFERENCES KhuyenMai(MaKM) ON DELETE CASCADE,
-    FOREIGN KEY (MaSP) REFERENCES SanPham(MaSP) ON DELETE CASCADE
-);
-GO
-
--- Cập nhật bảng DonHang để liên kết với KhuyenMai
-ALTER TABLE DonHang
-ADD MaKM INT NULL, -- Mã khuyến mãi đã áp dụng (nếu có)
-    SoTienGiam DECIMAL(18,2) DEFAULT 0; -- Lưu lại số tiền đã được trừ
-GO
-
-ALTER TABLE DonHang
-ADD CONSTRAINT FK_DonHang_KhuyenMai 
-FOREIGN KEY (MaKM) REFERENCES KhuyenMai(MaKM);
-GO
-
-ALTER TABLE NguoiDung
-ADD Avatar NVARCHAR(50) NULL;
+PRINT N'✅ Đã xóa bảng ThuocTinhMyPham và SanPham_ThuocTinh.';
+SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE';

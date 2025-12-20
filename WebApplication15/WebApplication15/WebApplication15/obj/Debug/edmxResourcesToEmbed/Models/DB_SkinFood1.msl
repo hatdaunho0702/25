@@ -192,16 +192,6 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <EntitySetMapping Name="ThuocTinhMyPhams">
-      <EntityTypeMapping TypeName="DB_SkinFood1Model.ThuocTinhMyPham">
-        <MappingFragment StoreEntitySet="ThuocTinhMyPham">
-          <ScalarProperty Name="MaThuocTinh" ColumnName="MaThuocTinh" />
-          <ScalarProperty Name="TenThuocTinh" ColumnName="TenThuocTinh" />
-          <ScalarProperty Name="LoaiThuocTinh" ColumnName="LoaiThuocTinh" />
-          <ScalarProperty Name="MoTa" ColumnName="MoTa" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
     <EntitySetMapping Name="ThuongHieux">
       <EntityTypeMapping TypeName="DB_SkinFood1Model.ThuongHieu">
         <MappingFragment StoreEntitySet="ThuongHieu">
@@ -211,14 +201,6 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <AssociationSetMapping Name="SanPham_ThuocTinh" TypeName="DB_SkinFood1Model.SanPham_ThuocTinh" StoreEntitySet="SanPham_ThuocTinh">
-      <EndProperty Name="ThuocTinhMyPham">
-        <ScalarProperty Name="MaThuocTinh" ColumnName="MaThuocTinh" />
-      </EndProperty>
-      <EndProperty Name="SanPham">
-        <ScalarProperty Name="MaSP" ColumnName="MaSP" />
-      </EndProperty>
-    </AssociationSetMapping>
     <FunctionImportMapping FunctionImportName="sp_alterdiagram" FunctionName="DB_SkinFood1Model.Store.sp_alterdiagram" />
     <FunctionImportMapping FunctionImportName="sp_creatediagram" FunctionName="DB_SkinFood1Model.Store.sp_creatediagram" />
     <FunctionImportMapping FunctionImportName="sp_dropdiagram" FunctionName="DB_SkinFood1Model.Store.sp_dropdiagram" />

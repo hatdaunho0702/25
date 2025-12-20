@@ -147,39 +147,16 @@ namespace WebApplication15.Areas.Admin.Controllers
         {
             try
             {
-                // Load existing early to help with missing fields
-                var existing = db.KhuyenMais.Find(model.MaKM);
-                if (existing == null)
-                {
-                    ModelState.AddModelError("", "Không tìm thấy khuyến mãi.");
-                    return View(model);
-                }
-
-                // If the form left GiaTriGiam empty, keep existing value to avoid "field is required" validation
-                var giaTriForm = Request.Form["GiaTriGiam"];
-                if (string.IsNullOrWhiteSpace(giaTriForm))
-                {
-                    model.GiaTriGiam = existing.GiaTriGiam; // keep old
-                    if (ModelState.ContainsKey("GiaTriGiam")) ModelState.Remove("GiaTriGiam");
-                }
-
-                // Explicitly parse TrangThai from form to avoid model binding surprises
-                bool? parsedTrangThai = null;
-                var formValue = Request.Form["TrangThai"];
-                if (!string.IsNullOrEmpty(formValue))
-                {
-                    bool b;
-                    if (bool.TryParse(formValue, out b)) parsedTrangThai = b;
-                    else if (formValue == "1" || formValue == "true" || formValue.Equals("True", StringComparison.OrdinalIgnoreCase)) parsedTrangThai = true;
-                    else if (formValue == "0" || formValue == "false" || formValue.Equals("False", StringComparison.OrdinalIgnoreCase)) parsedTrangThai = false;
-                }
-
-                // Clear ModelState for TrangThai so we can set it manually without validation errors
-                if (ModelState.ContainsKey("TrangThai"))
-                    ModelState.Remove("TrangThai");
-
                 if (ModelState.IsValid)
                 {
+                    // Load existing entity
+                    var existing = db.KhuyenMais.Find(model.MaKM);
+                    if (existing == null)
+                    {
+                        ModelState.AddModelError("", "Không tìm thấy khuyến mãi.");
+                        return View(model);
+                    }
+
                     // Update simple fields
                     existing.TenChuongTrinh = model.TenChuongTrinh;
                     existing.MaCode = model.MaCode;
@@ -190,7 +167,7 @@ namespace WebApplication15.Areas.Admin.Controllers
                     existing.SoLuongPhatHanh = model.SoLuongPhatHanh;
                     existing.SoLuongDaDung = model.SoLuongDaDung;
 
-                    // Overwrite dates only when form supplied values
+                    // Preserve dates if not provided in form: only overwrite when user supplies values
                     if (model.NgayBatDau.HasValue)
                     {
                         existing.NgayBatDau = model.NgayBatDau;
@@ -201,17 +178,13 @@ namespace WebApplication15.Areas.Admin.Controllers
                         existing.NgayKetThuc = model.NgayKetThuc;
                     }
 
-                    // If we parsed TrangThai explicitly, use it; otherwise keep incoming model value
-                    if (parsedTrangThai.HasValue)
-                        existing.TrangThai = parsedTrangThai;
-                    else
-                        existing.TrangThai = model.TrangThai;
+                    // TrangThai can be changed directly
+                    existing.TrangThai = model.TrangThai;
 
                     // Validate date order if both present on existing
                     if (existing.NgayBatDau.HasValue && existing.NgayKetThuc.HasValue && existing.NgayBatDau.Value >= existing.NgayKetThuc.Value)
                     {
                         ModelState.AddModelError("NgayKetThuc", "Ngày kết thúc phải lớn hơn ngày bắt đầu.");
-                        // Return view with existing entity so dates display correctly
                         return View(existing);
                     }
 
@@ -220,20 +193,10 @@ namespace WebApplication15.Areas.Admin.Controllers
                     TempData["SuccessMessage"] = "Cập nhật khuyến mãi thành công";
                     return RedirectToAction("Index");
                 }
-                else
-                {
-                    // Collect model state errors to TempData for debugging and show to user
-                    var errors = ModelState.Where(ms => ms.Value.Errors.Any())
-                        .Select(ms => new { Key = ms.Key, Errors = ms.Value.Errors.Select(e => e.ErrorMessage).ToArray() })
-                        .ToList();
-
-                    TempData["ErrorMessage"] = "Có lỗi khi gửi form: " + string.Join("; ", errors.SelectMany(e => e.Errors));
-                }
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Lỗi khi cập nhật: " + ex.Message);
-                TempData["ErrorMessage"] = ex.Message;
             }
             // repopulate any needed ViewBag
             return View(model);

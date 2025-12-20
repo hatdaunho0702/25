@@ -184,14 +184,6 @@
     <Property Name="NgayNhapKho" Type="datetime" />
     <Property Name="TrangThaiSanPham" Type="nvarchar" MaxLength="50" />
   </EntityType>
-  <EntityType Name="SanPham_ThuocTinh">
-    <Key>
-      <PropertyRef Name="MaSP" />
-      <PropertyRef Name="MaThuocTinh" />
-    </Key>
-    <Property Name="MaSP" Type="int" Nullable="false" />
-    <Property Name="MaThuocTinh" Type="int" Nullable="false" />
-  </EntityType>
   <EntityType Name="sysdiagrams">
     <Key>
       <PropertyRef Name="diagram_id" />
@@ -211,15 +203,6 @@
     <Property Name="MatKhauHash" Type="varchar" MaxLength="500" Nullable="false" />
     <Property Name="VaiTro" Type="nvarchar" MaxLength="20" />
     <Property Name="MaND" Type="int" Nullable="false" />
-  </EntityType>
-  <EntityType Name="ThuocTinhMyPham">
-    <Key>
-      <PropertyRef Name="MaThuocTinh" />
-    </Key>
-    <Property Name="MaThuocTinh" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="TenThuocTinh" Type="nvarchar" MaxLength="100" />
-    <Property Name="LoaiThuocTinh" Type="nvarchar" MaxLength="50" />
-    <Property Name="MoTa" Type="nvarchar" MaxLength="255" />
   </EntityType>
   <EntityType Name="ThuongHieu">
     <Key>
@@ -455,32 +438,6 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="FK__SanPham_T__MaThu__7A672E12">
-    <End Role="ThuocTinhMyPham" Type="Self.ThuocTinhMyPham" Multiplicity="1" />
-    <End Role="SanPham_ThuocTinh" Type="Self.SanPham_ThuocTinh" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="ThuocTinhMyPham">
-        <PropertyRef Name="MaThuocTinh" />
-      </Principal>
-      <Dependent Role="SanPham_ThuocTinh">
-        <PropertyRef Name="MaThuocTinh" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="FK__SanPham_Th__MaSP__797309D9">
-    <End Role="SanPham" Type="Self.SanPham" Multiplicity="1">
-      <OnDelete Action="Cascade" />
-    </End>
-    <End Role="SanPham_ThuocTinh" Type="Self.SanPham_ThuocTinh" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="SanPham">
-        <PropertyRef Name="MaSP" />
-      </Principal>
-      <Dependent Role="SanPham_ThuocTinh">
-        <PropertyRef Name="MaSP" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
   <Association Name="FK__TaiKhoan__MaND__3D5E1FD2">
     <End Role="NguoiDung" Type="Self.NguoiDung" Multiplicity="1" />
     <End Role="TaiKhoan" Type="Self.TaiKhoan" Multiplicity="*" />
@@ -552,10 +509,8 @@
     <EntitySet Name="PhieuNhap" EntityType="Self.PhieuNhap" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="PhieuXuat" EntityType="Self.PhieuXuat" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="SanPham" EntityType="Self.SanPham" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="SanPham_ThuocTinh" EntityType="Self.SanPham_ThuocTinh" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="TaiKhoan" EntityType="Self.TaiKhoan" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="ThuocTinhMyPham" EntityType="Self.ThuocTinhMyPham" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="ThuongHieu" EntityType="Self.ThuongHieu" Schema="dbo" store:Type="Tables" />
     <AssociationSet Name="FK__ChiTietDon__MaDH__59FA5E80" Association="Self.FK__ChiTietDon__MaDH__59FA5E80">
       <End Role="DonHang" EntitySet="DonHang" />
@@ -628,14 +583,6 @@
     <AssociationSet Name="FK__SanPham__MaTH__4F7CD00D" Association="Self.FK__SanPham__MaTH__4F7CD00D">
       <End Role="ThuongHieu" EntitySet="ThuongHieu" />
       <End Role="SanPham" EntitySet="SanPham" />
-    </AssociationSet>
-    <AssociationSet Name="FK__SanPham_T__MaThu__7A672E12" Association="Self.FK__SanPham_T__MaThu__7A672E12">
-      <End Role="ThuocTinhMyPham" EntitySet="ThuocTinhMyPham" />
-      <End Role="SanPham_ThuocTinh" EntitySet="SanPham_ThuocTinh" />
-    </AssociationSet>
-    <AssociationSet Name="FK__SanPham_Th__MaSP__797309D9" Association="Self.FK__SanPham_Th__MaSP__797309D9">
-      <End Role="SanPham" EntitySet="SanPham" />
-      <End Role="SanPham_ThuocTinh" EntitySet="SanPham_ThuocTinh" />
     </AssociationSet>
     <AssociationSet Name="FK__TaiKhoan__MaND__3D5E1FD2" Association="Self.FK__TaiKhoan__MaND__3D5E1FD2">
       <End Role="NguoiDung" EntitySet="NguoiDung" />

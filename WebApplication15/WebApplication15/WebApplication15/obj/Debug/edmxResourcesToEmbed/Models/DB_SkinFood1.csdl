@@ -191,7 +191,6 @@
     <NavigationProperty Name="DanhMuc" Relationship="Self.FK__SanPham__MaDM__4E88ABD4" FromRole="SanPham" ToRole="DanhMuc" />
     <NavigationProperty Name="LoaiSP" Relationship="Self.FK__SanPham__MaLoai__5070F446" FromRole="SanPham" ToRole="LoaiSP" />
     <NavigationProperty Name="ThuongHieu" Relationship="Self.FK__SanPham__MaTH__4F7CD00D" FromRole="SanPham" ToRole="ThuongHieu" />
-    <NavigationProperty Name="ThuocTinhMyPhams" Relationship="Self.SanPham_ThuocTinh" FromRole="SanPham" ToRole="ThuocTinhMyPham" />
     <NavigationProperty Name="KhuyenMais" Relationship="DB_SkinFood1Model.KhuyenMai_SanPham" FromRole="SanPham" ToRole="KhuyenMai" />
   </EntityType>
   <EntityType Name="sysdiagram">
@@ -214,16 +213,6 @@
     <Property Name="VaiTro" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
     <Property Name="MaND" Type="Int32" Nullable="false" />
     <NavigationProperty Name="NguoiDung" Relationship="Self.FK__TaiKhoan__MaND__3D5E1FD2" FromRole="TaiKhoan" ToRole="NguoiDung" />
-  </EntityType>
-  <EntityType Name="ThuocTinhMyPham">
-    <Key>
-      <PropertyRef Name="MaThuocTinh" />
-    </Key>
-    <Property Name="MaThuocTinh" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="TenThuocTinh" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-    <Property Name="LoaiThuocTinh" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-    <Property Name="MoTa" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-    <NavigationProperty Name="SanPhams" Relationship="Self.SanPham_ThuocTinh" FromRole="ThuocTinhMyPham" ToRole="SanPham" />
   </EntityType>
   <EntityType Name="ThuongHieu">
     <Key>
@@ -444,10 +433,6 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="SanPham_ThuocTinh">
-    <End Role="ThuocTinhMyPham" Type="Self.ThuocTinhMyPham" Multiplicity="*" />
-    <End Role="SanPham" Type="Self.SanPham" Multiplicity="*" />
-  </Association>
   <EntityContainer Name="DB_SkinFood1Entities1" annotation:LazyLoadingEnabled="true">
     <EntitySet Name="ChiTietDonHangs" EntityType="Self.ChiTietDonHang" />
     <EntitySet Name="ChiTietPhieuNhaps" EntityType="Self.ChiTietPhieuNhap" />
@@ -464,7 +449,6 @@
     <EntitySet Name="SanPhams" EntityType="Self.SanPham" />
     <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
     <EntitySet Name="TaiKhoans" EntityType="Self.TaiKhoan" />
-    <EntitySet Name="ThuocTinhMyPhams" EntityType="Self.ThuocTinhMyPham" />
     <EntitySet Name="ThuongHieux" EntityType="Self.ThuongHieu" />
     <AssociationSet Name="FK__ChiTietDon__MaDH__59FA5E80" Association="Self.FK__ChiTietDon__MaDH__59FA5E80">
       <End Role="DonHang" EntitySet="DonHangs" />
@@ -532,10 +516,6 @@
     </AssociationSet>
     <AssociationSet Name="FK__SanPham__MaTH__4F7CD00D" Association="Self.FK__SanPham__MaTH__4F7CD00D">
       <End Role="ThuongHieu" EntitySet="ThuongHieux" />
-      <End Role="SanPham" EntitySet="SanPhams" />
-    </AssociationSet>
-    <AssociationSet Name="SanPham_ThuocTinh" Association="Self.SanPham_ThuocTinh">
-      <End Role="ThuocTinhMyPham" EntitySet="ThuocTinhMyPhams" />
       <End Role="SanPham" EntitySet="SanPhams" />
     </AssociationSet>
     <FunctionImport Name="sp_alterdiagram">
