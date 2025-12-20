@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "D:\\25\\25\\WebApplication15\\WebApplication15\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\controllers\\chatcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\controllers\\chatcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|D:\\25\\25\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\views\\sanpham\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\views\\sanpham\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
@@ -19,7 +23,7 @@
       "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\controllers\\dashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\areas\\admin\\models\\sanphamcanhbaoviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|D:\\25\\25\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\models\\sanphamcanhbaoviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\models\\sanphamcanhbaoviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -47,12 +51,8 @@
       "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\models\\sanpham.extension.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\models\\db_skinfood1.edmx||{C99AEA30-8E36-4515-B76F-496F5A48A6AA}|",
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|D:\\25\\25\\WebApplication15\\WebApplication15\\webapplication15\\models\\db_skinfood1.edmx||{C99AEA30-8E36-4515-B76F-496F5A48A6AA}|",
       "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\models\\db_skinfood1.edmx||{C99AEA30-8E36-4515-B76F-496F5A48A6AA}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\controllers\\chatcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\controllers\\chatcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|D:\\25\\25\\WebApplication15\\WebApplication15\\webapplication15\\models\\db_skinfood1alias.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -114,7 +114,7 @@
       "DocumentGroups": [
         {
           "DockedHeight": 239,
-          "SelectedChildIndex": 8,
+          "SelectedChildIndex": 10,
           "Children": [
             {
               "$type": "Bookmark",
@@ -138,20 +138,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "SanPhamController.cs",
-              "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Controllers\\SanPhamController.cs",
-              "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Controllers\\SanPhamController.cs",
-              "ToolTip": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Controllers\\SanPhamController.cs",
-              "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Controllers\\SanPhamController.cs",
-              "ViewState": "AgIAAE0BAAAAAAAAAAAswFkBAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T01:15:58.751Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\Dashboard\\Index.cshtml",
               "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Views\\Dashboard\\Index.cshtml",
@@ -159,12 +146,11 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\Dashboard\\Index.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAMMAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-12-17T03:22:19.408Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T03:22:19.408Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "DashboardController.cs",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Controllers\\DashboardController.cs",
               "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Controllers\\DashboardController.cs",
@@ -172,12 +158,11 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Controllers\\DashboardController.cs",
               "ViewState": "AgIAAIcAAAAAAAAAAAAAAMwAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T03:22:40.064Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T03:22:40.064Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\SanPham\\Index.cshtml",
               "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Views\\SanPham\\Index.cshtml",
@@ -185,12 +170,11 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\SanPham\\Index.cshtml",
               "ViewState": "AgIAABEBAAAAAAAAAAAIwCMBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-12-17T03:55:30.523Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T03:55:30.523Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Edit.cshtml",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\SanPham\\Edit.cshtml",
               "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Views\\SanPham\\Edit.cshtml",
@@ -198,12 +182,11 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\SanPham\\Edit.cshtml",
               "ViewState": "AgIAAGMAAAAAAAAAAAAAAHkAAAAGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-12-17T03:55:00.929Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T03:55:00.929Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "SanPhamCanhBaoViewModel.cs",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Models\\SanPhamCanhBaoViewModel.cs",
               "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Models\\SanPhamCanhBaoViewModel.cs",
@@ -211,12 +194,36 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Models\\SanPhamCanhBaoViewModel.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-20T09:04:31.254Z",
+              "WhenOpened": "2025-12-20T09:04:31.254Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ChatController.cs",
+              "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Controllers\\ChatController.cs",
+              "RelativeDocumentMoniker": "WebApplication15\\Controllers\\ChatController.cs",
+              "ToolTip": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Controllers\\ChatController.cs",
+              "RelativeToolTip": "WebApplication15\\Controllers\\ChatController.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABQAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T12:12:00.862Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 6,
+              "Title": "SanPhamController.cs",
+              "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Controllers\\SanPhamController.cs",
+              "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Controllers\\SanPhamController.cs",
+              "ToolTip": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Controllers\\SanPhamController.cs",
+              "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Controllers\\SanPhamController.cs",
+              "ViewState": "AgIAAE0BAAAAAAAAAAAswFkBAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-17T01:15:58.751Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
               "Title": "NhaCungCapController.cs",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Controllers\\NhaCungCapController.cs",
               "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Controllers\\NhaCungCapController.cs",
@@ -224,12 +231,11 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Controllers\\NhaCungCapController.cs",
               "ViewState": "AgIAAEwAAAAAAAAAAAAUwFsAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T03:21:47.316Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T03:21:47.316Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "PhieuNhapController.cs",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Controllers\\PhieuNhapController.cs",
               "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Controllers\\PhieuNhapController.cs",
@@ -237,12 +243,11 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Controllers\\PhieuNhapController.cs",
               "ViewState": "AgIAAJIAAAAAAAAAAAAowJgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T04:44:03.309Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T04:44:03.309Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "Create.cshtml",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\PhieuNhap\\Create.cshtml",
               "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Views\\PhieuNhap\\Create.cshtml",
@@ -250,12 +255,11 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\PhieuNhap\\Create.cshtml",
               "ViewState": "AgIAAIIAAAAAAAAAAAAkwJIAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-12-17T04:47:21.94Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T04:47:21.94Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "Create.cshtml",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\SanPham\\Create.cshtml",
               "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Views\\SanPham\\Create.cshtml",
@@ -263,37 +267,22 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\SanPham\\Create.cshtml",
               "ViewState": "AgIAAEoAAAAAAAAAAAAkwGAAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-12-17T03:45:15.083Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T03:45:15.083Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "DB_SkinFood1.edmx [Diagram1]",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Models\\DB_SkinFood1.edmx",
               "RelativeDocumentMoniker": "WebApplication15\\Models\\DB_SkinFood1.edmx",
               "ToolTip": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Models\\DB_SkinFood1.edmx [Diagram1]",
               "RelativeToolTip": "WebApplication15\\Models\\DB_SkinFood1.edmx [Diagram1]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001116|",
-              "WhenOpened": "2025-12-20T08:36:38.008Z",
-              "EditorCaption": " [Diagram1]"
+              "WhenOpened": "2025-12-20T08:36:38.008Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "ChatController.cs",
-              "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Controllers\\ChatController.cs",
-              "RelativeDocumentMoniker": "WebApplication15\\Controllers\\ChatController.cs",
-              "ToolTip": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Controllers\\ChatController.cs",
-              "RelativeToolTip": "WebApplication15\\Controllers\\ChatController.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAAABAAAAAaAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T12:12:00.862Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "SanPham.Extension.cs",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Models\\SanPham.Extension.cs",
               "RelativeDocumentMoniker": "WebApplication15\\Models\\SanPham.Extension.cs",
@@ -301,8 +290,7 @@
               "RelativeToolTip": "WebApplication15\\Models\\SanPham.Extension.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T05:24:34.35Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T05:24:34.35Z"
             },
             {
               "$type": "Document",
@@ -314,8 +302,7 @@
               "RelativeToolTip": "WebApplication15\\Controllers\\UserController.cs",
               "ViewState": "AgIAAMsAAAAAAAAAAAAAAN4AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T05:08:18.43Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T05:08:18.43Z"
             },
             {
               "$type": "Document",
@@ -340,8 +327,7 @@
               "RelativeToolTip": "WebApplication15\\Models\\DB_SkinFood1Compat.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T05:30:14.162Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T05:30:14.162Z"
             },
             {
               "$type": "Document",
@@ -353,8 +339,7 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Controllers\\PhieuXuatController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAEBpwAsAAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T02:42:31.734Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T02:42:31.734Z"
             },
             {
               "$type": "Document",
@@ -366,8 +351,7 @@
               "RelativeToolTip": "WebApplication15\\Models\\DB_SkinFood1Alias.cs",
               "ViewState": "AgIAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T01:35:25.619Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T01:35:25.619Z"
             },
             {
               "$type": "Document",
@@ -379,8 +363,7 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\NhaCungCap\\Create.cshtml",
               "ViewState": "AgIAACAAAAAAAAAAAAAAADcAAAAGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-12-17T03:22:09.39Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T03:22:09.39Z"
             },
             {
               "$type": "Document",
@@ -392,8 +375,7 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\PhieuNhap\\Index.cshtml",
               "ViewState": "AgIAACgAAAAAAAAAAAAAAEAAAAAGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-12-17T04:58:34.762Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T04:58:34.762Z"
             },
             {
               "$type": "Document",
@@ -405,8 +387,7 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\NhaCungCap\\Index.cshtml",
               "ViewState": "AgIAACEAAAAAAAAAAAAiwDkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-12-17T03:21:57.407Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T03:21:57.407Z"
             },
             {
               "$type": "Document",
@@ -418,8 +399,7 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\Shared\\_Layout.cshtml",
               "ViewState": "AgIAAJsAAAAAAAAAAAAAAKwAAABFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-12-17T03:27:05.211Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T03:27:05.211Z"
             },
             {
               "$type": "Document",
@@ -431,8 +411,7 @@
               "RelativeToolTip": "WebApplication15\\Views\\Home\\ChiTietSP.cshtml",
               "ViewState": "AgIAALsAAAAAAAAAAEBVwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-12-17T03:12:39.13Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T03:12:39.13Z"
             },
             {
               "$type": "Document",
@@ -444,8 +423,7 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Controllers\\DonHangController.cs",
               "ViewState": "AgIAAG4AAAAAAAAAAAAwwIUAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T02:42:10.801Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T02:42:10.801Z"
             },
             {
               "$type": "Document",
@@ -457,8 +435,7 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\web.config",
               "ViewState": "AgIAABsAAAAAAAAAAAAAACcAAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
-              "WhenOpened": "2025-12-17T01:54:41.582Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T01:54:41.582Z"
             },
             {
               "$type": "Document",
@@ -470,8 +447,7 @@
               "RelativeToolTip": "WebApplication15\\Models\\ModelExtensions.cs",
               "ViewState": "AgIAAAcAAAAAAAAAAAAAABEAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T01:58:27.231Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T01:58:27.231Z"
             }
           ]
         },

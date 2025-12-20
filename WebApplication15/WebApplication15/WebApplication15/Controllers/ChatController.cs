@@ -10,8 +10,7 @@ namespace WebApplication15.Controllers
     public class ChatController : Controller
     {
         // Lưu ý: Thay thế API key của bạn ở đây
-        private readonly string apiKey = "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"; // TODO: Thêm API key của bạn vào đây hoặc lưu trong Web.config
-
+        private readonly string apiKey = "";
         public ActionResult ChatAI()
         {
             return View();
