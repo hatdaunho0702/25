@@ -77,8 +77,10 @@ namespace WebApplication15.Areas.Admin.Controllers
         {
             try
             {
-                // Try to load entities normally
-                var sanPhams = db.SanPhams.ToList();
+                // Load products with related data for suppliers
+                var sanPhams = db.SanPhams
+                    .Include("ChiTietPhieuNhaps.PhieuNhap.NhaCungCap")
+                    .ToList();
                 return View(sanPhams);
             }
             catch (SqlException sqlEx)
@@ -89,7 +91,7 @@ namespace WebApplication15.Areas.Admin.Controllers
                 TempData["ErrorMessage"] = "Lỗi khi tải sản phẩm từ cơ sở dữ liệu. Sử dụng dữ liệu tối giản thay thế.";
 
                 var safeList = db.Database.SqlQuery<SanPham>(
-                    "SELECT MaSP, TenSP, GiaBan, HinhAnh, SoLuongTon, MaNCC FROM SanPham"
+                    "SELECT MaSP, TenSP, GiaBan, HinhAnh, SoLuongTon FROM SanPham"
                 ).ToList();
 
                 return View(safeList);
@@ -104,19 +106,11 @@ namespace WebApplication15.Areas.Admin.Controllers
 
         public ActionResult Create()
         {
-            // Optional MaNCC passed when creating product from supplier Create page
-            int? maNcc = null;
-            if (int.TryParse(Request.QueryString["MaNCC"], out int parsed))
-                maNcc = parsed;
-
             ViewBag.MaLoai = new SelectList(db.LoaiSPs, "MaLoai", "TenLoai");
             ViewBag.MaTH = new SelectList(db.ThuongHieux, "MaTH", "TenTH");
             ViewBag.MaDM = new SelectList(db.DanhMucs, "MaDM", "TenDM");
-            // Provide supplier list to view (selected if provided)
-            ViewBag.MaNCC = new SelectList(db.NhaCungCaps, "MaNCC", "TenNCC", maNcc);
 
             var model = new SanPham();
-            if (maNcc.HasValue) model.MaNCC = maNcc;
             return View(model);
         }
 
@@ -137,8 +131,6 @@ namespace WebApplication15.Areas.Admin.Controllers
                     ViewBag.MaLoai = new SelectList(db.LoaiSPs, "MaLoai", "TenLoai", sp?.MaLoai);
                     ViewBag.MaTH = new SelectList(db.ThuongHieux, "MaTH", "TenTH", sp?.MaTH);
                     ViewBag.MaDM = new SelectList(db.DanhMucs, "MaDM", "TenDM", sp?.MaDM);
-                    // Ensure supplier list is available when redisplaying form
-                    ViewBag.MaNCC = new SelectList(db.NhaCungCaps, "MaNCC", "TenNCC", sp?.MaNCC);
                     return View(sp == null || sp.MaSP <= 0 ? "Create" : "Edit", sp);
                 }
 
@@ -150,9 +142,12 @@ namespace WebApplication15.Areas.Admin.Controllers
                         sp.HinhAnh = SaveUploadedFile(imageFile);
                     }
 
+                    // Set stock quantity to 0 for new products
+                    sp.SoLuongTon = 0;
+
                     db.SanPhams.Add(sp);
                     db.SaveChanges();
-                    TempData["SuccessMessage"] = "Thêm sản phẩm thành công!";
+                    TempData["SuccessMessage"] = "Thêm sản phẩm thành công! Số lượng tồn kho hiện tại là 0. Vui lòng sử dụng chức năng Nhập Hàng để cập nhật số lượng.";
                     return RedirectToAction("Index");
                 }
 
@@ -164,7 +159,6 @@ namespace WebApplication15.Areas.Admin.Controllers
                     ViewBag.MaLoai = new SelectList(db.LoaiSPs, "MaLoai", "TenLoai", sp.MaLoai);
                     ViewBag.MaTH = new SelectList(db.ThuongHieux, "MaTH", "TenTH", sp.MaTH);
                     ViewBag.MaDM = new SelectList(db.DanhMucs, "MaDM", "TenDM", sp.MaDM);
-                    ViewBag.MaNCC = new SelectList(db.NhaCungCaps, "MaNCC", "TenNCC", sp.MaNCC);
                     return View("Edit", sp);
                 }
 
@@ -181,6 +175,9 @@ namespace WebApplication15.Areas.Admin.Controllers
                     sp.HinhAnh = existingSp.HinhAnh;
                 }
 
+                // Preserve stock quantity - it should only be updated through PhieuNhap
+                sp.SoLuongTon = existingSp.SoLuongTon;
+
                 db.Entry(existingSp).CurrentValues.SetValues(sp);
                 db.SaveChanges();
                 TempData["SuccessMessage"] = "Cập nhật sản phẩm thành công!";
@@ -194,7 +191,6 @@ namespace WebApplication15.Areas.Admin.Controllers
             ViewBag.MaLoai = new SelectList(db.LoaiSPs, "MaLoai", "TenLoai", sp?.MaLoai);
             ViewBag.MaTH = new SelectList(db.ThuongHieux, "MaTH", "TenTH", sp?.MaTH);
             ViewBag.MaDM = new SelectList(db.DanhMucs, "MaDM", "TenDM", sp?.MaDM);
-            ViewBag.MaNCC = new SelectList(db.NhaCungCaps, "MaNCC", "TenNCC", sp?.MaNCC);
             return View(sp == null || sp.MaSP <= 0 ? "Create" : "Edit", sp);
         }
 
@@ -216,7 +212,6 @@ namespace WebApplication15.Areas.Admin.Controllers
             ViewBag.MaLoai = new SelectList(db.LoaiSPs, "MaLoai", "TenLoai", sp.MaLoai);
             ViewBag.MaTH = new SelectList(db.ThuongHieux, "MaTH", "TenTH", sp.MaTH);
             ViewBag.MaDM = new SelectList(db.DanhMucs, "MaDM", "TenDM", sp.MaDM);
-            ViewBag.MaNCC = new SelectList(db.NhaCungCaps, "MaNCC", "TenNCC", sp.MaNCC);
             return View(sp);
         }
 

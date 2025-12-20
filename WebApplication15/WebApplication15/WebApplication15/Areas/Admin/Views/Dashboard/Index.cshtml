@@ -216,13 +216,12 @@
                                 <tbody>
                                     @if (ViewBag.SanPhamDaHetHan != null)
                                     {
-                                        foreach (var sp in ViewBag.SanPhamDaHetHan)
+                                        foreach (WebApplication15.Areas.Admin.Models.SanPhamCanhBaoViewModel sp in ViewBag.SanPhamDaHetHan)
                                         {
-                                            DateTime? hanSuDung = sp.HanSuDung as DateTime?;
                                             <tr class="bg-light-danger">
                                                 <td class="fw-bold text-danger">@sp.TenSP</td>
                                                 <td><span class="badge bg-danger rounded-pill">Đã Hết Hạn</span></td>
-                                                <td>@(hanSuDung.HasValue ? hanSuDung.Value.ToString("dd/MM/yyyy") : "N/A")</td>
+                                                <td>@sp.HanSuDung.ToString("dd/MM/yyyy")</td>
                                                 <td>@sp.SoLuongTon</td>
                                                 <td><a href="#" class="btn btn-sm btn-outline-danger">Xử lý</a></td>
                                             </tr>
@@ -230,14 +229,13 @@
                                     }
                                     @if (ViewBag.SanPhamSapHetHan != null)
                                     {
-                                        foreach (var sp in ViewBag.SanPhamSapHetHan)
+                                        foreach (WebApplication15.Areas.Admin.Models.SanPhamCanhBaoViewModel sp in ViewBag.SanPhamSapHetHan)
                                         {
-                                            DateTime? hanSuDung = sp.HanSuDung as DateTime?;
-                                            int ngayConLai = hanSuDung.HasValue ? (int)(hanSuDung.Value - DateTime.Now).TotalDays : 0;
+                                            int ngayConLai = (int)(sp.HanSuDung - DateTime.Now).TotalDays;
                                             <tr>
                                                 <td class="fw-bold text-dark">@sp.TenSP</td>
                                                 <td><span class="badge bg-warning text-dark rounded-pill">Sắp Hết Hạn</span></td>
-                                                <td>@(hanSuDung.HasValue ? hanSuDung.Value.ToString("dd/MM/yyyy") : "N/A")</td>
+                                                <td>@sp.HanSuDung.ToString("dd/MM/yyyy")</td>
                                                 <td>@sp.SoLuongTon</td>
                                                 <td><small class="text-muted">Còn @ngayConLai ngày</small></td>
                                             </tr>

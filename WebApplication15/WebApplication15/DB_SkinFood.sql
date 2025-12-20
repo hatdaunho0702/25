@@ -72,7 +72,7 @@ CREATE TABLE NhaCungCap (
 );
 GO
 
--- 7. SẢN PHẨM (ĐÃ BỎ CỘT NGÀY SẢN XUẤT & HẠN SỬ DỤNG TẠI ĐÂY)
+-- 7. SẢN PHẨM (ĐÃ XÓA MaNCC, NSX, HSD)
 CREATE TABLE SanPham (
     MaSP INT PRIMARY KEY IDENTITY(1,1),
     TenSP NVARCHAR(200),
@@ -81,10 +81,12 @@ CREATE TABLE SanPham (
     MoTa NVARCHAR(MAX),
     HinhAnh NVARCHAR(255),
     SoLuongTon INT DEFAULT 0,
+    
+    -- Khóa ngoại phân loại
     MaDM INT, 
     MaTH INT, 
     MaLoai INT,
-    MaNCC INT, -- Nhà cung cấp mặc định
+    -- ĐÃ XÓA MaNCC TẠI ĐÂY
 
     -- Thuộc tính chi tiết
     LoaiDa NVARCHAR(50), 
@@ -99,8 +101,8 @@ CREATE TABLE SanPham (
     
     FOREIGN KEY (MaDM) REFERENCES DanhMuc(MaDM),
     FOREIGN KEY (MaTH) REFERENCES ThuongHieu(MaTH),
-    FOREIGN KEY (MaLoai) REFERENCES LoaiSP(MaLoai),
-    FOREIGN KEY (MaNCC) REFERENCES NhaCungCap(MaNCC)
+    FOREIGN KEY (MaLoai) REFERENCES LoaiSP(MaLoai)
+    -- ĐÃ XÓA CONSTRAINT REFERENCES NhaCungCap
 );
 GO
 
@@ -133,11 +135,11 @@ CREATE TABLE ChiTietDonHangs (
 );
 GO
 
--- 10. PHIẾU NHẬP
+-- 10. PHIẾU NHẬP (Nhà cung cấp sẽ gắn với phiếu nhập)
 CREATE TABLE PhieuNhap (
     MaPN INT PRIMARY KEY IDENTITY(1,1), 
     MaND INT, 
-    MaNCC INT, 
+    MaNCC INT, -- Nhà cung cấp nằm ở đây là đúng chuẩn
     NgayNhap DATETIME DEFAULT GETDATE(), 
     TongTien DECIMAL(18,2) DEFAULT 0, 
     GhiChu NVARCHAR(500),
@@ -146,7 +148,7 @@ CREATE TABLE PhieuNhap (
 );
 GO
 
--- 11. CHI TIẾT PHIẾU NHẬP (ĐÃ THÊM NSX VÀ HSD VÀO ĐÂY)
+-- 11. CHI TIẾT PHIẾU NHẬP (NSX và HSD nằm ở đây để quản lý Lô hàng)
 CREATE TABLE ChiTietPhieuNhap (
     MaPN INT, 
     MaSP INT, 
@@ -195,40 +197,36 @@ CREATE TABLE LienHe (MaLH INT IDENTITY(1,1) PRIMARY KEY, HoTen NVARCHAR(100), Em
 GO
 
 -- ==================================================================================
--- 3. TRIGGERS (TỰ ĐỘNG CẬP NHẬT KHO & TRẠNG THÁI)
+-- 3. TRIGGERS (GIỮ NGUYÊN)
 -- ==================================================================================
 
--- A. Trigger Nhập Kho (Cộng tồn kho khi nhập hàng)
+-- A. Trigger Nhập Kho
 CREATE TRIGGER trg_CapNhatKho_Nhap ON ChiTietPhieuNhap AFTER INSERT, UPDATE, DELETE AS
 BEGIN
-    -- Trừ kho khi xóa phiếu nhập
     IF EXISTS (SELECT * FROM deleted) 
         UPDATE sp SET sp.SoLuongTon = sp.SoLuongTon - d.SoLuong 
         FROM SanPham sp JOIN deleted d ON sp.MaSP = d.MaSP;
     
-    -- Cộng kho khi thêm phiếu nhập
     IF EXISTS (SELECT * FROM inserted) 
         UPDATE sp SET sp.SoLuongTon = sp.SoLuongTon + i.SoLuong, sp.NgayNhapKho = GETDATE() 
         FROM SanPham sp JOIN inserted i ON sp.MaSP = i.MaSP;
 END
 GO
 
--- B. Trigger Bán Hàng (Trừ kho khi khách đặt hàng)
+-- B. Trigger Bán Hàng
 CREATE TRIGGER trg_CapNhatKho_BanHang ON ChiTietDonHangs AFTER INSERT, UPDATE, DELETE AS
 BEGIN
-    -- Cộng lại kho nếu hủy đơn (xóa chi tiết)
     IF EXISTS (SELECT * FROM deleted) 
         UPDATE sp SET sp.SoLuongTon = sp.SoLuongTon + d.SoLuong 
         FROM SanPham sp JOIN deleted d ON sp.MaSP = d.MaSP;
     
-    -- Trừ kho khi tạo đơn mới
     IF EXISTS (SELECT * FROM inserted) 
         UPDATE sp SET sp.SoLuongTon = sp.SoLuongTon - i.SoLuong 
         FROM SanPham sp JOIN inserted i ON sp.MaSP = i.MaSP;
 END
 GO
 
--- C. Trigger Xuất Kho/Hủy Hàng (Trừ kho)
+-- C. Trigger Xuất Kho
 CREATE TRIGGER trg_CapNhatKho_Xuat ON ChiTietPhieuXuat AFTER INSERT, UPDATE, DELETE AS 
 BEGIN
     SET NOCOUNT ON;
@@ -244,18 +242,16 @@ BEGIN
 END
 GO
 
--- D. Trigger Tự động cập nhật Trạng Thái (Hết hàng/Kinh doanh)
+-- D. Trigger Trạng Thái
 CREATE TRIGGER trg_TuDongCapNhatTrangThai ON SanPham AFTER UPDATE AS
 BEGIN
     SET NOCOUNT ON;
     IF UPDATE(SoLuongTon)
     BEGIN
-        -- Hết hàng
         UPDATE sp SET sp.TrangThaiSanPham = N'Hết hàng'
         FROM SanPham sp JOIN inserted i ON sp.MaSP = i.MaSP
         WHERE i.SoLuongTon <= 0 AND sp.TrangThaiSanPham <> N'Hết hàng';
 
-        -- Có hàng lại
         UPDATE sp SET sp.TrangThaiSanPham = N'Kinh doanh'
         FROM SanPham sp JOIN inserted i ON sp.MaSP = i.MaSP
         WHERE i.SoLuongTon > 0 AND sp.TrangThaiSanPham = N'Hết hàng';
@@ -264,7 +260,7 @@ END
 GO
 
 -- ==================================================================================
--- 4. DỮ LIỆU MẪU (SEED DATA)
+-- 4. DỮ LIỆU MẪU (ĐÃ CẬP NHẬT INSERT)
 -- ==================================================================================
 
 -- 1. Admin & User
@@ -279,24 +275,24 @@ INSERT INTO ThuongHieu (TenTH, QuocGia) VALUES (N'Innisfree', N'Hàn Quốc'), (
 INSERT INTO NhaCungCap (TenNCC, DiaChi) VALUES (N'Innisfree VN', N'HCM');
 INSERT INTO LoaiSP (TenLoai, MaDM) VALUES (N'Serum', 1), (N'Kem dưỡng', 1), (N'Son môi', 2), (N'Dầu gội', 3);
 
--- 3. Sản Phẩm (Lưu ý: Không insert NgaySanXuat, HanSuDung ở đây nữa)
-INSERT INTO SanPham (TenSP, GiaBan, MaDM, MaTH, MaLoai, HinhAnh, MoTa, MaNCC) VALUES
-(N'Serum The Ordinary Niacinamide', 250000, 1, 3, 1, '1.jpg', N'Giảm mụn.', 1),
-(N'Bộ dưỡng da Trà Xanh', 1200000, 1, 1, 2, '2.jpg', N'Cấp ẩm.', 1),
-(N'Sữa rửa mặt L''Oreal', 150000, 1, 2, 1, '3.jpg', N'Sạch sâu.', 1),
-(N'Dầu gội thảo dược', 180000, 3, 1, 4, '4.jpg', N'Mượt tóc.', 1),
-(N'Nước hoa hồng Mamonde', 220000, 1, 1, 1, '5.jpg', N'Cân bằng pH.', 1),
-(N'Sữa dưỡng thể Vaseline', 150000, 1, 2, 2, '6.jpg', N'Trắng da.', 1),
-(N'Mặt nạ Kiehl''s', 850000, 1, 3, 2, '7.jpg', N'Sáng da.', 1),
-(N'Kem chống nắng Anessa', 450000, 1, 1, 2, '8.jpg', N'Chống UV.', 1),
-(N'Son Dior', 750000, 2, 2, 3, '9.jpg', N'Dưỡng môi.', 1),
-(N'Kem trị mụn La Roche-Posay', 350000, 1, 2, 2, '10.jpg', N'Giảm viêm.', 1);
+-- 3. Sản Phẩm (Đã xóa cột MaNCC trong câu lệnh Insert)
+INSERT INTO SanPham (TenSP, GiaBan, MaDM, MaTH, MaLoai, HinhAnh, MoTa) VALUES
+(N'Serum The Ordinary Niacinamide', 250000, 1, 3, 1, '1.jpg', N'Giảm mụn.'),
+(N'Bộ dưỡng da Trà Xanh', 1200000, 1, 1, 2, '2.jpg', N'Cấp ẩm.'),
+(N'Sữa rửa mặt L''Oreal', 150000, 1, 2, 1, '3.jpg', N'Sạch sâu.'),
+(N'Dầu gội thảo dược', 180000, 3, 1, 4, '4.jpg', N'Mượt tóc.'),
+(N'Nước hoa hồng Mamonde', 220000, 1, 1, 1, '5.jpg', N'Cân bằng pH.'),
+(N'Sữa dưỡng thể Vaseline', 150000, 1, 2, 2, '6.jpg', N'Trắng da.'),
+(N'Mặt nạ Kiehl''s', 850000, 1, 3, 2, '7.jpg', N'Sáng da.'),
+(N'Kem chống nắng Anessa', 450000, 1, 1, 2, '8.jpg', N'Chống UV.'),
+(N'Son Dior', 750000, 2, 2, 3, '9.jpg', N'Dưỡng môi.'),
+(N'Kem trị mụn La Roche-Posay', 350000, 1, 2, 2, '10.jpg', N'Giảm viêm.');
 
--- 4. Nhập Kho (Lưu ý: Insert NgaySanXuat, HanSuDung vào Chi Tiết Phiếu Nhập)
+-- 4. Nhập Kho
 -- Phiếu 1
 INSERT INTO PhieuNhap (MaND, MaNCC, TongTien) VALUES (1, 1, 50000000);
 
--- Chi tiết phiếu 1 (Điền date vào đây)
+-- Chi tiết phiếu 1 (Vẫn giữ Date ở đây)
 INSERT INTO ChiTietPhieuNhap (MaPN, MaSP, SoLuong, GiaNhap, ThanhTien, NgaySanXuat, HanSuDung) VALUES 
 (1, 1, 100, 200000, 20000000, '2023-01-01', '2026-01-01'),
 (1, 2, 50, 800000, 40000000, '2023-05-15', '2026-05-15'),
@@ -309,7 +305,7 @@ INSERT INTO ChiTietPhieuNhap (MaPN, MaSP, SoLuong, GiaNhap, ThanhTien, NgaySanXu
 (1, 9, 50, 500000, 25000000, '2023-10-20', '2028-10-20'),
 (1, 10, 100, 250000, 25000000, '2023-11-11', '2026-11-11');
 
--- Nhập thêm hàng (Lần 2 - cùng sản phẩm 1 nhưng date khác)
+-- Nhập thêm hàng (Lần 2)
 INSERT INTO PhieuNhap (MaND, MaNCC, TongTien) VALUES (1, 1, 8000000);
 INSERT INTO ChiTietPhieuNhap (MaPN, MaSP, SoLuong, GiaNhap, ThanhTien, NgaySanXuat, HanSuDung) VALUES 
 (2, 1, 20, 200000, 4000000, '2024-01-01', '2027-01-01');
@@ -318,8 +314,8 @@ INSERT INTO ChiTietPhieuNhap (MaPN, MaSP, SoLuong, GiaNhap, ThanhTien, NgaySanXu
 -- 5. KIỂM TRA KẾT QUẢ
 -- ==================================================================================
 PRINT N'✅ Database DB_SkinFood1 đã được khởi tạo thành công!';
-PRINT N'--- Kiểm tra tồn kho (phải là 120 cho SP 1 vì nhập 100 + 20) ---';
-SELECT MaSP, TenSP, SoLuongTon, TrangThaiSanPham FROM SanPham;
+PRINT N'--- Kiểm tra cấu trúc bảng SanPham (Không còn MaNCC, NSX, HSD) ---';
+SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'SanPham';
 
-PRINT N'--- Kiểm tra chi tiết lô nhập (có date) ---';
-SELECT * FROM ChiTietPhieuNhap;
+PRINT N'--- Kiểm tra dữ liệu SanPham ---';
+SELECT MaSP, TenSP, SoLuongTon FROM SanPham;

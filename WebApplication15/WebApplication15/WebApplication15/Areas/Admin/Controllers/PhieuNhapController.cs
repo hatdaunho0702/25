@@ -62,14 +62,13 @@ namespace WebApplication15.Areas.Admin.Controllers
                     p.MaSP,
                     p.TenSP,
                     GiaBan = p.GiaBan ?? 0m,
-                    SoLuongTon = p.SoLuongTon ?? 0,
-                    MaNCC = p.MaNCC
+                    SoLuongTon = p.SoLuongTon ?? 0
                 })
                 .ToList();
 
             ViewBag.Products = safeProducts;
 
-            // Thêm danh sách suppliers để dùng trong JS (cascading dropdown)
+            // Thêm danh sách suppliers để dùng trong JS
             ViewBag.Suppliers = db.NhaCungCaps.ToList();
             return View();
         }
@@ -146,8 +145,7 @@ namespace WebApplication15.Areas.Admin.Controllers
                     p.MaSP,
                     p.TenSP,
                     GiaBan = p.GiaBan ?? 0m,
-                    SoLuongTon = p.SoLuongTon ?? 0,
-                    MaNCC = p.MaNCC
+                    SoLuongTon = p.SoLuongTon ?? 0
                 })
                 .ToList();
 

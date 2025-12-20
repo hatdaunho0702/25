@@ -40,44 +40,22 @@ namespace WebApplication15.Areas.Admin.Controllers
                 ViewBag.TotalNhaCungCap = totalNhaCungCap;
                 ViewBag.TotalNguoiDung = totalNguoiDung;
 
-                // Cảnh báo sản phẩm sắp hết hạn (còn 3 tháng)
-                var ngayHienTai = DateTime.Now;
-                var ngaySauBaThangs = ngayHienTai.AddMonths(3);
-
-                // Lấy tất cả sản phẩm có HanSuDung không null
-                var sanPhamList = db.SanPhams
-                    .Where(sp => sp.HanSuDung != null)
-                    .ToList();
-
-                var sanPhamSapHetHan = sanPhamList
-                    .Where(sp => sp.HanSuDung.Value > ngayHienTai 
-                        && sp.HanSuDung.Value <= ngaySauBaThangs)
-                    .OrderBy(sp => sp.HanSuDung)
-                    .ToList();
-
-                var sanPhamDaHetHan = sanPhamList
-                    .Where(sp => sp.HanSuDung.Value <= ngayHienTai)
-                    .OrderBy(sp => sp.HanSuDung)
-                    .ToList();
-
                 // Thống kê tồn kho - lấy tất cả sản phẩm
                 var allSanPhams = db.SanPhams.ToList();
                 var soLuongTonTatCa = allSanPhams.Sum(sp => sp.SoLuongTon ?? 0);
                 var sanPhamHetHang = allSanPhams.Where(sp => (sp.SoLuongTon ?? 0) <= 0).Count();
 
-                ViewBag.SanPhamSapHetHan = sanPhamSapHetHan;
-                ViewBag.SanPhamDaHetHan = sanPhamDaHetHan;
                 ViewBag.SoLuongTonTatCa = soLuongTonTatCa;
                 ViewBag.SanPhamHetHang = sanPhamHetHang;
 
                 // Doanh thu tháng này - Optimized
-                var ngayDauThang = new DateTime(ngayHienTai.Year, ngayHienTai.Month, 1);
+                var ngayDauThang = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
                 
                 // Lấy tất cả đơn hàng vào memory một lần để tránh multiple queries
                 var allDonHangs = db.DonHangs.ToList();
                 
                 var doanhThuThangNay = allDonHangs
-                    .Where(dh => dh.NgayDat.HasValue && dh.NgayDat.Value >= ngayDauThang && dh.NgayDat.Value <= ngayHienTai)
+                    .Where(dh => dh.NgayDat.HasValue && dh.NgayDat.Value >= ngayDauThang && dh.NgayDat.Value <= DateTime.Now)
                     .Sum(dh => dh.TongTien ?? 0m);
 
                 ViewBag.DoanhThuThangNay = doanhThuThangNay;
@@ -118,7 +96,7 @@ namespace WebApplication15.Areas.Admin.Controllers
 
                 // Đơn hàng đã thanh toán tháng này
                 var donHangDaThanhToanThangNay = donHangDaThanhToan
-                    .Where(dh => dh.NgayDat.HasValue && dh.NgayDat.Value >= ngayDauThang && dh.NgayDat.Value <= ngayHienTai)
+                    .Where(dh => dh.NgayDat.HasValue && dh.NgayDat.Value >= ngayDauThang && dh.NgayDat.Value <= DateTime.Now)
                     .Count();
 
                 ViewBag.DonHangDaThanhToanThangNay = donHangDaThanhToanThangNay;
@@ -133,7 +111,7 @@ namespace WebApplication15.Areas.Admin.Controllers
                 
                 for (int i = 6; i >= 0; i--)
                 {
-                    var ngay = ngayHienTai.AddDays(-i);
+                    var ngay = DateTime.Now.AddDays(-i);
                     var ngayBatDau = ngay.Date;
                     var ngayKetThuc = ngayBatDau.AddDays(1);
                     
@@ -151,7 +129,7 @@ namespace WebApplication15.Areas.Admin.Controllers
                 
                 for (int i = 11; i >= 0; i--)
                 {
-                    var thang = ngayHienTai.AddMonths(-i);
+                    var thang = DateTime.Now.AddMonths(-i);
                     var ngayDauThangTemp = new DateTime(thang.Year, thang.Month, 1);
                     var ngayCuoiThang = ngayDauThangTemp.AddMonths(1);
                     
@@ -169,7 +147,7 @@ namespace WebApplication15.Areas.Admin.Controllers
                 
                 for (int i = 4; i >= 0; i--)
                 {
-                    var nam = ngayHienTai.Year - i;
+                    var nam = DateTime.Now.Year - i;
                     var ngayDauNam = new DateTime(nam, 1, 1);
                     var ngayCuoiNam = new DateTime(nam, 12, 31).AddDays(1);
                     
@@ -204,8 +182,6 @@ namespace WebApplication15.Areas.Admin.Controllers
                 ViewBag.TotalTaiKhoan = 0;
                 ViewBag.TotalNhaCungCap = 0;
                 ViewBag.TotalNguoiDung = 0;
-                ViewBag.SanPhamSapHetHan = new List<SanPham>();
-                ViewBag.SanPhamDaHetHan = new List<SanPham>();
                 ViewBag.SoLuongTonTatCa = 0;
                 ViewBag.SanPhamHetHang = 0;
                 ViewBag.DoanhThuThangNay = 0m;

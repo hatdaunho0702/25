@@ -5,6 +5,10 @@
 
 <h2>➕ Thêm sản phẩm mới</h2>
 
+<div class="alert alert-info">
+    <strong>ℹ️ Lưu ý:</strong> Sản phẩm mới sẽ có số lượng tồn kho là <strong>0</strong>. Để nhập hàng và cập nhật số lượng, vui lòng sử dụng chức năng <a href="@Url.Action("Create", "PhieuNhap")" class="alert-link"><strong>Nhập Hàng</strong></a> sau khi tạo sản phẩm.
+</div>
+
 @using (Html.BeginForm("Create", "SanPham", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
@@ -47,22 +51,22 @@
         </div>
         <div class="card-body">
             <div class="form-row">
-                <div class="form-group col-md-6">
+                <div class="form-group col-md-4">
                     <label>Loại Sản Phẩm <span class="text-danger">*</span></label>
                     @Html.DropDownListFor(m => m.MaLoai, (SelectList)ViewBag.MaLoai, "-- Chọn Loại --", new { @class = "form-control", required = "required" })
                 </div>
-                <div class="form-group col-md-6">
+                <div class="form-group col-md-4">
                     <label>Thương Hiệu <span class="text-danger">*</span></label>
                     @Html.DropDownListFor(m => m.MaTH, (SelectList)ViewBag.MaTH, "-- Chọn Thương Hiệu --", new { @class = "form-control", required = "required" })
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Danh Mục</label>
+                    @Html.DropDownListFor(m => m.MaDM, (SelectList)ViewBag.MaDM, "-- Chọn Danh Mục --", new { @class = "form-control" })
                 </div>
             </div>
 
             <div class="form-row mt-2">
-                <div class="form-group col-md-6">
-                    <label>Nhà Cung Cấp</label>
-                    @Html.DropDownListFor(m => m.MaNCC, (SelectList)ViewBag.MaNCC, "-- Chọn Nhà Cung Cấp --", new { @class = "form-control" })
-                </div>
-                <div class="form-group col-md-6">
+                <div class="form-group col-md-12">
                     <label>Trạng Thái</label>
                     @Html.DropDownListFor(m => m.TrangThaiSanPham,
                         new List<SelectListItem> {

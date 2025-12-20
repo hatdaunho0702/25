@@ -26,11 +26,6 @@ namespace WebApplication15.Areas.Admin.Controllers
         // GET: Admin/NhaCungCap/Create
         public ActionResult Create()
         {
-            // Provide products list to allow associating existing product or creating new one
-            ViewBag.Products = db.SanPhams.Select(p => new SelectListItem {
-                Value = p.MaSP.ToString(),
-                Text = p.TenSP
-            }).ToList();
             return View();
         }
 
@@ -56,7 +51,7 @@ namespace WebApplication15.Areas.Admin.Controllers
             return View(nhaCungCap);
         }
 
-        // Utility action: tạo mẫu 5 nhà cung cấp, mỗi nhà cung cấp ~3 sản phẩm (dùng khi muốn nhanh tạo dữ liệu mẫu)
+        // Utility action: tạo mẫu 5 nhà cung cấp
         public ActionResult SeedSampleSuppliers()
         {
             try
@@ -83,35 +78,7 @@ namespace WebApplication15.Areas.Admin.Controllers
                 db.NhaCungCaps.AddRange(sampleSuppliers);
                 db.SaveChanges();
 
-                // Tạo 3 sản phẩm cho mỗi nhà cung cấp mới
-                var createdSuppliers = db.NhaCungCaps.OrderByDescending(n => n.MaNCC).Take(5).ToList();
-                int sku = db.SanPhams.Any() ? db.SanPhams.Max(s => s.MaSP) + 1 : 1;
-
-                foreach (var ncc in createdSuppliers)
-                {
-                    for (int j = 1; j <= 3; j++)
-                    {
-                        var sp = new SanPham
-                        {
-                            TenSP = $"Sản phẩm {ncc.TenNCC} - {j}",
-                            GiaBan = 10000m * (j + 1),
-                            MaDM = db.DanhMucs.Select(d => d.MaDM).FirstOrDefault(),
-                            MaTH = db.ThuongHieux.Select(t => t.MaTH).FirstOrDefault(),
-                            MaLoai = db.LoaiSPs.Select(l => l.MaLoai).FirstOrDefault(),
-                            HinhAnh = "default.jpg",
-                            MaNCC = ncc.MaNCC,
-                            SoLuongTon = 10 * j,
-                            // NgaySanXuat and HanSuDung are now stored in ChiTietPhieuNhap
-                            // and exposed via computed properties on the partial SanPham class.
-                            TrangThaiSanPham = "Kinh doanh"
-                        };
-                        db.SanPhams.Add(sp);
-                    }
-                }
-
-                db.SaveChanges();
-
-                TempData["SuccessMessage"] = "Đã tạo mẫu 5 nhà cung cấp cùng với ~3 sản phẩm mỗi nhà cung cấp.";
+                TempData["SuccessMessage"] = "Đã tạo mẫu 5 nhà cung cấp.";
             }
             catch (Exception ex)
             {

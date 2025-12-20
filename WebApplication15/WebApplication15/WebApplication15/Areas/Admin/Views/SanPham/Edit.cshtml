@@ -10,6 +10,10 @@
         <h6 class="m-0 font-weight-bold text-primary">Sửa thông tin sản phẩm</h6>
     </div>
     <div class="card-body">
+        <div class="alert alert-info">
+            <strong>ℹ️ Lưu ý:</strong> Số lượng tồn kho không thể chỉnh sửa trực tiếp. Để cập nhật số lượng, vui lòng sử dụng chức năng <a href="@Url.Action("Create", "PhieuNhap")" class="alert-link"><strong>Nhập Hàng</strong></a>.
+        </div>
+
         @using (Html.BeginForm("Edit", "SanPham", FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
             @Html.AntiForgeryToken()
@@ -17,7 +21,7 @@
             <div class="form-horizontal">
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-                @* 1. QUAN TRỌNG: Hidden ID để Controller biết đang sửa dòng nào *@
+                @* Hidden ID để Controller biết đang sửa dòng nào *@
                 @Html.HiddenFor(model => model.MaSP)
 
                 @* Giữ lại tên ảnh cũ phòng trường hợp user không up ảnh mới *@
@@ -41,12 +45,12 @@
                     </div>
                 </div>
 
-                @* Số lượng tồn *@
+                @* Hiển thị số lượng tồn chỉ để xem (read-only) *@
                 <div class="form-group row">
-                    @Html.LabelFor(model => model.SoLuongTon, "Số lượng tồn", htmlAttributes: new { @class = "control-label col-md-2" })
+                    @Html.Label("Số lượng tồn kho", htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
-                        @Html.EditorFor(model => model.SoLuongTon, new { htmlAttributes = new { @class = "form-control", type = "number" } })
-                        @Html.ValidationMessageFor(model => model.SoLuongTon, "", new { @class = "text-danger" })
+                        <input type="text" value="@(Model.SoLuongTon ?? 0)" class="form-control" readonly disabled />
+                        <small class="form-text text-muted">Số lượng tồn chỉ được cập nhật thông qua phiếu nhập hàng.</small>
                     </div>
                 </div>
 
@@ -68,12 +72,21 @@
                     </div>
                 </div>
 
-                @* Nhà cung cấp *@
+                @* Thương hiệu *@
                 <div class="form-group row">
-                    @Html.LabelFor(model => model.MaNCC, "Nhà cung cấp", htmlAttributes: new { @class = "control-label col-md-2" })
+                    @Html.LabelFor(model => model.MaTH, "Thương hiệu", htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
-                        @Html.DropDownList("MaNCC", null, htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.MaNCC, "", new { @class = "text-danger" })
+                        @Html.DropDownList("MaTH", null, htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.MaTH, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                @* Danh mục *@
+                <div class="form-group row">
+                    @Html.LabelFor(model => model.MaDM, "Danh mục", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.DropDownList("MaDM", null, htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.MaDM, "", new { @class = "text-danger" })
                     </div>
                 </div>
 
@@ -95,8 +108,6 @@
                         @Html.ValidationMessageFor(model => model.HinhAnh, "", new { @class = "text-danger" })
                     </div>
                 </div>
-
-                @* 2. Đã XÓA phần NgaySanXuat và HanSuDung theo yêu cầu *@
 
                 @* Nút Submit *@
                 <div class="form-group row mt-4">

@@ -144,6 +144,7 @@
     <Compile Include="Areas\Admin\Controllers\ThuongHieuController.cs" />
     <Compile Include="Areas\Admin\Data\AuthorizeAdmin.cs" />
     <Compile Include="Areas\Admin\Data\TaiKhoanCreateVM.cs" />
+    <Compile Include="Areas\Admin\Models\SanPhamCanhBaoViewModel.cs" />
     <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Controllers\GioHangController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -215,6 +216,15 @@
       <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SanPham.Extension.cs" />
+    <Compile Include="Models\sp_helpdiagramdefinition_Result.cs">
+      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\sp_helpdiagrams_Result.cs">
+      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\sysdiagram.cs">
+      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\TaiKhoan.cs">
       <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
@@ -306,8 +316,6 @@
     <Content Include="Areas\Admin\Views\NguoiDungs\Details.cshtml" />
     <Content Include="Areas\Admin\Views\NguoiDungs\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\NguoiDungs\Index.cshtml" />
-    <Content Include="OPTIMIZATION_REPORT.md" />
-    <Content Include="CSRF_FIX_REPORT.md" />
     <Content Include="Areas\Admin\Views\PhieuNhap\Create.cshtml" />
     <Content Include="Areas\Admin\Views\PhieuNhap\Index.cshtml" />
     <Content Include="Areas\Admin\Views\PhieuNhap\Details.cshtml" />
@@ -336,7 +344,6 @@
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="CSS\StyleSheet1.css" />
     <Content Include="CSS\ThemDanhGia.css" />
-    <Content Include="UPDATE_IMAGE_NAMES.sql" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
