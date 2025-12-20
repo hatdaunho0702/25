@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using WebApplication15.Models;
+using System.Net;
 
 namespace WebApplication15.Controllers
 {
@@ -155,6 +156,59 @@ namespace WebApplication15.Controllers
                 TaiKhoan = tk,
                 NguoiDung = nd
             };
+
+            return View(model);
+        }
+
+        // GET: allow logged-in user to edit their profile
+        [HttpGet]
+        public ActionResult EditProfile()
+        {
+            if (Session["User"] == null)
+                return RedirectToAction("Login", "User");
+
+            TaiKhoan tk = Session["User"] as TaiKhoan;
+            var nd = data.NguoiDungs.FirstOrDefault(n => n.MaND == tk.MaND);
+            if (nd == null)
+                return HttpNotFound();
+
+            return View(nd);
+        }
+
+        // POST: update user profile
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditProfile(NguoiDung model)
+        {
+            if (Session["User"] == null)
+                return RedirectToAction("Login", "User");
+
+            TaiKhoan tk = Session["User"] as TaiKhoan;
+            if (model == null || model.MaND != tk.MaND)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            if (ModelState.IsValid)
+            {
+                var nd = data.NguoiDungs.Find(model.MaND);
+                if (nd == null)
+                    return HttpNotFound();
+
+                nd.HoTen = model.HoTen;
+                nd.SoDienThoai = model.SoDienThoai;
+                nd.DiaChi = model.DiaChi;
+                nd.GioiTinh = model.GioiTinh;
+                nd.NgaySinh = model.NgaySinh;
+
+                data.SaveChanges();
+
+                // update session
+                Session["NguoiDung"] = nd;
+
+                TempData["Success"] = "Cập nhật thông tin thành công.";
+                return RedirectToAction("Profile");
+            }
 
             return View(model);
         }

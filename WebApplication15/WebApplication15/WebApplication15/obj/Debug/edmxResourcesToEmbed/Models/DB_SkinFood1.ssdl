@@ -68,6 +68,33 @@
     <Property Name="TrangThaiThanhToan" Type="nvarchar" MaxLength="50" />
     <Property Name="NgayThanhToan" Type="datetime" />
     <Property Name="PhuongThucThanhToan" Type="nvarchar" MaxLength="100" />
+    <Property Name="MaKM" Type="int" />
+    <Property Name="SoTienGiam" Type="decimal" Precision="18" Scale="2" />
+  </EntityType>
+  <EntityType Name="KhuyenMai">
+    <Key>
+      <PropertyRef Name="MaKM" />
+    </Key>
+    <Property Name="MaKM" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="TenChuongTrinh" Type="nvarchar" MaxLength="200" Nullable="false" />
+    <Property Name="MaCode" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="LoaiGiamGia" Type="nvarchar" MaxLength="20" />
+    <Property Name="GiaTriGiam" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+    <Property Name="GiamToiDa" Type="decimal" Precision="18" Scale="2" />
+    <Property Name="DonHangToiThieu" Type="decimal" Precision="18" Scale="2" />
+    <Property Name="SoLuongPhatHanh" Type="int" />
+    <Property Name="SoLuongDaDung" Type="int" />
+    <Property Name="NgayBatDau" Type="datetime" />
+    <Property Name="NgayKetThuc" Type="datetime" />
+    <Property Name="TrangThai" Type="bit" />
+  </EntityType>
+  <EntityType Name="KhuyenMai_SanPham">
+    <Key>
+      <PropertyRef Name="MaKM" />
+      <PropertyRef Name="MaSP" />
+    </Key>
+    <Property Name="MaKM" Type="int" Nullable="false" />
+    <Property Name="MaSP" Type="int" Nullable="false" />
   </EntityType>
   <EntityType Name="LienHe">
     <Key>
@@ -315,6 +342,34 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Association Name="FK__KhuyenMai___MaKM__17F790F9">
+    <End Role="KhuyenMai" Type="Self.KhuyenMai" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="KhuyenMai_SanPham" Type="Self.KhuyenMai_SanPham" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="KhuyenMai">
+        <PropertyRef Name="MaKM" />
+      </Principal>
+      <Dependent Role="KhuyenMai_SanPham">
+        <PropertyRef Name="MaKM" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK__KhuyenMai___MaSP__18EBB532">
+    <End Role="SanPham" Type="Self.SanPham" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="KhuyenMai_SanPham" Type="Self.KhuyenMai_SanPham" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SanPham">
+        <PropertyRef Name="MaSP" />
+      </Principal>
+      <Dependent Role="KhuyenMai_SanPham">
+        <PropertyRef Name="MaSP" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
   <Association Name="FK__LoaiSP__MaDM__440B1D61">
     <End Role="DanhMuc" Type="Self.DanhMuc" Multiplicity="1" />
     <End Role="LoaiSP" Type="Self.LoaiSP" Multiplicity="*" />
@@ -437,6 +492,18 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Association Name="FK_DonHang_KhuyenMai">
+    <End Role="KhuyenMai" Type="Self.KhuyenMai" Multiplicity="0..1" />
+    <End Role="DonHang" Type="Self.DonHang" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="KhuyenMai">
+        <PropertyRef Name="MaKM" />
+      </Principal>
+      <Dependent Role="DonHang">
+        <PropertyRef Name="MaKM" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
   <Function Name="fn_diagramobjects" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="int" />
   <Function Name="sp_alterdiagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
     <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
@@ -475,6 +542,8 @@
     <EntitySet Name="DanhGia" EntityType="Self.DanhGia" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="DanhMuc" EntityType="Self.DanhMuc" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="DonHang" EntityType="Self.DonHang" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="KhuyenMai" EntityType="Self.KhuyenMai" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="KhuyenMai_SanPham" EntityType="Self.KhuyenMai_SanPham" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="LienHe" EntityType="Self.LienHe" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="LoaiSP" EntityType="Self.LoaiSP" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="NguoiDung" EntityType="Self.NguoiDung" Schema="dbo" store:Type="Tables" />
@@ -523,6 +592,14 @@
       <End Role="NguoiDung" EntitySet="NguoiDung" />
       <End Role="DonHang" EntitySet="DonHang" />
     </AssociationSet>
+    <AssociationSet Name="FK__KhuyenMai___MaKM__17F790F9" Association="Self.FK__KhuyenMai___MaKM__17F790F9">
+      <End Role="KhuyenMai" EntitySet="KhuyenMai" />
+      <End Role="KhuyenMai_SanPham" EntitySet="KhuyenMai_SanPham" />
+    </AssociationSet>
+    <AssociationSet Name="FK__KhuyenMai___MaSP__18EBB532" Association="Self.FK__KhuyenMai___MaSP__18EBB532">
+      <End Role="SanPham" EntitySet="SanPham" />
+      <End Role="KhuyenMai_SanPham" EntitySet="KhuyenMai_SanPham" />
+    </AssociationSet>
     <AssociationSet Name="FK__LoaiSP__MaDM__440B1D61" Association="Self.FK__LoaiSP__MaDM__440B1D61">
       <End Role="DanhMuc" EntitySet="DanhMuc" />
       <End Role="LoaiSP" EntitySet="LoaiSP" />
@@ -562,6 +639,10 @@
     <AssociationSet Name="FK__TaiKhoan__MaND__3D5E1FD2" Association="Self.FK__TaiKhoan__MaND__3D5E1FD2">
       <End Role="NguoiDung" EntitySet="NguoiDung" />
       <End Role="TaiKhoan" EntitySet="TaiKhoan" />
+    </AssociationSet>
+    <AssociationSet Name="FK_DonHang_KhuyenMai" Association="Self.FK_DonHang_KhuyenMai">
+      <End Role="KhuyenMai" EntitySet="KhuyenMai" />
+      <End Role="DonHang" EntitySet="DonHang" />
     </AssociationSet>
   </EntityContainer>
 </Schema>

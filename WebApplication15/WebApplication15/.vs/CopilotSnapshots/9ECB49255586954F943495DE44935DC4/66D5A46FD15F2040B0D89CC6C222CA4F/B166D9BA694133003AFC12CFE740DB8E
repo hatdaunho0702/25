@@ -5,7 +5,6 @@ using System.Web;
 using System.Web.Mvc;
 using WebApplication15.Areas.Admin.Data;
 using WebApplication15.Models;
-using System.Data.Entity;
 
 namespace WebApplication15.Areas.Admin.Controllers
 {
@@ -28,12 +27,12 @@ namespace WebApplication15.Areas.Admin.Controllers
         {
             try
             {
-                // Thống kê cơ bản - dùng AsNoTracking cho các truy vấn chỉ đọc
-                var totalSanPham = db.SanPhams.AsNoTracking().Count();
-                var totalDonHang = db.DonHangs.AsNoTracking().Count();
-                var totalTaiKhoan = db.TaiKhoans.AsNoTracking().Count();
-                var totalNhaCungCap = db.NhaCungCaps.AsNoTracking().Count();
-                var totalNguoiDung = db.NguoiDungs.AsNoTracking().Count();
+                // Thống kê cơ bản
+                var totalSanPham = db.SanPhams.Count();
+                var totalDonHang = db.DonHangs.Count();
+                var totalTaiKhoan = db.TaiKhoans.Count();
+                var totalNhaCungCap = db.NhaCungCaps.Count();
+                var totalNguoiDung = db.NguoiDungs.Count();
 
                 ViewBag.TotalSanPham = totalSanPham;
                 ViewBag.TotalDonHang = totalDonHang;
@@ -42,9 +41,9 @@ namespace WebApplication15.Areas.Admin.Controllers
                 ViewBag.TotalNguoiDung = totalNguoiDung;
 
                 // Thống kê Khuyến mãi
-                var totalKhuyenMai = db.KhuyenMais.AsNoTracking().Count();
-                var khuyenMaiDangHoatDong = db.KhuyenMais.AsNoTracking().Where(k => k.TrangThai == true).Count();
-                var khuyenMaiSapHetHan = db.KhuyenMais.AsNoTracking()
+                var totalKhuyenMai = db.KhuyenMais.Count();
+                var khuyenMaiDangHoatDong = db.KhuyenMais.Where(k => k.TrangThai == true).Count();
+                var khuyenMaiSapHetHan = db.KhuyenMais
                     .Where(k => k.NgayKetThuc.HasValue && k.NgayKetThuc.Value >= DateTime.Now && k.NgayKetThuc.Value <= DateTime.Now.AddDays(7))
                     .ToList();
 
@@ -53,7 +52,7 @@ namespace WebApplication15.Areas.Admin.Controllers
                 ViewBag.KhuyenMaiSapHetHan = khuyenMaiSapHetHan;
 
                 // Thống kê tồn kho - lấy tất cả sản phẩm
-                var allSanPhams = db.SanPhams.AsNoTracking().ToList();
+                var allSanPhams = db.SanPhams.ToList();
                 var soLuongTonTatCa = allSanPhams.Sum(sp => sp.SoLuongTon ?? 0);
                 var sanPhamHetHang = allSanPhams.Where(sp => (sp.SoLuongTon ?? 0) <= 0).Count();
 
@@ -64,7 +63,7 @@ namespace WebApplication15.Areas.Admin.Controllers
                 var ngayDauThang = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
                 
                 // Lấy tất cả đơn hàng vào memory một lần để tránh multiple queries
-                var allDonHangs = db.DonHangs.AsNoTracking().ToList();
+                var allDonHangs = db.DonHangs.ToList();
                 
                 var doanhThuThangNay = allDonHangs
                     .Where(dh => dh.NgayDat.HasValue && dh.NgayDat.Value >= ngayDauThang && dh.NgayDat.Value <= DateTime.Now)

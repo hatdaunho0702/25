@@ -44,6 +44,7 @@ namespace WebApplication15.Models
         public virtual DbSet<TaiKhoan> TaiKhoans { get; set; }
         public virtual DbSet<ThuocTinhMyPham> ThuocTinhMyPhams { get; set; }
         public virtual DbSet<ThuongHieu> ThuongHieux { get; set; }
+        public virtual DbSet<KhuyenMai> KhuyenMais { get; set; }
     
         public virtual int sp_alterdiagram(string diagramname, Nullable<int> owner_id, Nullable<int> version, byte[] definition)
         {

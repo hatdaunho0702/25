@@ -1,22 +1,81 @@
 ﻿@model WebApplication15.Models.UserProfileViewModel
 
-<div class="container mt-4" style="max-width:600px">
+<div class="container mt-5">
+    <div class="card shadow-lg mx-auto border-0" style="max-width: 700px; border-radius: 15px; overflow: hidden;">
 
-    <div class="card shadow p-4">
-        <h3 class="text-primary mb-3">Thông tin tài khoản</h3>
+        <div class="card-header text-white text-center py-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="mb-3">
+                <div class="bg-white rounded-circle d-inline-flex align-items-center justify-content-center text-primary" style="width: 100px; height: 100px; font-size: 50px;">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+            <h3 class="font-weight-bold">@Model.NguoiDung.HoTen</h3>
+            <span class="badge badge-light text-dark px-3 py-2 mt-1">@Model.TaiKhoan.VaiTro</span>
+        </div>
 
-        <p><strong>Họ tên:</strong> @Model.NguoiDung.HoTen</p>
-        <p><strong>Số điện thoại:</strong> @Model.NguoiDung.SoDienThoai</p>
-        <p><strong>Địa chỉ:</strong> @Model.NguoiDung.DiaChi</p>
-        <p><strong>Giới tính:</strong> @Model.NguoiDung.GioiTinh</p>
-        <p><strong>Ngày sinh:</strong> @Model.NguoiDung.NgaySinh</p>
+        <div class="card-body p-4 p-md-5">
+            <h5 class="text-muted mb-4 border-bottom pb-2">Thông tin cá nhân</h5>
 
-        <hr />
+            <div class="row mb-3">
+                <div class="col-sm-4 text-muted">
+                    <i class="fas fa-phone-alt mr-2 text-info"></i> Số điện thoại
+                </div>
+                <div class="col-sm-8 font-weight-bold">
+                    @(string.IsNullOrEmpty(Model.NguoiDung.SoDienThoai) ? "Chưa cập nhật" : Model.NguoiDung.SoDienThoai)
+                </div>
+            </div>
 
-        <p><strong>Tên đăng nhập:</strong> @Model.TaiKhoan.TenDangNhap</p>
-        <p><strong>Vai trò:</strong> @Model.TaiKhoan.VaiTro</p>
-        <a href="@Url.Action("DonHang", "User")" class="text-primary mb-3">Đơn hàng của tôi</a>
-        <a href="@Url.Action("Logout", "User")" class="btn btn-danger mt-3">Đăng xuất</a>
+            <div class="row mb-3">
+                <div class="col-sm-4 text-muted">
+                    <i class="fas fa-map-marker-alt mr-2 text-danger"></i> Địa chỉ
+                </div>
+                <div class="col-sm-8">
+                    @(string.IsNullOrEmpty(Model.NguoiDung.DiaChi) ? "Chưa cập nhật" : Model.NguoiDung.DiaChi)
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-sm-4 text-muted">
+                    <i class="fas fa-venus-mars mr-2 text-warning"></i> Giới tính
+                </div>
+                <div class="col-sm-8">
+                    @(string.IsNullOrEmpty(Model.NguoiDung.GioiTinh) ? "Bí mật" : Model.NguoiDung.GioiTinh)
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-sm-4 text-muted">
+                    <i class="fas fa-birthday-cake mr-2 text-primary"></i> Ngày sinh
+                </div>
+                <div class="col-sm-8">
+                    @(Model.NguoiDung.NgaySinh.HasValue ? Model.NguoiDung.NgaySinh.Value.ToString("dd/MM/yyyy") : "Chưa cập nhật")
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-sm-4 text-muted">
+                    <i class="fas fa-user-circle mr-2 text-secondary"></i> Username
+                </div>
+                <div class="col-sm-8">
+                    @Model.TaiKhoan.TenDangNhap
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+                <a href="@Url.Action("DonHang", "User")" class="btn btn-info text-white mb-2 mb-md-0 w-100 mr-md-2">
+                    <i class="fas fa-shopping-bag mr-1"></i> Đơn hàng của tôi
+                </a>
+
+                <a href="@Url.Action("EditProfile", "User")" class="btn btn-outline-primary mb-2 mb-md-0 w-100 mr-md-2">
+                    <i class="fas fa-edit mr-1"></i> Chỉnh sửa
+                </a>
+
+                <a href="@Url.Action("Logout", "User")" class="btn btn-outline-danger w-100">
+                    <i class="fas fa-sign-out-alt mr-1"></i> Đăng xuất
+                </a>
+            </div>
+        </div>
     </div>
-
 </div>

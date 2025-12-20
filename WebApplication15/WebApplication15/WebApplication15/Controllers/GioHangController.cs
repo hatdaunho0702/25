@@ -51,6 +51,41 @@ namespace WebApplication15.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        // Thêm sản phẩm vào giỏ từ các trang danh sách (giữ nguyên trang hiện tại)
+        public ActionResult ThemGioHang(int maSP, string url = null)
+        {
+            if (Session["User"] == null)
+            {
+                // Nếu chưa đăng nhập, chuyển hướng đến trang Login
+                return RedirectToAction("Login", "User");
+            }
+
+            Cart cart = (Cart)Session["Cart"];
+            if (cart == null)
+                cart = new Cart();
+
+            int result = cart.Them(maSP);
+            if (result == 1)
+            {
+                Session["Cart"] = cart;
+            }
+
+            // Nếu url truyền vào là local, redirect về url đó để reload trang
+            if (!string.IsNullOrEmpty(url) && Url.IsLocalUrl(url))
+            {
+                return Redirect(url);
+            }
+
+            // Nếu không có url hoặc không an toàn, dùng UrlReferrer hoặc fallback về trang hiện tại
+            var refUrl = Request.UrlReferrer?.ToString();
+            if (!string.IsNullOrEmpty(refUrl) && Url.IsLocalUrl(refUrl))
+            {
+                return Redirect(refUrl);
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
         // Xóa sản phẩm khỏi giỏ
         public ActionResult RemoveFromCart(int id)
         {

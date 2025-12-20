@@ -1,0 +1,23 @@
+﻿@model WebApplication15.Models.KhuyenMai
+
+@{
+    ViewBag.Title = "Xóa Khuyến mãi";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Xóa Khuyến mãi</h2>
+
+<div class="alert alert-danger">Bạn có chắc muốn xóa khuyến mãi này?</div>
+
+<div>
+    <h4>@Model.TenChuongTrinh (@Model.MaCode)</h4>
+    <p>Loại: @Model.LoaiGiamGia — Giá trị: @Model.GiaTriGiam</p>
+</div>
+
+@using (Html.BeginForm("Delete", "KhuyenMais", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.MaKM)
+    <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
+    <a class="btn btn-secondary" href="@Url.Action("Index")">Hủy</a>
+}

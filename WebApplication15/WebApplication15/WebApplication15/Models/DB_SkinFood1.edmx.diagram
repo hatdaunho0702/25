@@ -40,6 +40,9 @@
         <AssociationConnector Association="DB_SkinFood1Model.FK__PhieuNhap__MaNCC__60A75C0F" ManuallyRouted="false" />
         <AssociationConnector Association="DB_SkinFood1Model.FK__SanPham__MaTH__4F7CD00D" ManuallyRouted="false" />
         <AssociationConnector Association="DB_SkinFood1Model.SanPham_ThuocTinh" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="DB_SkinFood1Model.KhuyenMai" Width="1.5" PointX="0.75" PointY="11.5" />
+        <AssociationConnector Association="DB_SkinFood1Model.FK_DonHang_KhuyenMai" />
+        <AssociationConnector Association="DB_SkinFood1Model.KhuyenMai_SanPham" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

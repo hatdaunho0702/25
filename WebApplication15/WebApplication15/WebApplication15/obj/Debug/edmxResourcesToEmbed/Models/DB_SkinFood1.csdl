@@ -80,6 +80,9 @@
     <Property Name="PhuongThucThanhToan" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
     <NavigationProperty Name="ChiTietDonHangs" Relationship="Self.FK__ChiTietDon__MaDH__59FA5E80" FromRole="DonHang" ToRole="ChiTietDonHangs" />
     <NavigationProperty Name="NguoiDung" Relationship="Self.FK__DonHang__MaND__5629CD9C" FromRole="DonHang" ToRole="NguoiDung" />
+    <Property Name="MaKM" Type="Int32" />
+    <Property Name="SoTienGiam" Type="Decimal" Precision="18" Scale="2" />
+    <NavigationProperty Name="KhuyenMai" Relationship="DB_SkinFood1Model.FK_DonHang_KhuyenMai" FromRole="DonHang" ToRole="KhuyenMai" />
   </EntityType>
   <EntityType Name="LienHe">
     <Key>
@@ -188,6 +191,7 @@
     <NavigationProperty Name="LoaiSP" Relationship="Self.FK__SanPham__MaLoai__5070F446" FromRole="SanPham" ToRole="LoaiSP" />
     <NavigationProperty Name="ThuongHieu" Relationship="Self.FK__SanPham__MaTH__4F7CD00D" FromRole="SanPham" ToRole="ThuongHieu" />
     <NavigationProperty Name="ThuocTinhMyPhams" Relationship="Self.SanPham_ThuocTinh" FromRole="SanPham" ToRole="ThuocTinhMyPham" />
+    <NavigationProperty Name="KhuyenMais" Relationship="DB_SkinFood1Model.KhuyenMai_SanPham" FromRole="SanPham" ToRole="KhuyenMai" />
   </EntityType>
   <EntityType Name="sysdiagram">
     <Key>
@@ -563,6 +567,15 @@
       <Parameter Name="new_diagramname" Mode="In" Type="String" />
     </FunctionImport>
     <FunctionImport Name="sp_upgraddiagrams" />
+    <EntitySet Name="KhuyenMais" EntityType="DB_SkinFood1Model.KhuyenMai" />
+    <AssociationSet Name="FK_DonHang_KhuyenMai" Association="DB_SkinFood1Model.FK_DonHang_KhuyenMai">
+      <End Role="KhuyenMai" EntitySet="KhuyenMais" />
+      <End Role="DonHang" EntitySet="DonHangs" />
+    </AssociationSet>
+    <AssociationSet Name="KhuyenMai_SanPham" Association="DB_SkinFood1Model.KhuyenMai_SanPham">
+      <End Role="KhuyenMai" EntitySet="KhuyenMais" />
+      <End Role="SanPham" EntitySet="SanPhams" />
+    </AssociationSet>
   </EntityContainer>
   <ComplexType Name="sp_helpdiagramdefinition_Result">
     <Property Type="Int32" Name="version" Nullable="true" />
@@ -575,4 +588,39 @@
     <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
     <Property Type="Int32" Name="OwnerID" Nullable="false" />
   </ComplexType>
+  <EntityType Name="KhuyenMai">
+    <Key>
+      <PropertyRef Name="MaKM" />
+    </Key>
+    <Property Name="MaKM" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TenChuongTrinh" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="MaCode" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="LoaiGiamGia" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="GiaTriGiam" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+    <Property Name="GiamToiDa" Type="Decimal" Precision="18" Scale="2" />
+    <Property Name="DonHangToiThieu" Type="Decimal" Precision="18" Scale="2" />
+    <Property Name="SoLuongPhatHanh" Type="Int32" />
+    <Property Name="SoLuongDaDung" Type="Int32" />
+    <Property Name="NgayBatDau" Type="DateTime" Precision="3" />
+    <Property Name="NgayKetThuc" Type="DateTime" Precision="3" />
+    <Property Name="TrangThai" Type="Boolean" />
+    <NavigationProperty Name="DonHangs" Relationship="DB_SkinFood1Model.FK_DonHang_KhuyenMai" FromRole="KhuyenMai" ToRole="DonHang" />
+    <NavigationProperty Name="SanPhams" Relationship="DB_SkinFood1Model.KhuyenMai_SanPham" FromRole="KhuyenMai" ToRole="SanPham" />
+  </EntityType>
+  <Association Name="FK_DonHang_KhuyenMai">
+    <End Type="DB_SkinFood1Model.KhuyenMai" Role="KhuyenMai" Multiplicity="0..1" />
+    <End Type="DB_SkinFood1Model.DonHang" Role="DonHang" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="KhuyenMai">
+        <PropertyRef Name="MaKM" />
+      </Principal>
+      <Dependent Role="DonHang">
+        <PropertyRef Name="MaKM" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="KhuyenMai_SanPham">
+    <End Type="DB_SkinFood1Model.KhuyenMai" Role="KhuyenMai" Multiplicity="*" />
+    <End Type="DB_SkinFood1Model.SanPham" Role="SanPham" Multiplicity="*" />
+  </Association>
 </Schema>

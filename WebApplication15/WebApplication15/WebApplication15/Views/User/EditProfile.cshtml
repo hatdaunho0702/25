@@ -1,0 +1,116 @@
+﻿@model WebApplication15.Models.NguoiDung
+
+<div class="container mt-5">
+    <div class="card shadow-lg mx-auto border-0" style="max-width: 700px; border-radius: 15px; overflow: hidden;">
+
+        <div class="card-header text-white text-center py-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <h3 class="font-weight-bold mb-0">
+                <i class="fas fa-user-edit mr-2"></i> Cập nhật thông tin
+            </h3>
+            <p class="mb-0 mt-2 text-white-50" style="font-size: 0.9rem;">Vui lòng nhập thông tin chính xác để chúng tôi hỗ trợ tốt nhất</p>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.MaND)
+
+                <div class="form-group mb-4">
+                    @Html.LabelFor(m => m.HoTen, "Họ và tên", new { @class = "font-weight-bold text-secondary" })
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-light border-right-0"><i class="fas fa-user text-primary"></i></span>
+                        </div>
+                        @Html.TextBoxFor(m => m.HoTen, new { @class = "form-control border-left-0", placeholder = "Nhập họ tên của bạn" })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.HoTen, null, new { @class = "text-danger small mt-1" })
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group mb-4">
+                        @Html.LabelFor(m => m.SoDienThoai, "Số điện thoại", new { @class = "font-weight-bold text-secondary" })
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-light border-right-0"><i class="fas fa-phone-alt text-info"></i></span>
+                            </div>
+                            @Html.TextBoxFor(m => m.SoDienThoai, new { @class = "form-control border-left-0", placeholder = "09xxxxxxxx" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.SoDienThoai, null, new { @class = "text-danger small mt-1" })
+                    </div>
+
+                    <div class="col-md-6 form-group mb-4">
+                        @Html.LabelFor(m => m.NgaySinh, "Ngày sinh", new { @class = "font-weight-bold text-secondary" })
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-light border-right-0"><i class="fas fa-birthday-cake text-danger"></i></span>
+                            </div>
+                            @Html.TextBoxFor(m => m.NgaySinh, "{0:yyyy-MM-dd}", new { @class = "form-control border-left-0", type = "date" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.NgaySinh, null, new { @class = "text-danger small mt-1" })
+                    </div>
+                </div>
+
+                <div class="form-group mb-4">
+                    @Html.LabelFor(m => m.GioiTinh, "Giới tính", new { @class = "font-weight-bold text-secondary" })
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-light border-right-0"><i class="fas fa-venus-mars text-warning"></i></span>
+                        </div>
+                        @Html.DropDownListFor(m => m.GioiTinh, new List<SelectListItem>
+                        {
+                            new SelectListItem { Text = "Nam", Value = "Nam" },
+                            new SelectListItem { Text = "Nữ", Value = "Nữ" },
+                            new SelectListItem { Text = "Khác", Value = "Khác" }
+                        }, "--- Chọn giới tính ---", new { @class = "form-control border-left-0" })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.GioiTinh, null, new { @class = "text-danger small mt-1" })
+                </div>
+
+                <div class="form-group mb-4">
+                    @Html.LabelFor(m => m.DiaChi, "Địa chỉ nhận hàng", new { @class = "font-weight-bold text-secondary" })
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-light border-right-0" style="height: 100%"><i class="fas fa-map-marker-alt text-success"></i></span>
+                        </div>
+                        @Html.TextAreaFor(m => m.DiaChi, new { @class = "form-control border-left-0", rows = 3, placeholder = "Số nhà, tên đường, phường/xã..." })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.DiaChi, null, new { @class = "text-danger small mt-1" })
+                </div>
+
+                <hr class="my-4">
+
+                <div class="d-flex justify-content-between">
+                    <a href="@Url.Action("Profile","User")" class="btn btn-outline-secondary px-4">
+                        <i class="fas fa-arrow-left mr-1"></i> Quay lại
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                        <i class="fas fa-save mr-1"></i> Lưu thay đổi
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-color: #ced4da;
+    }
+
+    .form-control:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.1);
+    }
+
+    /* Ẩn đường viền trái của input để liền mạch với icon */
+    .border-left-0 {
+        border-left: 0;
+    }
+
+    /* Ẩn đường viền phải của icon */
+    .border-right-0 {
+        border-right: 0;
+    }
+</style>

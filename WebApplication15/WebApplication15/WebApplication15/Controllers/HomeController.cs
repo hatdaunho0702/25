@@ -36,8 +36,20 @@ namespace WebApplication15.Controllers
                     .Take(10)
                     .ToList();
 
+                // Thay đổi: lấy cả sản phẩm có GiamGia > 0 HOẶC được áp dụng trong các chương trình Khuyến mãi đang phát hành
+                var now = DateTime.Now;
+
+                // Lấy danh sách MaSP từ các khuyến mại đang hoạt động
+                var activeKmProductIds = data.KhuyenMais
+                    .Where(k => k.TrangThai == true
+                                && (k.NgayBatDau == null || k.NgayBatDau <= now)
+                                && (k.NgayKetThuc == null || k.NgayKetThuc >= now))
+                    .SelectMany(k => k.SanPhams.Select(s => s.MaSP))
+                    .Distinct()
+                    .ToList();
+
                 var spSale = PublicProducts()
-                    .Where(x => x.GiamGia > 0)
+                    .Where(x => (x.GiamGia ?? 0) > 0 || activeKmProductIds.Contains(x.MaSP))
                     .Take(10)
                     .ToList();
 
@@ -236,29 +248,160 @@ namespace WebApplication15.Controllers
             return View(sanPham);
         }
 
-        public ActionResult TatCaSanPham()
+        public ActionResult TatCaSanPham(string searchString, decimal? minPrice, decimal? maxPrice, string sortOrder)
         {
-            var list = PublicProducts().OrderByDescending(x => x.MaSP).ToList();
-            return View(list);
+            // 1. Lấy nguồn dữ liệu (chưa execute)
+            var query = PublicProducts().AsQueryable();
+
+            // 2. Tìm kiếm theo tên (nếu có)
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(x => x.TenSP.Contains(searchString));
+            }
+
+            // 3. LOGIC LỌC GIÁ MỚI: Tính toán giá sau giảm
+            // Công thức: Giá Thực = GiaBan * (1 - GiamGia / 100)
+            if (minPrice.HasValue)
+            {
+                query = query.Where(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m) >= minPrice.Value);
+            }
+
+            if (maxPrice.HasValue)
+            {
+                query = query.Where(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m) <= maxPrice.Value);
+            }
+
+            // 4. Sắp xếp (Sort)
+            ViewBag.CurrentSort = sortOrder; // Lưu lại để hiện lên View
+            switch (sortOrder)
+            {
+                case "price_asc": // Giá tăng dần (theo giá thực tế)
+                    query = query.OrderBy(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m));
+                    break;
+                case "price_desc": // Giá giảm dần
+                    query = query.OrderByDescending(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m));
+                    break;
+                case "name_asc":
+                    query = query.OrderBy(x => x.TenSP);
+                    break;
+                default: // Mặc định: Mới nhất lên đầu
+                    query = query.OrderByDescending(x => x.MaSP);
+                    break;
+            }
+
+            // 5. Lưu lại giá trị bộ lọc để hiển thị lại trên View
+            ViewBag.SearchString = searchString;
+            ViewBag.MinPrice = minPrice;
+            ViewBag.MaxPrice = maxPrice;
+
+            return View(query.ToList());
         }
 
-        public ActionResult SanPhamHot()
+        public ActionResult SanPhamHot(string searchString, decimal? minPrice, decimal? maxPrice, string sortOrder)
         {
-            var list = PublicProducts()
-                .OrderByDescending(x => x.GiaBan)
-                .ToList();
+            // 1. Lấy dữ liệu
+            var query = PublicProducts().AsQueryable();
 
-            return View(list);
+            // 2. Tìm kiếm
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(x => x.TenSP.Contains(searchString));
+            }
+
+            // 3. Lọc theo GIÁ THỰC TẾ (Giá sau giảm)
+            if (minPrice.HasValue)
+            {
+                query = query.Where(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m) >= minPrice.Value);
+            }
+
+            if (maxPrice.HasValue)
+            {
+                query = query.Where(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m) <= maxPrice.Value);
+            }
+
+            // 4. Sắp xếp
+            ViewBag.CurrentSort = sortOrder;
+            switch (sortOrder)
+            {
+                case "price_asc":
+                    query = query.OrderBy(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m));
+                    break;
+                case "price_desc":
+                    query = query.OrderByDescending(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m));
+                    break;
+                case "name_asc":
+                    query = query.OrderBy(x => x.TenSP);
+                    break;
+                default:
+                    // Mặc định HOT: Ưu tiên giá trị cao (hoặc bạn có thể sort theo lượt xem nếu có)
+                    query = query.OrderByDescending(x => x.GiaBan);
+                    break;
+            }
+
+            // 5. Lưu ViewBag
+            ViewBag.SearchString = searchString;
+            ViewBag.MinPrice = minPrice;
+            ViewBag.MaxPrice = maxPrice;
+
+            return View(query.ToList());
         }
 
-        public ActionResult SanPhamSale()
+        public ActionResult SanPhamSale(string searchString, decimal? minPrice, decimal? maxPrice, string sortOrder)
         {
-            var list = PublicProducts()
-                .Where(x => x.GiamGia > 0)
-                .OrderByDescending(x => x.GiamGia)
+            var now = DateTime.Now;
+            // Lấy danh sách MaSP từ các khuyến mại đang hoạt động (đã phát hành và trong khoảng thời gian)
+            var activeKmProductIds = data.KhuyenMais
+                .Where(k => k.TrangThai == true
+                            && (k.NgayBatDau == null || k.NgayBatDau <= now)
+                            && (k.NgayKetThuc == null || k.NgayKetThuc >= now))
+                .SelectMany(k => k.SanPhams.Select(s => s.MaSP))
+                .Distinct()
                 .ToList();
 
-            return View(list);
+            // 1. Chỉ lấy sản phẩm đang có giảm giá (> 0) hoặc nằm trong chương trình khuyến mãi đang phát hành
+            var query = PublicProducts().Where(x => (x.GiamGia ?? 0) > 0 || activeKmProductIds.Contains(x.MaSP)).AsQueryable();
+
+            // 2. Tìm kiếm theo tên (nếu có nhập)
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(x => x.TenSP.Contains(searchString));
+            }
+
+            // 3. Lọc theo GIÁ THỰC TẾ (Giá sau khi trừ % giảm)
+            if (minPrice.HasValue)
+            {
+                query = query.Where(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m) >= minPrice.Value);
+            }
+
+            if (maxPrice.HasValue)
+            {
+                query = query.Where(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m) <= maxPrice.Value);
+            }
+
+            // 4. Sắp xếp
+            ViewBag.CurrentSort = sortOrder;
+            switch (sortOrder)
+            {
+                case "price_asc": // Giá thấp đến cao
+                    query = query.OrderBy(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m));
+                    break;
+                case "price_desc": // Giá cao đến thấp
+                    query = query.OrderByDescending(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m));
+                    break;
+                case "name_asc": // Tên A-Z
+                    query = query.OrderBy(x => x.TenSP);
+                    break;
+                default: // Mặc định: Giảm giá sâu nhất lên đầu (Ưu tiên sản phẩm sale mạnh)
+                    query = query.OrderByDescending(x => x.GiamGia);
+                    break;
+            }
+
+            // 5. Lưu lại dữ liệu lọc để hiện lại trên View
+            ViewBag.SearchString = searchString;
+            ViewBag.MinPrice = minPrice;
+            ViewBag.MaxPrice = maxPrice;
+
+            return View(query.ToList());
         }
 
         public ActionResult TimKiem(string keyword)

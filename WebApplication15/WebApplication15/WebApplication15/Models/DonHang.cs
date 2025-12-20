@@ -31,9 +31,12 @@ namespace WebApplication15.Models
         public string TrangThaiThanhToan { get; set; }
         public Nullable<System.DateTime> NgayThanhToan { get; set; }
         public string PhuongThucThanhToan { get; set; }
+        public Nullable<int> MaKM { get; set; }
+        public Nullable<decimal> SoTienGiam { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
         public virtual NguoiDung NguoiDung { get; set; }
+        public virtual KhuyenMai KhuyenMai { get; set; }
     }
 }

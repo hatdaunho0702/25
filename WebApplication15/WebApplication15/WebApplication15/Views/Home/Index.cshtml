@@ -1,19 +1,24 @@
 ﻿@model WebApplication15.Models.HomeViewModel
 
 @{
-    ViewBag.Title = "Danh sách Sản Phẩm";
+    ViewBag.Title = "Trang Chủ";
 }
+
 <style>
+    /* --- CSS CŨ CỦA BẠN (GIỮ NGUYÊN) --- */
     .product-card {
         width: 260px;
         margin-right: 15px;
         border-radius: 12px;
         overflow: hidden;
         transition: transform .2s;
+        background: #fff; /* Thêm nền trắng cho đẹp */
+        border: 1px solid #eee; /* Thêm viền nhẹ */
     }
 
         .product-card:hover {
-            transform: scale(1.04);
+            transform: translateY(-5px); /* Bay lên nhẹ thay vì zoom */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Đổ bóng khi hover */
         }
 
     .product-img {
@@ -33,6 +38,7 @@
         border-radius: 6px;
         font-size: 12px;
         font-weight: bold;
+        z-index: 2;
     }
 
     .badge-hot {
@@ -45,6 +51,7 @@
         border-radius: 6px;
         font-size: 12px;
         font-weight: bold;
+        z-index: 2;
     }
 
     .slider-container {
@@ -53,6 +60,8 @@
         overflow-x: auto;
         scroll-behavior: smooth;
         padding-bottom: 10px;
+        /* Ẩn thanh cuộn xấu xí */
+        scrollbar-width: thin;
     }
 
     .slider-btn {
@@ -60,21 +69,27 @@
         height: 40px;
         border-radius: 50%;
         border: none;
-        background: #ddd;
+        background: #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         font-size: 20px;
         font-weight: bold;
         transition: .2s;
+        z-index: 10;
     }
 
         .slider-btn:hover {
-            background: #bbb;
+            background: #007bff;
+            color: white;
         }
 
     .section-title {
         font-weight: 700;
         font-size: 1.4rem;
-        margin: 20px 0 10px 0;
+        margin: 30px 0 15px 0;
+        border-left: 5px solid #007bff;
+        padding-left: 10px;
     }
+
     .brand-item {
         padding: 8px 16px;
         border-radius: 20px;
@@ -88,35 +103,66 @@
     }
 
         .brand-item:hover {
-            background: #ffeaea;
-            border-color: #ff4d4d;
-            color: #ff1a1a;
+            background: #e3f2fd;
+            border-color: #007bff;
+            color: #007bff;
         }
 
     .brand-active {
-        background: #ff3b3b !important;
+        background: #007bff !important;
         color: white !important;
-        border-color: #ff1a1a !important;
+        border-color: #0056b3 !important;
     }
+
+    /* --- CSS MỚI CHO TRẠNG THÁI HẾT HÀNG --- */
+    .overlay-hethang {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5); /* Màu đen mờ */
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 5;
+        backdrop-filter: blur(2px);
+    }
+
+    .card-disabled {
+        opacity: 0.7; /* Làm mờ cả thẻ */
+    }
+
+    /* Style cho Card trong phần Thương hiệu (dạng Grid) */
+    .product-card-grid {
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #eee;
+        transition: .2s;
+        display: block;
+    }
+
+        .product-card-grid:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
 </style>
 
 <div class="container my-4">
 
-
-
-
-
     <div class="row mt-4">
-        <!-- Banner trái -->
-        <div class="col-md-4">
-            <img src="~/Content/images/banner.jpg" style="width:100%; border-radius:12px;" />
+        <div class="col-md-4 mb-3">
+            <img src="~/Content/images/banner.jpg" style="width:100%; border-radius:12px; object-fit: cover; height: 100%; min-height: 300px;" />
         </div>
 
-        <!-- Thương hiệu nổi bật -->
         <div class="col-md-8">
-            <h4 class="fw-bold mb-3">THƯƠNG HIỆU NỔI BẬT</h4>
+            <h4 class="fw-bold mb-3 text-secondary"><i class="fas fa-tags"></i> THƯƠNG HIỆU NỔI BẬT</h4>
 
-            <div class="brand-box mb-3" style="display:flex; flex-wrap:wrap; gap:10px;">
+            <div class="brand-box mb-4" style="display:flex; flex-wrap:wrap; gap:10px;">
                 @foreach (var th in Model.ThuongHieuList)
                 {
                     <a href="@Url.Action("Index", "Home", new { maTH = th.MaTH })"
@@ -126,23 +172,37 @@
                 }
             </div>
 
-
             @if (Model.SanPhamTheoTH.Any())
             {
-                <h5 class="fw-bold">Sản phẩm thuộc thương hiệu: @Model.ThuongHieuDangChon.TenTH</h5>
-                <div class="row">
+                <h5 class="fw-bold mb-3">Sản phẩm thuộc: <span class="text-primary">@Model.ThuongHieuDangChon.TenTH</span></h5>
+                <div class="row g-3">
                     @foreach (var sp in Model.SanPhamTheoTH)
                     {
-                        <div class="col-6 col-md-4 col-lg-3 mb-3">
+                        bool hetHang = (sp.SoLuongTon ?? 0) <= 0;
+                        <div class="col-6 col-md-4 col-lg-3">
                             <a href="@Url.Action("ChiTietSP", "Home", new { maSP = sp.MaSP })"
-                               class="text-decoration-none text-dark">
+                               class="text-decoration-none text-dark product-card-grid h-100 @(hetHang ? "card-disabled" : "")">
 
-                                <div class="product-card2">
-                                    <img src="~/Content/images/@sp.HinhAnh"
-                                         style="width:100%; height:180px; object-fit:cover;" />
-                                    <div class="p-2">
-                                        <h6 class="fw-bold">@sp.TenSP</h6>
-                                    </div>
+                                <div class="position-relative">
+                                    @* LOGIC HẾT HÀNG *@
+                                    @if (hetHang)
+                                    {
+                                        <div class="overlay-hethang">HẾT HÀNG</div>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(sp.HinhAnh))
+                                    {
+                                        <img src="~/Content/images/@sp.HinhAnh" style="width:100%; height:180px; object-fit:cover;" />
+                                    }
+                                    else
+                                    {
+                                        <img src="https://via.placeholder.com/180" style="width:100%; height:180px; object-fit:cover;" />
+                                    }
+                                </div>
+
+                                <div class="p-2">
+                                    <h6 class="fw-bold text-truncate" title="@sp.TenSP">@sp.TenSP</h6>
+                                    <div class="text-danger fw-bold">@((sp.GiaBan ?? 0).ToString("N0")) đ</div>
                                 </div>
                             </a>
                         </div>
@@ -153,179 +213,216 @@
     </div>
 
 
-
-
-
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <h4 class="section-title">🔥 Sản phẩm HOT</h4>
-
-        <a href="@Url.Action("SanPhamHot", "Home")"
-           class="text-decoration-none fw-bold text-primary">
-            Xem tất cả →
-        </a>
+    <div class="d-flex justify-content-between align-items-center mt-5">
+        <h4 class="section-title text-warning" style="border-color: #ff9800;">🔥 Sản phẩm HOT</h4>
+        <a href="@Url.Action("SanPhamHot", "Home")" class="text-decoration-none fw-bold text-primary">Xem tất cả →</a>
     </div>
 
-    <div class="d-flex align-items-center">
-        <button class="slider-btn me-3" onclick="slide('slider2', -270)">&lt;</button>
+    <div class="d-flex align-items-center position-relative">
+        <button class="slider-btn position-absolute start-0" onclick="slide('slider2', -270)">&lt;</button>
 
-        <div id="slider2" class="slider-container">
+        <div id="slider2" class="slider-container px-4">
             @foreach (var sp in Model.HotProducts)
             {
                 var priceHot = (sp.GiaBan ?? 0m);
-                <a href="@Url.Action("ChiTietSP", "Home", new { maSP = sp.MaSP })"
-                   class="product-card d-inline-block text-decoration-none text-dark">
+                bool hetHang = (sp.SoLuongTon ?? 0) <= 0;
 
-                    <div class="position-relative">
-                        <span class="badge-hot">HOT</span>
-                        <img src="~/Content/images/@sp.HinhAnh" class="product-img" />
-                    </div>
+                <div class="d-inline-block" style="width:260px; margin-right:15px; vertical-align: top;">
+                    <a href="@Url.Action("ChiTietSP", "Home", new { maSP = sp.MaSP })"
+                       class="product-card d-block text-decoration-none text-dark @(hetHang ? "card-disabled" : "")">
 
-                    <div class="p-2">
-                        <h6 class="fw-bold">@sp.TenSP</h6>
-                        <span class="fw-bold text-danger">@priceHot.ToString("N0") đ</span>
-                    </div>
-                </a>
+                        <div class="position-relative">
+                            @* LOGIC HẾT HÀNG *@
+                            @if (hetHang)
+                            {
+                                <div class="overlay-hethang">HẾT HÀNG</div>
+                            }
+
+                            <span class="badge-hot">HOT</span>
+                            <img src="~/Content/images/@sp.HinhAnh" class="product-img" />
+                        </div>
+
+                        <div class="p-3">
+                            <h6 class="fw-bold text-truncate" title="@sp.TenSP">@sp.TenSP</h6>
+                            <span class="fw-bold text-danger fs-5">@priceHot.ToString("N0") đ</span>
+                        </div>
+                    </a>
+
+                    @* Thêm nút Thêm vào giỏ bên dưới card (hiển thị khi còn hàng) *@
+                    @if (!hetHang)
+                    {
+                        <div class="mt-2">
+                            <a href="@Url.Action("ThemGioHang", "GioHang", new { maSP = sp.MaSP, url = Request.RawUrl })" class="btn btn-outline-primary w-100 btn-sm">
+                                <i class="fas fa-cart-plus me-1"></i> Thêm vào giỏ
+                            </a>
+                        </div>
+                    }
+                </div>
             }
         </div>
 
-        <button class="slider-btn ms-3" onclick="slide('slider2', 270)">&gt;</button>
+        <button class="slider-btn position-absolute end-0" onclick="slide('slider2', 270)">&gt;</button>
     </div>
 
 
-
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <h4 class="section-title">⚡ Sản phẩm SALE</h4>
-
-        <a href="@Url.Action("SanPhamSale", "Home")"
-           class="text-decoration-none fw-bold text-primary">
-            Xem tất cả →
-        </a>
+    <div class="d-flex justify-content-between align-items-center mt-5">
+        <h4 class="section-title text-danger" style="border-color: #e63946;">⚡ Sản phẩm SALE</h4>
+        <a href="@Url.Action("SanPhamSale", "Home")" class="text-decoration-none fw-bold text-primary">Xem tất cả →</a>
     </div>
 
-    <div class="d-flex align-items-center">
-        <button class="slider-btn me-3" onclick="slide('slider3', -270)">&lt;</button>
+    <div class="d-flex align-items-center position-relative">
+        <button class="slider-btn position-absolute start-0" onclick="slide('slider3', -270)">&lt;</button>
 
-        <div id="slider3" class="slider-container">
+        <div id="slider3" class="slider-container px-4">
             @foreach (var sp in Model.SaleProducts)
             {
                 var giamGia = (sp.GiamGia ?? 0m);
                 var basePrice = (sp.GiaBan ?? 0m);
-                var finalPrice = (basePrice * (1 - (giamGia/100)));
+                var finalPrice = (basePrice * (1 - (giamGia / 100)));
+                bool hetHang = (sp.SoLuongTon ?? 0) <= 0;
 
-                if (giamGia > 0)
-                {
+                <div class="d-inline-block" style="width:260px; margin-right:15px; vertical-align: top;">
                     <a href="@Url.Action("ChiTietSP", "Home", new { maSP = sp.MaSP })"
-                       class="product-card d-inline-block text-decoration-none text-dark">
+                       class="product-card d-block text-decoration-none text-dark @(hetHang ? "card-disabled" : "")">
 
                         <div class="position-relative">
-                            <span class="badge-sale">-@giamGia% </span>
+                            @* LOGIC HẾT HÀNG *@
+                            @if (hetHang)
+                            {
+                                <div class="overlay-hethang">HẾT HÀNG</div>
+                            }
+
+                            @if (giamGia > 0)
+                            {
+                                <span class="badge-sale">-@giamGia% </span>
+                            }
+
                             <img src="~/Content/images/@sp.HinhAnh" class="product-img" />
                         </div>
 
-                        <div class="p-2">
-                            <h6 class="fw-bold">@sp.TenSP</h6>
-                            <p>
-                                <span class="text-muted text-decoration-line-through">@basePrice.ToString("N0")</span><br />
-                                <span class="text-danger fw-bold">@finalPrice.ToString("N0") đ</span>
+                        <div class="p-3">
+                            <h6 class="fw-bold text-truncate" title="@sp.TenSP">@sp.TenSP</h6>
+                            <p class="m-0">
+                                @if (giamGia > 0)
+                                {
+                                    <span class="text-muted text-decoration-line-through small">@basePrice.ToString("N0")</span><br />
+                                    <span class="text-danger fw-bold fs-5">@finalPrice.ToString("N0") đ</span>
+                                }
+                                else
+                                {
+                                    <br />
+                                    <span class="text-primary fw-bold fs-5">@basePrice.ToString("N0") đ</span>
+                                }
                             </p>
                         </div>
                     </a>
-                }
-                else
-                {
-                    <a href="@Url.Action("ChiTietSP", "Home", new { maSP = sp.MaSP })"
-                       class="product-card d-inline-block text-decoration-none text-dark">
 
-                        <div class="position-relative">
-                            <img src="~/Content/images/@sp.HinhAnh" class="product-img" />
+                    @if (!hetHang)
+                    {
+                        <div class="mt-2">
+                            <a href="@Url.Action("ThemGioHang", "GioHang", new { maSP = sp.MaSP, url = Request.RawUrl })" class="btn btn-outline-danger w-100 btn-sm">
+                                <i class="fas fa-cart-plus me-1"></i> Thêm vào giỏ
+                            </a>
                         </div>
-
-                        <div class="p-2">
-                            <h6 class="fw-bold">@sp.TenSP</h6>
-                            <p>
-                                <span class="text-primary fw-bold">@basePrice.ToString("N0") đ</span>
-                            </p>
-                        </div>
-                    </a>
-                }
+                    }
+                </div>
             }
         </div>
 
-        <button class="slider-btn ms-3" onclick="slide('slider3', 270)">&gt;</button>
+        <button class="slider-btn position-absolute end-0" onclick="slide('slider3', 270)">&gt;</button>
     </div>
 
 
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <h4 class="section-title">⭐ Tất cả sản phẩm</h4>
-
-        <a href="@Url.Action("TatCaSanPham", "Home")"
-           class="text-decoration-none fw-bold text-primary">
-            Xem tất cả →
-        </a>
+    <div class="d-flex justify-content-between align-items-center mt-5">
+        <h4 class="section-title text-primary">⭐ Tất cả sản phẩm</h4>
+        <a href="@Url.Action("TatCaSanPham", "Home")" class="text-decoration-none fw-bold text-primary">Xem tất cả →</a>
     </div>
-    <div class="d-flex align-items-center">
-        <button class="slider-btn me-3" onclick="slide('slider1', -270)">&lt;</button>
 
-        <div id="slider1" class="slider-container">
+    <div class="d-flex align-items-center position-relative">
+        <button class="slider-btn position-absolute start-0" onclick="slide('slider1', -270)">&lt;</button>
+
+        <div id="slider1" class="slider-container px-4">
             @foreach (var sp in Model.DsSanPham)
             {
                 var basePriceAll = (sp.GiaBan ?? 0m);
                 var giamGiaAll = (sp.GiamGia ?? 0m);
-                var displayPrice = (basePriceAll * (1 - (giamGiaAll/100)));
+                var displayPrice = (basePriceAll * (1 - (giamGiaAll / 100)));
+                bool hetHang = (sp.SoLuongTon ?? 0) <= 0;
 
-                <a href="@Url.Action("ChiTietSP", "Home", new { maSP = sp.MaSP })"
-                   class="product-card d-inline-block text-decoration-none text-dark">
+                <div class="d-inline-block" style="width:260px; margin-right:15px; vertical-align: top;">
+                    <a href="@Url.Action("ChiTietSP", "Home", new { maSP = sp.MaSP })"
+                       class="product-card d-block text-decoration-none text-dark @(hetHang ? "card-disabled" : "")">
 
-                    <div class="position-relative">
-                        @if (giamGiaAll > 0)
-                        {
-                            <span class="badge-sale">-@giamGiaAll%</span>
-                        }
-                        <img src="~/Content/images/@sp.HinhAnh" class="product-img" />
-                    </div>
+                        <div class="position-relative">
+                            @if (hetHang)
+                            {
+                                <div class="overlay-hethang">HẾT HÀNG</div>
+                            }
 
-                    <div class="p-2">
-                        <h6 class="fw-bold">@sp.TenSP</h6>
-                        <p>
-                            <span class="text-muted text-decoration-line-through">
-                                @basePriceAll.ToString("N0")
-                            </span><br />
+                            @if (giamGiaAll > 0)
+                            {
+                                <span class="badge-sale">-@giamGiaAll%</span>
+                            }
+                            <img src="~/Content/images/@sp.HinhAnh" class="product-img" />
+                        </div>
 
-                            <span class="text-danger fw-bold">
-                                @displayPrice.ToString("N0") đ
-                            </span>
-                        </p>
-                    </div>
-                </a>
+                        <div class="p-3">
+                            <h6 class="fw-bold text-truncate" title="@sp.TenSP">@sp.TenSP</h6>
+                            <p class="m-0">
+                                @if (giamGiaAll > 0)
+                                {
+                                    <span class="text-muted text-decoration-line-through small">
+                                        @basePriceAll.ToString("N0")
+                                    </span><br />
+                                }
+                                else
+                                {
+                                    <br />
+                                }
+
+                                <span class="text-danger fw-bold fs-5">
+                                    @displayPrice.ToString("N0") đ
+                                </span>
+                            </p>
+                        </div>
+                    </a>
+
+                    @if (!hetHang)
+                    {
+                        <div class="mt-2">
+                            <a href="@Url.Action("ThemGioHang", "GioHang", new { maSP = sp.MaSP, url = Request.RawUrl })" class="btn btn-outline-primary w-100 btn-sm">
+                                <i class="fas fa-cart-plus me-1"></i> Thêm vào giỏ
+                            </a>
+                        </div>
+                    }
+                </div>
             }
         </div>
 
-        <button class="slider-btn ms-3" onclick="slide('slider1', 270)">&gt;</button>
+        <button class="slider-btn position-absolute end-0" onclick="slide('slider1', 270)">&gt;</button>
     </div>
 
+</div>
 
+<script>
+    function slide(id, offset) {
+        document.getElementById(id).scrollBy({
+            left: offset,
+            behavior: 'smooth'
+        });
+    }
 
-    <script>
-        function slide(id, offset) {
-            document.getElementById(id).scrollBy({
-                left: offset,
-                behavior: 'smooth'
-            });
+    // Giữ vị trí cuộn khi reload
+    document.querySelectorAll('.brand-item').forEach(item => {
+        item.addEventListener('click', () => {
+            sessionStorage.setItem("scrollPos", window.scrollY);
+        });
+    });
+
+    window.addEventListener("load", () => {
+        let pos = sessionStorage.getItem("scrollPos");
+        if (pos) {
+            window.scrollTo(0, pos);
         }
-    </script>
-    <script>
-        // Khi người dùng chọn thương hiệu → lưu vị trí cuộn
-        document.querySelectorAll('.brand-item').forEach(item => {
-            item.addEventListener('click', () => {
-                sessionStorage.setItem("scrollPos", window.scrollY);
-            });
-        });
-
-        // Khi load lại trang → cuộn xuống vị trí cũ
-        window.addEventListener("load", () => {
-            let pos = sessionStorage.getItem("scrollPos");
-            if (pos) {
-                window.scrollTo(0, pos);
-            }
-        });
-    </script>
+    });
+</script>

@@ -319,3 +319,54 @@ SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'SanPham';
 
 PRINT N'--- Kiểm tra dữ liệu SanPham ---';
 SELECT MaSP, TenSP, SoLuongTon FROM SanPham;
+
+
+-- 14. BẢNG KHUYẾN MÃI (MÃ GIẢM GIÁ)
+CREATE TABLE KhuyenMai (
+    MaKM INT PRIMARY KEY IDENTITY(1,1),
+    TenChuongTrinh NVARCHAR(200) NOT NULL, -- Tên đợt KM
+    MaCode VARCHAR(50) UNIQUE NOT NULL,    -- Mã user nhập vào (VD: SALE10, TET2025)
+    
+    -- Loại giảm: 1 là % (PhanTram), 2 là Tiền mặt (TienMat)
+    LoaiGiamGia NVARCHAR(20) CHECK (LoaiGiamGia IN ('PhanTram', 'TienMat')) DEFAULT 'PhanTram',
+    
+    -- Giá trị giảm: VD 10 (là 10%) hoặc 50000 (là 50k)
+    GiaTriGiam DECIMAL(18,2) NOT NULL,
+
+    -- Số tiền giảm tối đa (Chỉ dùng cho loại %)
+    -- VD: Giảm 10% nhưng tối đa chỉ giảm 50k
+    GiamToiDa DECIMAL(18,2) NULL, 
+
+    -- Điều kiện áp dụng
+    DonHangToiThieu DECIMAL(18,2) DEFAULT 0, -- Đơn tối thiểu để áp mã
+    
+    -- Quản lý thời gian & Số lượng
+    SoLuongPhatHanh INT DEFAULT 1000,        -- Tổng số mã tung ra
+    SoLuongDaDung INT DEFAULT 0,             -- Số mã đã được dùng
+    NgayBatDau DATETIME DEFAULT GETDATE(),
+    NgayKetThuc DATETIME,
+    
+    TrangThai BIT DEFAULT 1 -- 1: Đang hoạt động, 0: Ngưng
+);
+GO
+
+-- 15. BẢNG CHI TIẾT SẢN PHẨM ĐƯỢC ÁP DỤNG MÃ
+CREATE TABLE KhuyenMai_SanPham (
+    MaKM INT,
+    MaSP INT,
+    PRIMARY KEY (MaKM, MaSP),
+    FOREIGN KEY (MaKM) REFERENCES KhuyenMai(MaKM) ON DELETE CASCADE,
+    FOREIGN KEY (MaSP) REFERENCES SanPham(MaSP) ON DELETE CASCADE
+);
+GO
+
+-- Cập nhật bảng DonHang để liên kết với KhuyenMai
+ALTER TABLE DonHang
+ADD MaKM INT NULL, -- Mã khuyến mãi đã áp dụng (nếu có)
+    SoTienGiam DECIMAL(18,2) DEFAULT 0; -- Lưu lại số tiền đã được trừ
+GO
+
+ALTER TABLE DonHang
+ADD CONSTRAINT FK_DonHang_KhuyenMai 
+FOREIGN KEY (MaKM) REFERENCES KhuyenMai(MaKM);
+GO

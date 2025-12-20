@@ -22,6 +22,7 @@ namespace WebApplication15.Models
             this.ChiTietPhieuXuats = new HashSet<ChiTietPhieuXuat>();
             this.DanhGias = new HashSet<DanhGia>();
             this.ThuocTinhMyPhams = new HashSet<ThuocTinhMyPham>();
+            this.KhuyenMais = new HashSet<KhuyenMai>();
         }
     
         public int MaSP { get; set; }
@@ -57,5 +58,7 @@ namespace WebApplication15.Models
         public virtual ThuongHieu ThuongHieu { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ThuocTinhMyPham> ThuocTinhMyPhams { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<KhuyenMai> KhuyenMais { get; set; }
     }
 }

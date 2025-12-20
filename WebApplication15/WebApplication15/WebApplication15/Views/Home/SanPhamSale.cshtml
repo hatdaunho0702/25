@@ -1,31 +1,234 @@
 ﻿@model List<WebApplication15.Models.SanPham>
-<link href="~/CSS/HienSP.css" rel="stylesheet" />
-<div class="container mt-4">
-    <h3 class="fw-bold mb-4">⚡ Sản phẩm SALE</h3>
+@{
+    ViewBag.Title = "Sản phẩm đang Sale";
+    System.Globalization.CultureInfo cul = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+}
+
+<style>
+    /* Sidebar & Filter - Theme Đỏ */
+    .filter-sidebar {
+        background-color: #fff0f0;
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid #ffcccc;
+    }
+
+    .filter-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+        color: #d63031;
+        border-bottom: 2px solid #ffcccc;
+        padding-bottom: 10px;
+    }
+
+    /* Product Card */
+    .product-card {
+        border: 1px solid #f0f0f0;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        background: #fff;
+        overflow: hidden;
+        height: 100%;
+        position: relative;
+    }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+    .product-thumb {
+        position: relative;
+        padding-top: 100%;
+        overflow: hidden;
+    }
+
+        .product-thumb img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+    .product-card:hover .product-thumb img {
+        transform: scale(1.08);
+    }
+
+    .badge-discount {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: #ff4757;
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        z-index: 2;
+        box-shadow: 0 2px 5px rgba(255, 71, 87, 0.4);
+    }
+
+    .overlay-hethang {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 5;
+    }
+
+    .card-disabled {
+        opacity: 0.7;
+    }
+
+    .price-final {
+        color: #ff4757;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .price-original {
+        color: #a4b0be;
+        text-decoration: line-through;
+        font-size: 0.9rem;
+        margin-left: 8px;
+    }
+</style>
+
+<div class="container mt-5 mb-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-danger m-0">⚡ FLASH SALE</h3>
+            <span class="text-muted small">Đang giảm giá @Model.Count sản phẩm cực hot</span>
+        </div>
+        <button class="btn btn-outline-danger d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobileFilter">
+            <i class="fas fa-filter"></i> Lọc
+        </button>
+    </div>
 
     <div class="row">
-        @foreach (var sp in Model)
-        {
-            <div class="col-md-3 mb-4">
-                <a href="@Url.Action("ChiTietSP", "Home", new { MaSP = sp.MaSP })"
-                   class="text-dark text-decoration-none">
-                    <div class="card shadow-sm">
-                        <img src="~/Content/images/@sp.HinhAnh" class="card-img-top" />
-
-                        <div class="card-body">
-                            <h6 class="fw-bold">@sp.TenSP</h6>
-                            <p class="mb-0">
-                                <span class="text-muted text-decoration-line-through">
-                                    @sp.GiaBan.Value.ToString("N0") đ
-                                </span><br />
-                                <span class="text-danger fw-bold">
-                                    @((sp.GiaBan.Value * (1 - (sp.GiamGia/100)))?.ToString("N0")) đ
-                                </span>
-                            </p>
+        <div class="col-md-3 mb-4">
+            <form method="get" action="@Url.Action("SanPhamSale", "Home")">
+                <div class="filter-sidebar shadow-sm collapse d-md-block" id="mobileFilter">
+                    <div class="mb-4">
+                        <h6 class="filter-title"><i class="fas fa-search me-2"></i>Tìm kiếm</h6>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="searchString" value="@ViewBag.SearchString" placeholder="Tên sp...">
+                            <button class="btn btn-danger" type="submit"><i class="fas fa-search"></i></button>
                         </div>
                     </div>
-                </a>
-            </div>
-        }
+
+                    <div class="mb-4">
+                        <h6 class="filter-title"><i class="fas fa-wallet me-2"></i>Giá sau giảm</h6>
+                        <div class="mb-2">
+                            <input type="number" class="form-control form-control-sm" name="minPrice" value="@ViewBag.MinPrice" step="1000" min="0" placeholder="Từ...">
+                        </div>
+                        <div class="mb-3">
+                            <input type="number" class="form-control form-control-sm" name="maxPrice" value="@ViewBag.MaxPrice" step="1000" min="0" placeholder="Đến...">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="filter-title"><i class="fas fa-sort me-2"></i>Sắp xếp</h6>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="sortOrder" id="sortDefault" value="" @(string.IsNullOrEmpty(ViewBag.CurrentSort) ? "checked" : "") onchange="this.form.submit()">
+                            <label class="form-check-label" for="sortDefault">% Giảm nhiều nhất</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="sortOrder" id="sortPriceAsc" value="price_asc" @(ViewBag.CurrentSort == "price_asc" ? "checked" : "") onchange="this.form.submit()">
+                            <label class="form-check-label" for="sortPriceAsc">Giá rẻ nhất</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="sortOrder" id="sortPriceDesc" value="price_desc" @(ViewBag.CurrentSort == "price_desc" ? "checked" : "") onchange="this.form.submit()">
+                            <label class="form-check-label" for="sortPriceDesc">Giá cao nhất</label>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger btn-sm rounded-pill">Áp dụng</button>
+                        <a href="@Url.Action("SanPhamSale", "Home")" class="btn btn-outline-secondary btn-sm rounded-pill">Xóa lọc</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-9">
+            @if (Model.Count == 0)
+            {
+                <div class="text-center py-5 bg-light rounded-3">
+                    <i class="fas fa-heart-broken fa-3x text-danger mb-3 opacity-50"></i>
+                    <h5 class="text-secondary">Không tìm thấy sản phẩm khuyến mãi nào!</h5>
+                    <a href="@Url.Action("SanPhamSale")" class="btn btn-danger mt-2">Xem tất cả Sale</a>
+                </div>
+            }
+            else
+            {
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+                    @foreach (var sp in Model)
+                    {
+                        decimal giaGoc = sp.GiaBan ?? 0;
+                        decimal phanTram = sp.GiamGia ?? 0;
+                        decimal giaSauGiam = giaGoc * (1 - phanTram / 100m);
+                        bool hetHang = (sp.SoLuongTon ?? 0) <= 0;
+
+                        <div class="col">
+                            <div class="product-card h-100 @(hetHang ? "card-disabled" : "")">
+                                <a href="@Url.Action("ChiTietSP", "Home", new { MaSP = sp.MaSP })" class="text-decoration-none">
+                                    <div class="product-thumb">
+                                        @if (hetHang)
+                                        {
+                                            <div class="overlay-hethang">HẾT HÀNG</div>
+                                        }
+
+                                        <span class="badge-discount">-@phanTram.ToString("0")%</span>
+
+                                        @if (!string.IsNullOrEmpty(sp.HinhAnh))
+                                        {
+                                            <img src="~/Content/images/@sp.HinhAnh" alt="@sp.TenSP">
+                                        }
+                                        else
+                                        {
+                                            <img src="https://via.placeholder.com/300" alt="No Image">
+                                        }
+                                    </div>
+                                </a>
+
+                                <div class="card-body">
+                                    <h6 class="card-title mb-2 text-truncate">
+                                        <a href="@Url.Action("ChiTietSP", "Home", new { MaSP = sp.MaSP })" class="text-dark text-decoration-none">@sp.TenSP</a>
+                                    </h6>
+
+                                    <div class="d-flex align-items-center mt-2">
+                                        <span class="price-final">@giaSauGiam.ToString("#,###", cul.NumberFormat) đ</span>
+                                        <span class="price-original">@giaGoc.ToString("#,###", cul.NumberFormat) đ</span>
+                                    </div>
+                                </div>
+
+                                @if (!hetHang)
+                                {
+                                    <div class="card-footer bg-white border-top-0 pt-0 pb-3">
+                                        <a href="@Url.Action("ThemGioHang", "GioHang", new { maSP = sp.MaSP, url = Request.Url.ToString() })"
+                                           class="btn btn-outline-danger w-100 btn-sm rounded-pill">
+                                            <i class="fas fa-cart-plus me-1"></i> Thêm vào giỏ
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
     </div>
 </div>

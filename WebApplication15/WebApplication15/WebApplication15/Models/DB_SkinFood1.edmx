@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="DB_SkinFood1Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="DB_SkinFood1Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="ChiTietDonHangs">
           <Key>
             <PropertyRef Name="MaDH" />
@@ -73,6 +73,33 @@
           <Property Name="TrangThaiThanhToan" Type="nvarchar" MaxLength="50" />
           <Property Name="NgayThanhToan" Type="datetime" />
           <Property Name="PhuongThucThanhToan" Type="nvarchar" MaxLength="100" />
+          <Property Name="MaKM" Type="int" />
+          <Property Name="SoTienGiam" Type="decimal" Precision="18" Scale="2" />
+        </EntityType>
+        <EntityType Name="KhuyenMai">
+          <Key>
+            <PropertyRef Name="MaKM" />
+          </Key>
+          <Property Name="MaKM" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TenChuongTrinh" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="MaCode" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="LoaiGiamGia" Type="nvarchar" MaxLength="20" />
+          <Property Name="GiaTriGiam" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="GiamToiDa" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="DonHangToiThieu" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="SoLuongPhatHanh" Type="int" />
+          <Property Name="SoLuongDaDung" Type="int" />
+          <Property Name="NgayBatDau" Type="datetime" />
+          <Property Name="NgayKetThuc" Type="datetime" />
+          <Property Name="TrangThai" Type="bit" />
+        </EntityType>
+        <EntityType Name="KhuyenMai_SanPham">
+          <Key>
+            <PropertyRef Name="MaKM" />
+            <PropertyRef Name="MaSP" />
+          </Key>
+          <Property Name="MaKM" Type="int" Nullable="false" />
+          <Property Name="MaSP" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="LienHe">
           <Key>
@@ -320,6 +347,34 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK__KhuyenMai___MaKM__17F790F9">
+          <End Role="KhuyenMai" Type="Self.KhuyenMai" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="KhuyenMai_SanPham" Type="Self.KhuyenMai_SanPham" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="KhuyenMai">
+              <PropertyRef Name="MaKM" />
+            </Principal>
+            <Dependent Role="KhuyenMai_SanPham">
+              <PropertyRef Name="MaKM" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__KhuyenMai___MaSP__18EBB532">
+          <End Role="SanPham" Type="Self.SanPham" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="KhuyenMai_SanPham" Type="Self.KhuyenMai_SanPham" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SanPham">
+              <PropertyRef Name="MaSP" />
+            </Principal>
+            <Dependent Role="KhuyenMai_SanPham">
+              <PropertyRef Name="MaSP" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK__LoaiSP__MaDM__440B1D61">
           <End Role="DanhMuc" Type="Self.DanhMuc" Multiplicity="1" />
           <End Role="LoaiSP" Type="Self.LoaiSP" Multiplicity="*" />
@@ -442,6 +497,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_DonHang_KhuyenMai">
+          <End Role="KhuyenMai" Type="Self.KhuyenMai" Multiplicity="0..1" />
+          <End Role="DonHang" Type="Self.DonHang" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="KhuyenMai">
+              <PropertyRef Name="MaKM" />
+            </Principal>
+            <Dependent Role="DonHang">
+              <PropertyRef Name="MaKM" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Function Name="fn_diagramobjects" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="int" />
         <Function Name="sp_alterdiagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
@@ -480,6 +547,8 @@
           <EntitySet Name="DanhGia" EntityType="Self.DanhGia" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DanhMuc" EntityType="Self.DanhMuc" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DonHang" EntityType="Self.DonHang" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="KhuyenMai" EntityType="Self.KhuyenMai" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="KhuyenMai_SanPham" EntityType="Self.KhuyenMai_SanPham" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LienHe" EntityType="Self.LienHe" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LoaiSP" EntityType="Self.LoaiSP" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="NguoiDung" EntityType="Self.NguoiDung" Schema="dbo" store:Type="Tables" />
@@ -528,6 +597,14 @@
             <End Role="NguoiDung" EntitySet="NguoiDung" />
             <End Role="DonHang" EntitySet="DonHang" />
           </AssociationSet>
+          <AssociationSet Name="FK__KhuyenMai___MaKM__17F790F9" Association="Self.FK__KhuyenMai___MaKM__17F790F9">
+            <End Role="KhuyenMai" EntitySet="KhuyenMai" />
+            <End Role="KhuyenMai_SanPham" EntitySet="KhuyenMai_SanPham" />
+          </AssociationSet>
+          <AssociationSet Name="FK__KhuyenMai___MaSP__18EBB532" Association="Self.FK__KhuyenMai___MaSP__18EBB532">
+            <End Role="SanPham" EntitySet="SanPham" />
+            <End Role="KhuyenMai_SanPham" EntitySet="KhuyenMai_SanPham" />
+          </AssociationSet>
           <AssociationSet Name="FK__LoaiSP__MaDM__440B1D61" Association="Self.FK__LoaiSP__MaDM__440B1D61">
             <End Role="DanhMuc" EntitySet="DanhMuc" />
             <End Role="LoaiSP" EntitySet="LoaiSP" />
@@ -568,9 +645,12 @@
             <End Role="NguoiDung" EntitySet="NguoiDung" />
             <End Role="TaiKhoan" EntitySet="TaiKhoan" />
           </AssociationSet>
+          <AssociationSet Name="FK_DonHang_KhuyenMai" Association="Self.FK_DonHang_KhuyenMai">
+            <End Role="KhuyenMai" EntitySet="KhuyenMai" />
+            <End Role="DonHang" EntitySet="DonHang" />
+          </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="DB_SkinFood1Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -654,6 +734,9 @@
           <Property Name="PhuongThucThanhToan" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="ChiTietDonHangs" Relationship="Self.FK__ChiTietDon__MaDH__59FA5E80" FromRole="DonHang" ToRole="ChiTietDonHangs" />
           <NavigationProperty Name="NguoiDung" Relationship="Self.FK__DonHang__MaND__5629CD9C" FromRole="DonHang" ToRole="NguoiDung" />
+          <Property Name="MaKM" Type="Int32" />
+          <Property Name="SoTienGiam" Type="Decimal" Precision="18" Scale="2" />
+          <NavigationProperty Name="KhuyenMai" Relationship="DB_SkinFood1Model.FK_DonHang_KhuyenMai" FromRole="DonHang" ToRole="KhuyenMai" />
         </EntityType>
         <EntityType Name="LienHe">
           <Key>
@@ -762,6 +845,7 @@
           <NavigationProperty Name="LoaiSP" Relationship="Self.FK__SanPham__MaLoai__5070F446" FromRole="SanPham" ToRole="LoaiSP" />
           <NavigationProperty Name="ThuongHieu" Relationship="Self.FK__SanPham__MaTH__4F7CD00D" FromRole="SanPham" ToRole="ThuongHieu" />
           <NavigationProperty Name="ThuocTinhMyPhams" Relationship="Self.SanPham_ThuocTinh" FromRole="SanPham" ToRole="ThuocTinhMyPham" />
+          <NavigationProperty Name="KhuyenMais" Relationship="DB_SkinFood1Model.KhuyenMai_SanPham" FromRole="SanPham" ToRole="KhuyenMai" />
         </EntityType>
         <EntityType Name="sysdiagram">
           <Key>
@@ -1137,6 +1221,15 @@
             <Parameter Name="new_diagramname" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="sp_upgraddiagrams" />
+          <EntitySet Name="KhuyenMais" EntityType="DB_SkinFood1Model.KhuyenMai" />
+          <AssociationSet Name="FK_DonHang_KhuyenMai" Association="DB_SkinFood1Model.FK_DonHang_KhuyenMai">
+            <End Role="KhuyenMai" EntitySet="KhuyenMais" />
+            <End Role="DonHang" EntitySet="DonHangs" />
+          </AssociationSet>
+          <AssociationSet Name="KhuyenMai_SanPham" Association="DB_SkinFood1Model.KhuyenMai_SanPham">
+            <End Role="KhuyenMai" EntitySet="KhuyenMais" />
+            <End Role="SanPham" EntitySet="SanPhams" />
+          </AssociationSet>
         </EntityContainer>
         <ComplexType Name="sp_helpdiagramdefinition_Result">
           <Property Type="Int32" Name="version" Nullable="true" />
@@ -1149,6 +1242,41 @@
           <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
           <Property Type="Int32" Name="OwnerID" Nullable="false" />
         </ComplexType>
+        <EntityType Name="KhuyenMai">
+          <Key>
+            <PropertyRef Name="MaKM" />
+          </Key>
+          <Property Name="MaKM" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TenChuongTrinh" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="MaCode" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="LoaiGiamGia" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="GiaTriGiam" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="GiamToiDa" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="DonHangToiThieu" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="SoLuongPhatHanh" Type="Int32" />
+          <Property Name="SoLuongDaDung" Type="Int32" />
+          <Property Name="NgayBatDau" Type="DateTime" Precision="3" />
+          <Property Name="NgayKetThuc" Type="DateTime" Precision="3" />
+          <Property Name="TrangThai" Type="Boolean" />
+          <NavigationProperty Name="DonHangs" Relationship="DB_SkinFood1Model.FK_DonHang_KhuyenMai" FromRole="KhuyenMai" ToRole="DonHang" />
+          <NavigationProperty Name="SanPhams" Relationship="DB_SkinFood1Model.KhuyenMai_SanPham" FromRole="KhuyenMai" ToRole="SanPham" />
+        </EntityType>
+        <Association Name="FK_DonHang_KhuyenMai">
+          <End Type="DB_SkinFood1Model.KhuyenMai" Role="KhuyenMai" Multiplicity="0..1" />
+          <End Type="DB_SkinFood1Model.DonHang" Role="DonHang" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="KhuyenMai">
+              <PropertyRef Name="MaKM" />
+            </Principal>
+            <Dependent Role="DonHang">
+              <PropertyRef Name="MaKM" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="KhuyenMai_SanPham">
+          <End Type="DB_SkinFood1Model.KhuyenMai" Role="KhuyenMai" Multiplicity="*" />
+          <End Type="DB_SkinFood1Model.SanPham" Role="SanPham" Multiplicity="*" />
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1213,6 +1341,8 @@
           <EntitySetMapping Name="DonHangs">
             <EntityTypeMapping TypeName="DB_SkinFood1Model.DonHang">
               <MappingFragment StoreEntitySet="DonHang">
+                <ScalarProperty Name="SoTienGiam" ColumnName="SoTienGiam" />
+                <ScalarProperty Name="MaKM" ColumnName="MaKM" />
                 <ScalarProperty Name="MaDH" ColumnName="MaDH" />
                 <ScalarProperty Name="MaND" ColumnName="MaND" />
                 <ScalarProperty Name="NgayDat" ColumnName="NgayDat" />
@@ -1394,6 +1524,32 @@
           </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="sp_renamediagram" FunctionName="DB_SkinFood1Model.Store.sp_renamediagram" />
           <FunctionImportMapping FunctionImportName="sp_upgraddiagrams" FunctionName="DB_SkinFood1Model.Store.sp_upgraddiagrams" />
+          <EntitySetMapping Name="KhuyenMais">
+            <EntityTypeMapping TypeName="DB_SkinFood1Model.KhuyenMai">
+              <MappingFragment StoreEntitySet="KhuyenMai">
+                <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
+                <ScalarProperty Name="NgayKetThuc" ColumnName="NgayKetThuc" />
+                <ScalarProperty Name="NgayBatDau" ColumnName="NgayBatDau" />
+                <ScalarProperty Name="SoLuongDaDung" ColumnName="SoLuongDaDung" />
+                <ScalarProperty Name="SoLuongPhatHanh" ColumnName="SoLuongPhatHanh" />
+                <ScalarProperty Name="DonHangToiThieu" ColumnName="DonHangToiThieu" />
+                <ScalarProperty Name="GiamToiDa" ColumnName="GiamToiDa" />
+                <ScalarProperty Name="GiaTriGiam" ColumnName="GiaTriGiam" />
+                <ScalarProperty Name="LoaiGiamGia" ColumnName="LoaiGiamGia" />
+                <ScalarProperty Name="MaCode" ColumnName="MaCode" />
+                <ScalarProperty Name="TenChuongTrinh" ColumnName="TenChuongTrinh" />
+                <ScalarProperty Name="MaKM" ColumnName="MaKM" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="KhuyenMai_SanPham" TypeName="DB_SkinFood1Model.KhuyenMai_SanPham" StoreEntitySet="KhuyenMai_SanPham">
+            <EndProperty Name="SanPham">
+              <ScalarProperty Name="MaSP" ColumnName="MaSP" />
+            </EndProperty>
+            <EndProperty Name="KhuyenMai">
+              <ScalarProperty Name="MaKM" ColumnName="MaKM" />
+            </EndProperty>
+          </AssociationSetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

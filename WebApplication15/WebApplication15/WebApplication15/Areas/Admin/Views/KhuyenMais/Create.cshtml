@@ -1,0 +1,157 @@
+﻿@model WebApplication15.Models.KhuyenMai
+
+@{
+    ViewBag.Title = "Tạo Khuyến mãi mới";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    List<SelectListItem> listProducts = ViewBag.Products as List<SelectListItem>;
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Tạo Khuyến mãi mới</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Thông tin chi tiết</h6>
+                </div>
+                <div class="card-body">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="form-group">
+                        <label>Tên chương trình <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.TenChuongTrinh, new { @class = "form-control", placeholder = "Ví dụ: Sale Black Friday" })
+                        @Html.ValidationMessageFor(m => m.TenChuongTrinh, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Mã Code (Voucher) <span class="text-danger">*</span></label>
+                                @Html.TextBoxFor(m => m.MaCode, new { @class = "form-control text-uppercase font-weight-bold", placeholder = "SALE50" })
+                                @Html.ValidationMessageFor(m => m.MaCode, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Loại giảm giá</label>
+                                @Html.DropDownListFor(m => m.LoaiGiamGia, new SelectList(new[] {
+                                    new { Value = "PhanTram", Text = "Theo Phần trăm (%)" },
+                                    new { Value = "TienMat", Text = "Theo Tiền mặt (VNĐ)" },
+                                }, "Value", "Text"), new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Giá trị giảm</label>
+                                @Html.TextBoxFor(m => m.GiaTriGiam, new { @class = "form-control", type = "number", min = "0" })
+                                @Html.ValidationMessageFor(m => m.GiaTriGiam, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Giảm tối đa (Nếu là %)</label>
+                                @Html.TextBoxFor(m => m.GiamToiDa, new { @class = "form-control", type = "number", min = "0" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Đơn tối thiểu</label>
+                                @Html.TextBoxFor(m => m.DonHangToiThieu, new { @class = "form-control", type = "number", min = "0" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Ngày bắt đầu</label>
+                                @Html.TextBoxFor(m => m.NgayBatDau, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Ngày kết thúc</label>
+                                @Html.TextBoxFor(m => m.NgayKetThuc, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                                @Html.ValidationMessageFor(m => m.NgayKetThuc, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Áp dụng cho Sản phẩm</h6>
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="toggleAll()">Chọn tất cả</button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="input-group p-2">
+                        <input type="text" class="form-control form-control-sm" id="searchProduct" placeholder="Tìm sản phẩm...">
+                    </div>
+
+                    <div class="overflow-auto" style="max-height: 400px;">
+                        <ul class="list-group list-group-flush" id="productList">
+                            @if (listProducts != null)
+                            {
+                                foreach (var item in listProducts)
+                                {
+                                    <li class="list-group-item">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input product-item"
+                                                   id="prod_@item.Value" name="SelectedProductIds"
+                                                   value="@item.Value" @(item.Selected ? "checked" : "")>
+                                            <label class="custom-control-label" for="prod_@item.Value">
+                                                @item.Text
+                                            </label>
+                                        </div>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                    <div class="p-2 text-muted small bg-light">
+                        * Bỏ chọn tất cả để áp dụng cho <strong>Toàn bộ đơn hàng</strong> (Tùy logic shop).
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group mt-3">
+        <button type="submit" class="btn btn-success btn-lg"><i class="fa fa-save"></i> Lưu Khuyến Mãi</button>
+        <a href="@Url.Action("Index")" class="btn btn-secondary btn-lg">Quay lại</a>
+    </div>
+}
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        // Script tìm kiếm nhanh sản phẩm
+        $(document).ready(function(){
+            $("#searchProduct").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#productList li").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+
+        // Script chọn tất cả
+        function toggleAll() {
+            var checkboxes = $('.product-item');
+            var allChecked = checkboxes.length === checkboxes.filter(':checked').length;
+            checkboxes.prop('checked', !allChecked);
+        }
+    </script>
+}

@@ -1,0 +1,54 @@
+﻿@model WebApplication15.Models.KhuyenMai
+
+@{
+    ViewBag.Title = "Sửa Khuyến mãi";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Sửa Khuyến mãi</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.MaKM)
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.TenChuongTrinh)
+        @Html.TextBoxFor(m => m.TenChuongTrinh, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.MaCode)
+        @Html.TextBoxFor(m => m.MaCode, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.LoaiGiamGia)
+        @Html.TextBoxFor(m => m.LoaiGiamGia, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.GiaTriGiam)
+        @Html.TextBoxFor(m => m.GiaTriGiam, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.NgayBatDau)
+        @Html.TextBoxFor(m => m.NgayBatDau, new { @class = "form-control", type = "date" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.NgayKetThuc)
+        @Html.TextBoxFor(m => m.NgayKetThuc, new { @class = "form-control", type = "date" })
+    </div>
+
+    <div class="form-group">
+        @Html.Label("Trạng thái")
+        @Html.DropDownListFor(m => m.TrangThai, new SelectList(new[] {
+            new { Value = "true", Text = "Phát hành" },
+            new { Value = "false", Text = "Chưa phát hành" }
+        }, "Value", "Text", (Model.TrangThai.HasValue && Model.TrangThai.Value) ? "true" : "false"), new { @class = "form-control" })
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lưu</button>
+}
