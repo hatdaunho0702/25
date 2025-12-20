@@ -171,6 +171,7 @@
         <div id="slider2" class="slider-container">
             @foreach (var sp in Model.HotProducts)
             {
+                var priceHot = (sp.GiaBan ?? 0m);
                 <a href="@Url.Action("ChiTietSP", "Home", new { maSP = sp.MaSP })"
                    class="product-card d-inline-block text-decoration-none text-dark">
 
@@ -181,7 +182,7 @@
 
                     <div class="p-2">
                         <h6 class="fw-bold">@sp.TenSP</h6>
-                        <span class="fw-bold text-danger">@sp.GiaBan.Value.ToString("N0") đ</span>
+                        <span class="fw-bold text-danger">@priceHot.ToString("N0") đ</span>
                     </div>
                 </a>
             }
@@ -207,24 +208,46 @@
         <div id="slider3" class="slider-container">
             @foreach (var sp in Model.SaleProducts)
             {
-                <a href="@Url.Action("ChiTietSP", "Home", new { maSP = sp.MaSP })"
-                   class="product-card d-inline-block text-decoration-none text-dark">
+                var giamGia = (sp.GiamGia ?? 0m);
+                var basePrice = (sp.GiaBan ?? 0m);
+                var finalPrice = (basePrice * (1 - (giamGia/100)));
 
-                    <div class="position-relative">
-                        <span class="badge-sale">-@sp.GiamGia%</span>
-                        <img src="~/Content/images/@sp.HinhAnh" class="product-img" />
-                    </div>
+                if (giamGia > 0)
+                {
+                    <a href="@Url.Action("ChiTietSP", "Home", new { maSP = sp.MaSP })"
+                       class="product-card d-inline-block text-decoration-none text-dark">
 
-                    <div class="p-2">
-                        <h6 class="fw-bold">@sp.TenSP</h6>
-                        <p>
-                            <span class="text-muted text-decoration-line-through">@sp.GiaBan.Value.ToString("N0")</span><br />
-                            <span class="text-danger fw-bold">
-                                @((sp.GiaBan.Value * (1 - (sp.GiamGia/100)))?.ToString("N0")) đ
-                            </span>
-                        </p>
-                    </div>
-                </a>
+                        <div class="position-relative">
+                            <span class="badge-sale">-@giamGia% </span>
+                            <img src="~/Content/images/@sp.HinhAnh" class="product-img" />
+                        </div>
+
+                        <div class="p-2">
+                            <h6 class="fw-bold">@sp.TenSP</h6>
+                            <p>
+                                <span class="text-muted text-decoration-line-through">@basePrice.ToString("N0")</span><br />
+                                <span class="text-danger fw-bold">@finalPrice.ToString("N0") đ</span>
+                            </p>
+                        </div>
+                    </a>
+                }
+                else
+                {
+                    <a href="@Url.Action("ChiTietSP", "Home", new { maSP = sp.MaSP })"
+                       class="product-card d-inline-block text-decoration-none text-dark">
+
+                        <div class="position-relative">
+                            <img src="~/Content/images/@sp.HinhAnh" class="product-img" />
+                        </div>
+
+                        <div class="p-2">
+                            <h6 class="fw-bold">@sp.TenSP</h6>
+                            <p>
+                                <span class="text-primary fw-bold">@basePrice.ToString("N0") đ</span>
+                            </p>
+                        </div>
+                    </a>
+                }
             }
         </div>
 
@@ -246,13 +269,17 @@
         <div id="slider1" class="slider-container">
             @foreach (var sp in Model.DsSanPham)
             {
+                var basePriceAll = (sp.GiaBan ?? 0m);
+                var giamGiaAll = (sp.GiamGia ?? 0m);
+                var displayPrice = (basePriceAll * (1 - (giamGiaAll/100)));
+
                 <a href="@Url.Action("ChiTietSP", "Home", new { maSP = sp.MaSP })"
                    class="product-card d-inline-block text-decoration-none text-dark">
 
                     <div class="position-relative">
-                        @if (sp.GiamGia > 0)
+                        @if (giamGiaAll > 0)
                         {
-                            <span class="badge-sale">-@sp.GiamGia%</span>
+                            <span class="badge-sale">-@giamGiaAll%</span>
                         }
                         <img src="~/Content/images/@sp.HinhAnh" class="product-img" />
                     </div>
@@ -261,11 +288,11 @@
                         <h6 class="fw-bold">@sp.TenSP</h6>
                         <p>
                             <span class="text-muted text-decoration-line-through">
-                                @sp.GiaBan.Value.ToString("N0")
+                                @basePriceAll.ToString("N0")
                             </span><br />
 
                             <span class="text-danger fw-bold">
-                                @((sp.GiaBan.Value * (1 - (sp.GiamGia/100)))?.ToString("N0")) đ
+                                @displayPrice.ToString("N0") đ
                             </span>
                         </p>
                     </div>

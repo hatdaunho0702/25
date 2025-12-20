@@ -22,8 +22,62 @@ namespace WebApplication15.Areas.Admin.Controllers
         // GET: Admin/PhieuNhap
         public ActionResult Index()
         {
-            var list = db.PhieuNhaps.OrderByDescending(x => x.NgayNhap).ToList();
+            // Eager load ChiTietPhieuNhaps so we can compute/display Totals reliably in the view
+            var list = db.PhieuNhaps
+                         .Include("ChiTietPhieuNhaps")
+                         .Include("NhaCungCap")
+                         .OrderByDescending(x => x.NgayNhap)
+                         .ToList();
             return View(list);
+        }
+
+        // Utility: Recalculate totals for existing PhieuNhaps from their ChiTietPhieuNhaps
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult RecalculateTotals()
+        {
+            try
+            {
+                var phieus = db.PhieuNhaps.Include("ChiTietPhieuNhaps").ToList();
+                int updated = 0;
+                foreach (var p in phieus)
+                {
+                    decimal sum = 0m;
+                    if (p.ChiTietPhieuNhaps != null && p.ChiTietPhieuNhaps.Any())
+                    {
+                        foreach (var ct in p.ChiTietPhieuNhaps)
+                        {
+                            decimal line = 0m;
+                            if (ct.ThanhTien.HasValue)
+                                line = ct.ThanhTien.Value;
+                            else
+                            {
+                                var qty = ct.SoLuong ?? 0;
+                                var gia = ct.GiaNhap ?? 0m;
+                                line = qty * gia;
+                            }
+
+                            sum += line;
+                        }
+                    }
+
+                    if (p.TongTien == null || p.TongTien != sum)
+                    {
+                        p.TongTien = sum;
+                        db.Entry(p).State = EntityState.Modified;
+                        updated++;
+                    }
+                }
+
+                db.SaveChanges();
+                TempData["SuccessMessage"] = $"Đã cập nhật tổng tiền cho {updated} phiếu nhập.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Lỗi khi cập nhật tổng tiền: " + ex.Message;
+            }
+
+            return RedirectToAction("Index");
         }
 
         // Details: Hiển thị chi tiết một phiếu nhập
@@ -57,6 +111,7 @@ namespace WebApplication15.Areas.Admin.Controllers
 
             // Truyền danh sách sản phẩm đã được project để tránh vòng tham chiếu khi serialize JSON
             var safeProducts = db.SanPhams
+                // Chỉ lấy những trường cần thiết để tối ưu hiệu suất
                 .Select(p => new
                 {
                     p.MaSP,
@@ -103,6 +158,52 @@ namespace WebApplication15.Areas.Admin.Controllers
 
                         foreach (var d in details)
                         {
+                            // --- NEW: nếu nhà cung cấp của phiếu nhập khác với nhà cung cấp gần nhất của sản phẩm ---
+                            var originalProduct = db.SanPhams
+                                .Include(p => p.ChiTietPhieuNhaps.Select(ct => ct.PhieuNhap))
+                                .FirstOrDefault(p => p.MaSP == d.MaSP);
+
+                            if (originalProduct != null)
+                            {
+                                // Lấy nhà cung cấp gần nhất đã nhập cho sản phẩm này
+                                var recentSupplierId = originalProduct.ChiTietPhieuNhaps
+                                    .OrderByDescending(ct => ct.PhieuNhap.NgayNhap)
+                                    .Select(ct => ct.PhieuNhap.MaNCC)
+                                    .FirstOrDefault();
+
+                                // Nếu có recent supplier và khác với supplier của phiếu nhập hiện tại → tạo bản copy sản phẩm
+                                if (recentSupplierId != 0 && phieuNhap.MaNCC != recentSupplierId && phieuNhap.MaNCC != null)
+                                {
+                                    var copy = new SanPham
+                                    {
+                                        TenSP = originalProduct.TenSP,
+                                        GiamGia = originalProduct.GiamGia,
+                                        GiaBan = 0m, // theo yêu cầu
+                                        MoTa = originalProduct.MoTa,
+                                        HinhAnh = originalProduct.HinhAnh,
+                                        SoLuongTon = 0, // sẽ được cập nhật bên dưới
+                                        MaDM = originalProduct.MaDM,
+                                        MaTH = originalProduct.MaTH,
+                                        MaLoai = originalProduct.MaLoai,
+                                        LoaiDa = originalProduct.LoaiDa,
+                                        VanDeChiRi = originalProduct.VanDeChiRi,
+                                        TonDaMau = originalProduct.TonDaMau,
+                                        ThanhPhanChiNhYeu = originalProduct.ThanhPhanChiNhYeu,
+                                        SoLanSuDungMoiTuan = originalProduct.SoLanSuDungMoiTuan,
+                                        DoTinCay = originalProduct.DoTinCay,
+                                        KichCoTieuChuan = originalProduct.KichCoTieuChuan,
+                                        NgayNhapKho = DateTime.Now,
+                                        TrangThaiSanPham = "Tạm ngưng"
+                                    };
+
+                                    db.SanPhams.Add(copy);
+                                    db.SaveChanges();
+
+                                    // Gán lại MaSP trong detail để liên kết với sản phẩm mới
+                                    d.MaSP = copy.MaSP;
+                                }
+                            }
+
                             d.MaPN = phieuNhap.MaPN; // Gán MaPN vừa sinh ra
                             d.ThanhTien = (d.SoLuong ?? 0) * (d.GiaNhap ?? 0);
 
@@ -115,6 +216,10 @@ namespace WebApplication15.Areas.Admin.Controllers
                                 sp.SoLuongTon = (sp.SoLuongTon ?? 0) + (d.SoLuong ?? 0);
                             }
                         }
+
+                        // Compute total for the PhieuNhap header and save it
+                        phieuNhap.TongTien = details.Sum(x => (x.ThanhTien ?? 0m));
+                        db.Entry(phieuNhap).State = EntityState.Modified;
 
                         db.SaveChanges();
                         tran.Commit();

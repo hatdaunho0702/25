@@ -1,66 +1,65 @@
 ﻿@model WebApplication15.Models.NguoiDung
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Chi tiết người dùng";
 }
 
-<h2>Details</h2>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h4 class="m-0">Thông Tin Chi Tiết</h4>
+                    <i class="fa fa-user-circle fa-2x"></i>
+                </div>
 
-<div>
-    <h4>NguoiDung</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.HoTen)
-        </dt>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <dl class="row">
+                                <dt class="col-sm-4 text-muted">@Html.DisplayNameFor(model => model.HoTen)</dt>
+                                <dd class="col-sm-8 font-weight-bold border-bottom pb-2">@Html.DisplayFor(model => model.HoTen)</dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.HoTen)
-        </dd>
+                                <dt class="col-sm-4 text-muted">@Html.DisplayNameFor(model => model.SoDienThoai)</dt>
+                                <dd class="col-sm-8 border-bottom pb-2">@Html.DisplayFor(model => model.SoDienThoai)</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.SoDienThoai)
-        </dt>
+                                <dt class="col-sm-4 text-muted">@Html.DisplayNameFor(model => model.DiaChi)</dt>
+                                <dd class="col-sm-8 border-bottom pb-2">@Html.DisplayFor(model => model.DiaChi)</dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.SoDienThoai)
-        </dd>
+                                <dt class="col-sm-4 text-muted">@Html.DisplayNameFor(model => model.GioiTinh)</dt>
+                                <dd class="col-sm-8 border-bottom pb-2">
+                                    @Html.DisplayFor(model => model.GioiTinh)
+                                </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.DiaChi)
-        </dt>
+                                <dt class="col-sm-4 text-muted">@Html.DisplayNameFor(model => model.NgaySinh)</dt>
+                                <dd class="col-sm-8 border-bottom pb-2">
+                                    @if (Model.NgaySinh != null)
+                                    {
+                                        @Convert.ToDateTime(Model.NgaySinh).ToString("dd/MM/yyyy")
+                                    }
+                                </dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.DiaChi)
-        </dd>
+                                <dt class="col-sm-4 text-muted">@Html.DisplayNameFor(model => model.NgayTao)</dt>
+                                <dd class="col-sm-8">
+                                    @if (Model.NgayTao != null)
+                                    {
+                                        @Convert.ToDateTime(Model.NgayTao).ToString("dd/MM/yyyy")
+                                    }
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.GioiTinh)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.GioiTinh)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.NgaySinh)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.NgaySinh)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.NgayTao)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.NgayTao)
-        </dd>
-
-    </dl>
+                <div class="card-footer text-center bg-light">
+                    <a href="@Url.Action("Edit", new { id = Model.MaND })" class="btn btn-warning shadow-sm mx-2">
+                        <i class="fa fa-edit"></i> Chỉnh sửa
+                    </a>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary shadow-sm mx-2">
+                        <i class="fa fa-arrow-left"></i> Quay lại danh sách
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.MaND }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>

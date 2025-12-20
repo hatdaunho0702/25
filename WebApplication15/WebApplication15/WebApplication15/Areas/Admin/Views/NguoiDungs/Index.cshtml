@@ -1,63 +1,78 @@
 ﻿@model IEnumerable<WebApplication15.Models.NguoiDung>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Danh sách người dùng";
 }
 
-<h2>Index</h2>
+<div class="container-fluid mt-4">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center bg-white">
+            <h5 class="m-0 font-weight-bold text-primary">Danh Sách Người Dùng</h5>
+            <a href="@Url.Action("Create")" class="btn btn-success btn-sm shadow-sm">
+                <i class="fa fa-plus"></i> Thêm mới
+            </a>
+        </div>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.HoTen)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.SoDienThoai)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.DiaChi)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.GioiTinh)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.NgaySinh)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.NgayTao)
-        </th>
-        <th></th>
-    </tr>
-
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.HoTen)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.SoDienThoai)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.DiaChi)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.GioiTinh)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.NgaySinh)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.NgayTao)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.MaND }) |
-            @Html.ActionLink("Details", "Details", new { id=item.MaND }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.MaND })
-        </td>
-    </tr>
-}
-
-</table>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="thead-light text-center">
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.HoTen)</th>
+                            <th>@Html.DisplayNameFor(model => model.SoDienThoai)</th>
+                            <th>@Html.DisplayNameFor(model => model.DiaChi)</th>
+                            <th width="100px">@Html.DisplayNameFor(model => model.GioiTinh)</th>
+                            <th>@Html.DisplayNameFor(model => model.NgaySinh)</th>
+                            <th>@Html.DisplayNameFor(model => model.NgayTao)</th>
+                            <th width="200px">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="align-middle font-weight-bold text-dark">
+                                    @Html.DisplayFor(modelItem => item.HoTen)
+                                </td>
+                                <td class="align-middle">
+                                    @Html.DisplayFor(modelItem => item.SoDienThoai)
+                                </td>
+                                <td class="align-middle">
+                                    @Html.DisplayFor(modelItem => item.DiaChi)
+                                </td>
+                                <td class="align-middle text-center">
+                                    @Html.DisplayFor(modelItem => item.GioiTinh)
+                                </td>
+                                <td class="align-middle">
+                                    @if (item.NgaySinh != null)
+                                    {
+                                        @Convert.ToDateTime(item.NgaySinh).ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                                <td class="align-middle text-muted small">
+                                    @if (item.NgayTao != null)
+                                    {
+                                        @Convert.ToDateTime(item.NgayTao).ToString("dd/MM/yyyy")
+                                    }
+                                </td>
+                                <td class="align-middle text-center">
+                                    <div class="btn-group" role="group">
+                                        <a href="@Url.Action("Edit", new { id = item.MaND })" class="btn btn-warning btn-sm" title="Sửa">
+                                            Sửa
+                                        </a>
+                                        <a href="@Url.Action("Details", new { id = item.MaND })" class="btn btn-info btn-sm" title="Chi tiết">
+                                            Xem
+                                        </a>
+                                        <a href="@Url.Action("Delete", new { id = item.MaND })" class="btn btn-danger btn-sm" title="Xóa">
+                                            Xóa
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -33,7 +33,6 @@
     </div>
 }
 
-<!-- Thống Kê Tồn Kho -->
 <div class="row mb-3">
     <div class="col-md-12">
         <div class="card">
@@ -76,44 +75,39 @@
                 <th>Tên Sản Phẩm</th>
                 <th>Nhà Cung Cấp</th>
                 <th>Giá Bán</th>
-                <th>Trạng Thái KD</th>
                 <th>Tồn Kho</th>
+                <th>Trạng Thái</th>
                 <th>Hành Động</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var sp in Model)
             {
+                // Logic màu sắc cho Tồn kho
                 var tonKhoClass = "badge-success";
                 var tonKhoText = sp.SoLuongTon ?? 0;
-                
-                // Color coding cho tồn kho
-                if (tonKhoText == 0)
+
+                if (tonKhoText == 0) { tonKhoClass = "badge-danger"; }
+                else if (tonKhoText < 10) { tonKhoClass = "badge-warning"; }
+
+                // Logic màu sắc cho Trạng thái
+                var trangThaiClass = "badge-secondary";
+                var trangThaiText = sp.TrangThaiSanPham ?? "Không xác định";
+
+                if (trangThaiText == "Kinh doanh")
                 {
-                    tonKhoClass = "badge-danger";
+                    trangThaiClass = "badge-success"; // Màu xanh lá
                 }
-                else if (tonKhoText < 10)
+                else if (trangThaiText == "Hết hàng")
                 {
-                    tonKhoClass = "badge-warning";
+                    trangThaiClass = "badge-danger"; // Màu đỏ
+                }
+                else if (trangThaiText == "Ngừng kinh doanh")
+                {
+                    trangThaiClass = "badge-dark"; // Màu đen/xám đậm
                 }
 
-                // Trạng thái kinh doanh
-                var statusText = string.IsNullOrEmpty(sp.TrangThaiSanPham) ? "Không xác định" : sp.TrangThaiSanPham;
-                var statusClass = "badge-secondary";
-                if (statusText.IndexOf("Kinh doanh", StringComparison.OrdinalIgnoreCase) >= 0 || statusText.IndexOf("kinh doanh", StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    statusClass = "badge-success";
-                }
-                else if (statusText.IndexOf("Hết", StringComparison.OrdinalIgnoreCase) >= 0 || statusText.IndexOf("hết", StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    statusClass = "badge-danger";
-                }
-                else if (statusText.IndexOf("Tạm", StringComparison.OrdinalIgnoreCase) >= 0 || statusText.IndexOf("Ngưng", StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    statusClass = "badge-warning";
-                }
-
-                // Lấy nhà cung cấp từ phiếu nhập gần nhất
+                // Lấy nhà cung cấp gần nhất
                 var recentSupplier = sp.ChiTietPhieuNhaps?
                     .OrderByDescending(ct => ct.PhieuNhap?.NgayNhap)
                     .Select(ct => ct.PhieuNhap?.NhaCungCap?.TenNCC)
@@ -127,8 +121,8 @@
                     <td>
                         @if (!string.IsNullOrEmpty(sp.HinhAnh))
                         {
-                            <img src="@Url.Content("~/Content/images/" + sp.HinhAnh)" 
-                                 alt="@sp.TenSP" 
+                            <img src="@Url.Content("~/Content/images/" + sp.HinhAnh)"
+                                 alt="@sp.TenSP"
                                  class="product-thumbnail" />
                         }
                         else
@@ -153,18 +147,20 @@
                         @((sp.GiaBan ?? 0m).ToString("N0")) đ
                     </td>
                     <td>
-                        <span class="badge @statusClass" style="font-size: 14px; padding: 6px 10px;">
-                            @statusText
-                        </span>
-                    </td>
-                    <td>
                         <span class="badge @tonKhoClass" style="font-size: 14px; padding: 8px 12px;">
-                            + @tonKhoText +
+                            + @tonKhoText
                         </span>
                     </td>
+
+                    <td>
+                        <span class="badge @trangThaiClass">
+                            @trangThaiText
+                        </span>
+                    </td>
+
                     <td>
                         <a class="btn btn-sm btn-primary" href="@Url.Action("Edit", new { id = sp.MaSP })" title="Sửa">✏️</a>
-                        <a class="btn btn-sm btn-danger" href="@Url.Action("Delete", new { id = sp.MaSP })" 
+                        <a class="btn btn-sm btn-danger" href="@Url.Action("Delete", new { id = sp.MaSP })"
                            onclick="return confirm('Bạn chắc chắn muốn xóa sản phẩm này?')" title="Xóa">🗑️</a>
                     </td>
                 </tr>
@@ -198,11 +194,8 @@
             if (!confirm('Bạn chắc chắn muốn xóa ' + selected.length + ' sản phẩm đã chọn?')) return;
 
             const form = document.getElementById('bulkDeleteForm');
-
-            // Xóa các input cũ nếu có
             document.querySelectorAll('input[name="idsToDelete"]').forEach(n => n.remove());
 
-            // Thêm các id được chọn vào form
             selected.forEach(id => {
                 const input = document.createElement('input');
                 input.type = 'hidden';
@@ -217,18 +210,13 @@
         // Xóa tất cả sản phẩm
         document.getElementById('btnDeleteAll').addEventListener('click', function (e) {
             e.preventDefault();
-
             const totalProducts = @Model.Count;
             if (totalProducts === 0) {
                 alert('Không có sản phẩm nào để xóa.');
                 return;
             }
-
             if (!confirm('⚠️ CẢNH BÁO: Bạn chắc chắn muốn xóa TẤT CẢ ' + totalProducts + ' sản phẩm?\n\nHành động này không thể hoàn tác!')) return;
-
-            // Xác nhận lần 2
             if (!confirm('Xác nhận lần cuối: Xóa TẤT CẢ sản phẩm?')) return;
-
             document.getElementById('deleteAllForm').submit();
         });
     </script>
@@ -238,7 +226,7 @@
     .table-datatable {
         font-size: 13px;
     }
-    
+
     .product-thumbnail {
         width: 60px;
         height: 60px;
@@ -259,13 +247,36 @@
         color: #999;
         font-size: 24px;
     }
-    
-    .badge-success { background-color: #28a745; }
-    .badge-warning { background-color: #ffc107; color: #000; }
-    .badge-danger { background-color: #dc3545; }
-    .badge-info { background-color: #17a2b8; }
-    .badge-secondary { background-color: #6c757d; }
-    .badge-primary { background-color: #007bff; }
+
+    .badge-success {
+        background-color: #28a745;
+    }
+
+    .badge-warning {
+        background-color: #ffc107;
+        color: #000;
+    }
+
+    .badge-danger {
+        background-color: #dc3545;
+    }
+
+    .badge-info {
+        background-color: #17a2b8;
+    }
+
+    .badge-secondary {
+        background-color: #6c757d;
+    }
+
+    .badge-primary {
+        background-color: #007bff;
+    }
+
+    .badge-dark {
+        background-color: #343a40;
+    }
+    /* Thêm màu tối cho trạng thái Ngừng KD */
 
     .me-2 {
         margin-right: 0.5rem;

@@ -1,86 +1,134 @@
 ﻿@model WebApplication15.Models.SanPham
 @{
+    ViewBag.Title = "Thêm sản phẩm mới";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
-
-<h2>➕ Thêm sản phẩm mới</h2>
-
-<div class="alert alert-info">
-    <strong>ℹ️ Lưu ý:</strong> Sản phẩm mới sẽ có số lượng tồn kho là <strong>0</strong>. Để nhập hàng và cập nhật số lượng, vui lòng sử dụng chức năng <a href="@Url.Action("Create", "PhieuNhap")" class="alert-link"><strong>Nhập Hàng</strong></a> sau khi tạo sản phẩm.
-</div>
 
 @using (Html.BeginForm("Create", "SanPham", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
 
-    <div class="form-row">
-        <div class="form-group col-md-6">
-            <label>Tên Sản Phẩm <span class="text-danger">*</span></label>
-            @Html.TextBoxFor(m => m.TenSP, new { @class = "form-control", required = "required" })
-        </div>
-        <div class="form-group col-md-3">
-            <label>Giá Bán <span class="text-danger">*</span></label>
-            @Html.TextBoxFor(m => m.GiaBan, new { @class = "form-control", type = "number", step = "1000", required = "required" })
-        </div>
-        <div class="form-group col-md-3">
-            <label>Giảm Giá (%)</label>
-            @Html.TextBoxFor(m => m.GiamGia, new { @class = "form-control", type = "number", step = "0.01", placeholder = "0" })
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Thêm sản phẩm mới</h1>
+        <div>
+            <a href="@Url.Action("Index")" class="btn btn-secondary btn-sm shadow-sm">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+            <button type="submit" class="btn btn-success btn-sm shadow-sm ml-2">
+                <i class="fas fa-save"></i> Lưu thông tin
+            </button>
         </div>
     </div>
 
-    <div class="form-group">
-        <label>Mô Tả</label>
-        @Html.TextAreaFor(m => m.MoTa, new { @class = "form-control", rows = 3 })
-    </div>
-
-    <div class="form-row">
-        <div class="form-group col-md-6">
-            <label>Hình Ảnh</label>
-            <input type="file" name="imageFile" id="imageFile" class="form-control" accept="image/*" />
-            <div id="imagePreview" style="margin-top: 10px;"></div>
-        </div>
-        <div class="form-group col-md-6">
-            <label>Kích Cỡ Tiêu Chuẩn</label>
-            @Html.TextBoxFor(m => m.KichCoTieuChuan, new { @class = "form-control", placeholder = "50ml, 100ml..." })
-        </div>
-    </div>
-
-    <div class="card mt-3 mb-3">
-        <div class="card-header bg-secondary text-white">
-            <strong>🏷️ Phân Loại Sản Phẩm</strong>
-        </div>
-        <div class="card-body">
-            <div class="form-row">
-                <div class="form-group col-md-4">
-                    <label>Loại Sản Phẩm <span class="text-danger">*</span></label>
-                    @Html.DropDownListFor(m => m.MaLoai, (SelectList)ViewBag.MaLoai, "-- Chọn Loại --", new { @class = "form-control", required = "required" })
+    <div class="row">
+        @* CỘT TRÁI: NHẬP LIỆU CHÍNH *@
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Thông tin chi tiết</h6>
                 </div>
-                <div class="form-group col-md-4">
-                    <label>Thương Hiệu <span class="text-danger">*</span></label>
-                    @Html.DropDownListFor(m => m.MaTH, (SelectList)ViewBag.MaTH, "-- Chọn Thương Hiệu --", new { @class = "form-control", required = "required" })
-                </div>
-                <div class="form-group col-md-4">
-                    <label>Danh Mục</label>
-                    @Html.DropDownListFor(m => m.MaDM, (SelectList)ViewBag.MaDM, "-- Chọn Danh Mục --", new { @class = "form-control" })
-                </div>
-            </div>
+                <div class="card-body">
+                    @* Tên SP *@
+                    <div class="form-group">
+                        <label class="font-weight-bold">Tên Sản Phẩm <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.TenSP, new { @class = "form-control form-control-lg", required = "required", placeholder = "Ví dụ: Son dưỡng môi..." })
+                    </div>
 
-            <div class="form-row mt-2">
-                <div class="form-group col-md-12">
-                    <label>Trạng Thái</label>
-                    @Html.DropDownListFor(m => m.TrangThaiSanPham,
-                        new List<SelectListItem> {
-                            new SelectListItem { Text = "Kinh doanh", Value = "Kinh doanh" },
-                            new SelectListItem { Text = "Ngừng kinh doanh", Value = "Ngừng kinh doanh" }
-                        }, new { @class = "form-control" })
+                    @* Giá bán & Giảm giá *@
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label class="font-weight-bold">Giá Bán (VNĐ) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                @Html.TextBoxFor(m => m.GiaBan, new { @class = "form-control", type = "number", step = "1000", required = "required" })
+                                <div class="input-group-append"><span class="input-group-text">đ</span></div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="font-weight-bold">Giảm Giá (%)</label>
+                            <div class="input-group">
+                                @Html.TextBoxFor(m => m.GiamGia, new { @class = "form-control", type = "number", step = "0.01", placeholder = "0" })
+                                <div class="input-group-append"><span class="input-group-text">%</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Kích cỡ *@
+                    <div class="form-group">
+                        <label class="font-weight-bold">Kích Cỡ Tiêu Chuẩn</label>
+                        @Html.TextBoxFor(m => m.KichCoTieuChuan, new { @class = "form-control", placeholder = "Ví dụ: 50ml, 100g..." })
+                    </div>
+
+                    @* Mô tả *@
+                    <div class="form-group">
+                        <label class="font-weight-bold">Mô Tả Sản Phẩm</label>
+                        @Html.TextAreaFor(m => m.MoTa, new { @class = "form-control", rows = 5, placeholder = "Viết mô tả chi tiết..." })
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="form-group">
-        <button type="submit" class="btn btn-success btn-lg">💾 Lưu thông tin</button>
-        <a href="@Url.Action("Index")" class="btn btn-secondary btn-lg">❌ Hủy</a>
+        @* CỘT PHẢI: PHÂN LOẠI & ẢNH *@
+        <div class="col-lg-4">
+
+            @* Cảnh báo kho *@
+            <div class="alert alert-warning shadow-sm">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Lưu ý:</strong> Tồn kho mặc định là <strong>0</strong>.
+                <a href="@Url.Action("Create", "PhieuNhap")" class="d-block mt-1 font-weight-bold">👉 Đi tới Nhập Hàng sau khi tạo</a>
+            </div>
+
+            @* Ảnh sản phẩm *@
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Hình ảnh & Trạng thái</h6>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-3 border rounded bg-light p-2" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                        <div id="imagePreview">
+                            <span class="text-muted small">Chưa chọn ảnh</span>
+                        </div>
+                    </div>
+
+                    <div class="text-left">
+                        <label class="font-weight-bold">Chọn ảnh bìa</label>
+                        <input type="file" name="imageFile" id="imageFile" class="form-control-file border p-1" accept="image/*" />
+                    </div>
+
+                    <hr />
+
+                    <div class="text-left">
+                        <label class="font-weight-bold">Trạng Thái Kinh Doanh</label>
+                        @Html.DropDownListFor(m => m.TrangThaiSanPham,
+                           new List<SelectListItem> {
+                               new SelectListItem { Text = "🟢 Đang kinh doanh", Value = "Kinh doanh" },
+                               new SelectListItem { Text = "🟡 Tạm ngưng", Value = "Tạm ngưng" },
+                               new SelectListItem { Text = "🔴 Ngừng kinh doanh", Value = "Ngừng kinh doanh" }
+                           }, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+
+            @* Phân loại *@
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Phân Loại</h6>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="font-weight-bold">Loại Sản Phẩm <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(m => m.MaLoai, (SelectList)ViewBag.MaLoai, "-- Chọn Loại --", new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="form-group">
+                        <label class="font-weight-bold">Thương Hiệu <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(m => m.MaTH, (SelectList)ViewBag.MaTH, "-- Chọn Thương Hiệu --", new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="form-group">
+                        <label class="font-weight-bold">Danh Mục</label>
+                        @Html.DropDownListFor(m => m.MaDM, (SelectList)ViewBag.MaDM, "-- Chọn Danh Mục --", new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 }
 
@@ -90,8 +138,12 @@
         const preview = document.getElementById('imagePreview');
         if (file) {
             const reader = new FileReader();
-            reader.onload = function (event) { preview.innerHTML = '<img src="' + event.target.result + '" style="max-width:200px" />'; };
+            reader.onload = function (event) {
+                preview.innerHTML = '<img src="' + event.target.result + '" style="max-width:100%; max-height: 200px; object-fit: contain;" class="rounded" />';
+            };
             reader.readAsDataURL(file);
-        } else { preview.innerHTML = ''; }
+        } else {
+            preview.innerHTML = '<span class="text-muted small">Chưa chọn ảnh</span>';
+        }
     });
 </script>

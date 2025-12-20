@@ -2,121 +2,168 @@
 
 @{
     ViewBag.Title = "Sửa sản phẩm";
-    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Sửa thông tin sản phẩm</h6>
-    </div>
-    <div class="card-body">
-        <div class="alert alert-info">
-            <strong>ℹ️ Lưu ý:</strong> Số lượng tồn kho không thể chỉnh sửa trực tiếp. Để cập nhật số lượng, vui lòng sử dụng chức năng <a href="@Url.Action("Create", "PhieuNhap")" class="alert-link"><strong>Nhập Hàng</strong></a>.
+@using (Html.BeginForm("Edit", "SanPham", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    @* Giữ nguyên Hidden Field *@
+    @Html.HiddenFor(model => model.MaSP)
+    @Html.HiddenFor(model => model.HinhAnh)
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Sửa thông tin sản phẩm</h1>
+        <div>
+            @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-secondary btn-sm shadow-sm" })
+            <button type="submit" class="btn btn-primary btn-sm shadow-sm ml-2">
+                <i class="fas fa-save fa-sm text-white-50"></i> Lưu thay đổi
+            </button>
         </div>
+    </div>
 
-        @using (Html.BeginForm("Edit", "SanPham", FormMethod.Post, new { enctype = "multipart/form-data" }))
-        {
-            @Html.AntiForgeryToken()
-
-            <div class="form-horizontal">
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
-                @* Hidden ID để Controller biết đang sửa dòng nào *@
-                @Html.HiddenFor(model => model.MaSP)
-
-                @* Giữ lại tên ảnh cũ phòng trường hợp user không up ảnh mới *@
-                @Html.HiddenFor(model => model.HinhAnh)
-
-                @* Tên sản phẩm *@
-                <div class="form-group row">
-                    @Html.LabelFor(model => model.TenSP, "Tên sản phẩm", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.TenSP, new { htmlAttributes = new { @class = "form-control" } })
+    <div class="row">
+        @* CỘT TRÁI: THÔNG TIN CHÍNH *@
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Thông tin chung</h6>
+                </div>
+                <div class="card-body">
+                    @* Tên sản phẩm *@
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TenSP, "Tên sản phẩm", new { @class = "control-label font-weight-bold" })
+                        @Html.EditorFor(model => model.TenSP, new { htmlAttributes = new { @class = "form-control form-control-lg", placeholder = "Nhập tên sản phẩm..." } })
                         @Html.ValidationMessageFor(model => model.TenSP, "", new { @class = "text-danger" })
                     </div>
-                </div>
 
-                @* Giá bán *@
-                <div class="form-group row">
-                    @Html.LabelFor(model => model.GiaBan, "Giá bán", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.GiaBan, new { htmlAttributes = new { @class = "form-control", type = "number" } })
-                        @Html.ValidationMessageFor(model => model.GiaBan, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-                @* Hiển thị số lượng tồn chỉ để xem (read-only) *@
-                <div class="form-group row">
-                    @Html.Label("Số lượng tồn kho", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        <input type="text" value="@(Model.SoLuongTon ?? 0)" class="form-control" readonly disabled />
-                        <small class="form-text text-muted">Số lượng tồn chỉ được cập nhật thông qua phiếu nhập hàng.</small>
-                    </div>
-                </div>
-
-                @* Mô tả *@
-                <div class="form-group row">
-                    @Html.LabelFor(model => model.MoTa, "Mô tả", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextAreaFor(model => model.MoTa, new { @class = "form-control", rows = "4" })
+                    @* Mô tả *@
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.MoTa, "Mô tả chi tiết", new { @class = "control-label font-weight-bold" })
+                        @Html.TextAreaFor(model => model.MoTa, new { @class = "form-control", rows = "6", placeholder = "Mô tả chi tiết về sản phẩm..." })
                         @Html.ValidationMessageFor(model => model.MoTa, "", new { @class = "text-danger" })
                     </div>
-                </div>
 
-                @* Loại sản phẩm *@
-                <div class="form-group row">
-                    @Html.LabelFor(model => model.MaLoai, "Loại sản phẩm", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.DropDownList("MaLoai", null, htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.MaLoai, "", new { @class = "text-danger" })
-                    </div>
-                </div>
+                    <hr />
 
-                @* Thương hiệu *@
-                <div class="form-group row">
-                    @Html.LabelFor(model => model.MaTH, "Thương hiệu", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.DropDownList("MaTH", null, htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.MaTH, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-                @* Danh mục *@
-                <div class="form-group row">
-                    @Html.LabelFor(model => model.MaDM, "Danh mục", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.DropDownList("MaDM", null, htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.MaDM, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-                @* Hình ảnh *@
-                <div class="form-group row">
-                    @Html.Label("Hình ảnh", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @* Hiển thị ảnh hiện tại *@
-                        @if (!string.IsNullOrEmpty(Model.HinhAnh))
-                        {
-                            <div class="mb-2">
-                                <img src="@Url.Content("~/Images/" + Model.HinhAnh)" alt="Ảnh hiện tại" style="width: 150px; height: auto; object-fit: cover; border: 1px solid #ddd;" />
+                    <div class="row">
+                        @* Giá bán *@
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.GiaBan, "Giá bán", new { @class = "control-label font-weight-bold" })
+                                <div class="input-group">
+                                    @Html.EditorFor(model => model.GiaBan, new { htmlAttributes = new { @class = "form-control", type = "number" } })
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">VNĐ</span>
+                                    </div>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.GiaBan, "", new { @class = "text-danger" })
                             </div>
-                        }
+                        </div>
 
-                        @* Input chọn ảnh mới *@
-                        <input type="file" name="ImageUpload" class="form-control-file" accept="image/*" />
-                        <small class="text-muted">Để trống nếu không muốn thay đổi ảnh.</small>
-                        @Html.ValidationMessageFor(model => model.HinhAnh, "", new { @class = "text-danger" })
+                        @* Loại sản phẩm *@
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.MaLoai, "Loại sản phẩm", new { @class = "control-label font-weight-bold" })
+                                @Html.DropDownList("MaLoai", null, htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.MaLoai, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                @* Nút Submit *@
-                <div class="form-group row mt-4">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" value="Lưu thay đổi" class="btn btn-primary" />
-                        @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-secondary ml-2" })
+                    <div class="row">
+                        @* Thương hiệu *@
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.MaTH, "Thương hiệu", new { @class = "control-label font-weight-bold" })
+                                @Html.DropDownList("MaTH", null, htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.MaTH, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        @* Danh mục *@
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.MaDM, "Danh mục", new { @class = "control-label font-weight-bold" })
+                                @Html.DropDownList("MaDM", null, htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.MaDM, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        }
+        </div>
+
+        @* CỘT PHẢI: ẢNH & TRẠNG THÁI *@
+        <div class="col-lg-4">
+            @* Card Hình Ảnh *@
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Hình ảnh sản phẩm</h6>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        @if (!string.IsNullOrEmpty(Model.HinhAnh))
+                        {
+                            <img src="@Url.Content("~/Content/images/" + Model.HinhAnh)"
+                                 class="img-fluid rounded border"
+                                 style="max-height: 250px; width: 100%; object-fit: contain; background-color: #f8f9fa;"
+                                 alt="Ảnh hiện tại" />
+                        }
+                        else
+                        {
+                            <div class="p-5 bg-light border rounded text-muted">Chưa có ảnh</div>
+                        }
+                    </div>
+
+                    <div class="custom-file text-left">
+                        <label class="small font-weight-bold">Thay đổi ảnh:</label>
+                        <input type="file" name="ImageUpload" class="form-control-file border p-1" accept="image/*" />
+                        <small class="text-muted d-block mt-1">Hỗ trợ: .jpg, .png, .jpeg</small>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.HinhAnh, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            @* Card Trạng Thái & Kho *@
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Thiết lập</h6>
+                </div>
+                <div class="card-body">
+                    @* Trạng thái *@
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TrangThaiSanPham, "Trạng thái kinh doanh", new { @class = "control-label font-weight-bold" })
+                        @Html.DropDownListFor(m => m.TrangThaiSanPham,
+                            new List<SelectListItem> {
+                                new SelectListItem { Text = "🟢 Đang kinh doanh", Value = "Kinh doanh" },
+                                new SelectListItem { Text = "🟡 Tạm ngưng", Value = "Tạm ngưng" },
+                                new SelectListItem { Text = "🔴 Ngừng kinh doanh", Value = "Ngừng kinh doanh" }
+                            }, "-- Chọn trạng thái --", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.TrangThaiSanPham, "", new { @class = "text-danger" })
+                    </div>
+
+                    <hr />
+
+                    @* Tồn kho (Read only) *@
+                    <div class="form-group">
+                        <label class="font-weight-bold">Kho hàng hiện tại</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-light font-weight-bold">SL</span>
+                            </div>
+                            <input type="text" value="@(Model.SoLuongTon ?? 0)" class="form-control bg-white text-dark font-weight-bold" readonly disabled />
+                        </div>
+                        <div class="alert alert-warning mt-3 mb-0 p-2 small">
+                            <i class="fa fa-info-circle"></i>
+                            Cần nhập thêm hàng? <br />
+                            <a href="@Url.Action("Create", "PhieuNhap")" class="font-weight-bold text-dark" style="text-decoration: underline;">Đến trang Nhập Hàng</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+}

@@ -7,6 +7,7 @@ using System.IO;
 using WebApplication15.Areas.Admin.Data;
 using WebApplication15.Models;
 using System.Data.SqlClient;
+using System.Data.Entity;
 
 namespace WebApplication15.Areas.Admin.Controllers
 {
@@ -223,25 +224,119 @@ namespace WebApplication15.Areas.Admin.Controllers
             return Save(sp, imageFile);
         }
 
+        private bool HasOrderReferences(int maSP)
+        {
+            return db.ChiTietDonHangs.Any(ct => ct.MaSP == maSP);
+        }
+
+        private void RemoveSafeDependents(int maSP)
+        {
+            // Remove reviews
+            var reviews = db.DanhGias.Where(d => d.MaSP == maSP).ToList();
+            if (reviews.Any())
+                db.DanhGias.RemoveRange(reviews);
+
+            // Remove inventory details (ChiTietPhieuNhap)
+            var chiNhaps = db.ChiTietPhieuNhaps.Where(c => c.MaSP == maSP).ToList();
+            if (chiNhaps.Any())
+                db.ChiTietPhieuNhaps.RemoveRange(chiNhaps);
+
+            // Remove link table SanPham_ThuocTinh if exists (ThuocTinhMyPhams mapping)
+            // EF model likely exposes ThuocTinhMyPhams navigation; remove entries via raw SQL if needed
+            try
+            {
+                var linkRows = db.Database.SqlQuery<int?>("SELECT MaThuocTinh FROM SanPham_ThuocTinh WHERE MaSP = @p0", maSP).ToList();
+                if (linkRows.Any())
+                {
+                    db.Database.ExecuteSqlCommand("DELETE FROM SanPham_ThuocTinh WHERE MaSP = @p0", maSP);
+                }
+            }
+            catch
+            {
+                // ignore if table not present in schema
+            }
+        }
+
         public ActionResult Delete(int id)
         {
             try
             {
                 var sp = db.SanPhams.Find(id);
-                if (sp != null)
+                if (sp == null)
                 {
-                    if (!string.IsNullOrEmpty(sp.HinhAnh))
-                        DeleteUploadedFile(sp.HinhAnh);
-
-                    db.SanPhams.Remove(sp);
-                    db.SaveChanges();
-                    TempData["SuccessMessage"] = "Xóa sản phẩm thành công!";
+                    TempData["ErrorMessage"] = "Không tìm thấy sản phẩm.";
                     return RedirectToAction("Index");
                 }
-            }
-            catch (System.Data.Entity.Infrastructure.DbUpdateException)
-            {
-                TempData["ErrorMessage"] = "Không thể xóa sản phẩm này vì còn có đơn hàng hoặc đánh giá liên quan.";
+
+                // Count dependents
+                int orderRefs = db.ChiTietDonHangs.Count(ct => ct.MaSP == id);
+                int reviewRefs = db.DanhGias.Count(d => d.MaSP == id);
+                int chiNhapRefs = db.ChiTietPhieuNhaps.Count(c => c.MaSP == id);
+                int thuocTinhRefs = 0;
+                try
+                {
+                    thuocTinhRefs = db.Database.SqlQuery<int>("SELECT COUNT(1) FROM SanPham_ThuocTinh WHERE MaSP = @p0", id).Single();
+                }
+                catch
+                {
+                    // ignore if mapping table doesn't exist
+                }
+
+                if (orderRefs > 0)
+                {
+                    TempData["ErrorMessage"] = $"Không thể xóa sản phẩm vì có {orderRefs} chi tiết đơn hàng liên quan. Nếu bạn chắc chắn, hãy kiểm tra và xóa đơn hàng trước.";
+                    return RedirectToAction("Index");
+                }
+
+                using (var tran = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        // remove safe dependent rows first
+                        if (reviewRefs > 0)
+                        {
+                            var reviews = db.DanhGias.Where(d => d.MaSP == id).ToList();
+                            db.DanhGias.RemoveRange(reviews);
+                        }
+
+                        if (chiNhapRefs > 0)
+                        {
+                            var chiNhaps = db.ChiTietPhieuNhaps.Where(c => c.MaSP == id).ToList();
+                            db.ChiTietPhieuNhaps.RemoveRange(chiNhaps);
+                        }
+
+                        try
+                        {
+                            if (thuocTinhRefs > 0)
+                            {
+                                db.Database.ExecuteSqlCommand("DELETE FROM SanPham_ThuocTinh WHERE MaSP = @p0", id);
+                            }
+                        }
+                        catch { }
+
+                        db.SaveChanges();
+
+                        if (!string.IsNullOrEmpty(sp.HinhAnh))
+                            DeleteUploadedFile(sp.HinhAnh);
+
+                        db.SanPhams.Remove(sp);
+                        db.SaveChanges();
+                        tran.Commit();
+
+                        TempData["SuccessMessage"] = "Xóa sản phẩm thành công!";
+                        return RedirectToAction("Index");
+                    }
+                    catch (Exception ex)
+                    {
+                        tran.Rollback();
+                        System.Diagnostics.Debug.WriteLine("Error deleting product with dependents: " + ex.Message);
+
+                        // Provide detailed info to admin to help debugging
+                        TempData["ErrorMessage"] = "Không thể xóa sản phẩm do có dữ liệu liên quan hoặc lỗi cơ sở dữ liệu. " +
+                            $"(Đơn hàng: {orderRefs}, Nhập kho: {chiNhapRefs}, Đánh giá: {reviewRefs}, Thuộc tính: {thuocTinhRefs})";
+                        return RedirectToAction("Index");
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -266,13 +361,40 @@ namespace WebApplication15.Areas.Admin.Controllers
                         try
                         {
                             var sp = db.SanPhams.Find(id);
-                            if (sp != null)
+                            if (sp == null)
                             {
-                                if (!string.IsNullOrEmpty(sp.HinhAnh))
-                                    DeleteUploadedFile(sp.HinhAnh);
+                                failedCount++;
+                                continue;
+                            }
 
-                                db.SanPhams.Remove(sp);
-                                deletedCount++;
+                            int orderRefs = db.ChiTietDonHangs.Count(ct => ct.MaSP == id);
+                            if (orderRefs > 0)
+                            {
+                                failedCount++;
+                                continue;
+                            }
+
+                            using (var tran = db.Database.BeginTransaction())
+                            {
+                                try
+                                {
+                                    // remove safe dependents
+                                    RemoveSafeDependents(id);
+                                    db.SaveChanges();
+
+                                    if (!string.IsNullOrEmpty(sp.HinhAnh))
+                                        DeleteUploadedFile(sp.HinhAnh);
+
+                                    db.SanPhams.Remove(sp);
+                                    db.SaveChanges();
+                                    tran.Commit();
+                                    deletedCount++;
+                                }
+                                catch
+                                {
+                                    tran.Rollback();
+                                    failedCount++;
+                                }
                             }
                         }
                         catch
@@ -281,13 +403,11 @@ namespace WebApplication15.Areas.Admin.Controllers
                         }
                     }
 
-                    db.SaveChanges();
-
                     if (deletedCount > 0)
                         TempData["SuccessMessage"] = $"Đã xóa {deletedCount} sản phẩm thành công!";
                     
                     if (failedCount > 0)
-                        TempData["ErrorMessage"] = $"Không thể xóa {failedCount} sản phẩm vì còn có đơn hàng hoặc đánh giá liên quan.";
+                        TempData["ErrorMessage"] = $"Không thể xóa {failedCount} sản phẩm vì có đơn hàng hoặc dữ liệu liên quan.";
                 }
                 else
                 {
@@ -316,19 +436,40 @@ namespace WebApplication15.Areas.Admin.Controllers
                 {
                     try
                     {
-                        if (!string.IsNullOrEmpty(sp.HinhAnh))
-                            DeleteUploadedFile(sp.HinhAnh);
+                        int orderRefs = db.ChiTietDonHangs.Count(ct => ct.MaSP == sp.MaSP);
+                        if (orderRefs > 0)
+                        {
+                            failedCount++;
+                            continue;
+                        }
 
-                        db.SanPhams.Remove(sp);
-                        deletedCount++;
+                        using (var tran = db.Database.BeginTransaction())
+                        {
+                            try
+                            {
+                                RemoveSafeDependents(sp.MaSP);
+                                db.SaveChanges();
+
+                                if (!string.IsNullOrEmpty(sp.HinhAnh))
+                                    DeleteUploadedFile(sp.HinhAnh);
+
+                                db.SanPhams.Remove(sp);
+                                db.SaveChanges();
+                                tran.Commit();
+                                deletedCount++;
+                            }
+                            catch
+                            {
+                                tran.Rollback();
+                                failedCount++;
+                            }
+                        }
                     }
                     catch
                     {
                         failedCount++;
                     }
                 }
-
-                db.SaveChanges();
 
                 if (deletedCount > 0)
                     TempData["SuccessMessage"] = $"Đã xóa {deletedCount} sản phẩm thành công!";
@@ -341,6 +482,72 @@ namespace WebApplication15.Areas.Admin.Controllers
                 TempData["ErrorMessage"] = "Có lỗi xảy ra khi xóa tất cả: " + ex.Message;
             }
 
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ForceDelete(int id)
+        {
+            try
+            {
+                var sp = db.SanPhams.Find(id);
+                if (sp == null)
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy sản phẩm.";
+                    return RedirectToAction("Index");
+                }
+
+                int orderRefs = db.ChiTietDonHangs.Count(ct => ct.MaSP == id);
+                if (orderRefs > 0)
+                {
+                    TempData["ErrorMessage"] = $"Không thể xóa sản phẩm vì có {orderRefs} chi tiết đơn hàng liên quan.";
+                    return RedirectToAction("Index");
+                }
+
+                using (var tran = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        // Remove reviews
+                        var reviews = db.DanhGias.Where(d => d.MaSP == id).ToList();
+                        if (reviews.Any()) db.DanhGias.RemoveRange(reviews);
+
+                        // Remove chi tiet phieu nhap
+                        var chiNhaps = db.ChiTietPhieuNhaps.Where(c => c.MaSP == id).ToList();
+                        if (chiNhaps.Any()) db.ChiTietPhieuNhaps.RemoveRange(chiNhaps);
+
+                        // Remove mapping rows if table exists
+                        try
+                        {
+                            db.Database.ExecuteSqlCommand("DELETE FROM SanPham_ThuocTinh WHERE MaSP = @p0", id);
+                        }
+                        catch { }
+
+                        db.SaveChanges();
+
+                        if (!string.IsNullOrEmpty(sp.HinhAnh))
+                            DeleteUploadedFile(sp.HinhAnh);
+
+                        db.SanPhams.Remove(sp);
+                        db.SaveChanges();
+                        tran.Commit();
+
+                        TempData["SuccessMessage"] = "Đã xóa sản phẩm và các dữ liệu phụ liên quan thành công.";
+                        return RedirectToAction("Index");
+                    }
+                    catch (Exception ex)
+                    {
+                        tran.Rollback();
+                        TempData["ErrorMessage"] = "Xóa không thành công: " + ex.Message;
+                        return RedirectToAction("Index");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Có lỗi khi xóa sản phẩm: " + ex.Message;
+            }
             return RedirectToAction("Index");
         }
     }

@@ -1,4 +1,5 @@
-﻿@model IEnumerable<WebApplication15.Models.DanhGia>
+﻿
+@model IEnumerable<WebApplication15.Models.DanhGia>
 
 @{
     ViewBag.Title = "Danh sách đánh giá";
@@ -9,6 +10,8 @@
 @using (Html.BeginForm("DeleteSelected", "DanhGias", FormMethod.Post, new { area = "Admin" }))
 {
     <div class="d-flex gap-2 mb-3">
+        @Html.ActionLink("➕ Thêm đánh giá", "Create", null, new { @class = "btn btn-success" })
+
         <button type="submit" class="btn btn-danger"
                 onclick="return confirm('Bạn chắc chắn muốn xóa các đánh giá đã chọn?');">
             🗑 Xóa nhiều

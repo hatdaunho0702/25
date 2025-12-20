@@ -7,9 +7,16 @@
 <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Quản lý xuất kho</h1>
-        <a href="@Url.Action("Create", "PhieuXuat", new { area = "Admin" })" class="btn btn-primary shadow-sm">
-            <i class="fa-solid fa-plus"></i> Tạo phiếu xuất mới
-        </a>
+        <div>
+            <a href="@Url.Action("Create", "PhieuXuat", new { area = "Admin" })" class="btn btn-primary shadow-sm">
+                <i class="fa-solid fa-plus"></i> Tạo phiếu xuất mới
+            </a>
+            @using (Html.BeginForm("RecalculateTotals", "PhieuXuat", FormMethod.Post, new { area = "Admin", @class = "d-inline" }))
+            {
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-sm btn-outline-secondary ms-2">Cập nhật tổng tiền</button>
+            }
+        </div>
     </div>
 
     <div class="card shadow mb-4">

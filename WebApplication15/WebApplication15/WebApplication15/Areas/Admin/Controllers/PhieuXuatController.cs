@@ -39,6 +39,42 @@ namespace WebApplication15.Areas.Admin.Controllers
             return View(list);
         }
 
+        // Utility: Recalculate totals for existing PhieuXuats from their ChiTietPhieuXuats
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult RecalculateTotals()
+        {
+            try
+            {
+                var phieus = db.PhieuXuats.Include("ChiTietPhieuXuats").ToList();
+                int updated = 0;
+                foreach (var p in phieus)
+                {
+                    decimal sum = 0m;
+                    if (p.ChiTietPhieuXuats != null && p.ChiTietPhieuXuats.Any())
+                    {
+                        sum = p.ChiTietPhieuXuats.Sum(ct => (ct.ThanhTien ?? 0m));
+                    }
+
+                    if (p.TongTien == null || p.TongTien != sum)
+                    {
+                        p.TongTien = sum;
+                        db.Entry(p).State = EntityState.Modified;
+                        updated++;
+                    }
+                }
+
+                db.SaveChanges();
+                TempData["SuccessMessage"] = $"Đã cập nhật tổng tiền cho {updated} phiếu xuất.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Lỗi khi cập nhật tổng tiền: " + ex.Message;
+            }
+
+            return RedirectToAction("Index");
+        }
+
         // GET: Admin/PhieuXuat/Create
         public ActionResult Create()
         {
