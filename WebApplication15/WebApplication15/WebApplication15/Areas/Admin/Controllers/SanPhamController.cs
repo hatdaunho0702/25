@@ -81,6 +81,8 @@ namespace WebApplication15.Areas.Admin.Controllers
                 // Load products with related data for suppliers
                 var sanPhams = db.SanPhams
                     .Include("ChiTietPhieuNhaps.PhieuNhap.NhaCungCap")
+                    // include KhuyenMais navigation so views can access promotions related to each product
+                    .Include("KhuyenMais")
                     .ToList();
                 return View(sanPhams);
             }

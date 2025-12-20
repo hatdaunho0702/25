@@ -76,6 +76,7 @@
                 <th>Tên Sản Phẩm</th>
                 <th>Nhà Cung Cấp</th>
                 <th>Giá Bán</th>
+                <th>Giảm Giá</th>
                 <th>Trạng Thái KD</th>
                 <th>Tồn Kho</th>
                 <th>Hành Động</th>
@@ -151,6 +152,40 @@
                     </td>
                     <td class="fw-bold text-primary">
                         @((sp.GiaBan ?? 0m).ToString("N0")) đ
+                    </td>
+                    <td class="text-center">
+                        @{
+                            // Determine active percentage discount for this product.
+                            decimal percent = 0m;
+                            try
+                            {
+                                var now = DateTime.Now;
+                                if (sp.KhuyenMais != null)
+                                {
+                                    percent = sp.KhuyenMais
+                                        .Where(k => k.LoaiGiamGia == "PhanTram" && (k.TrangThai == true) &&
+                                               (!k.NgayBatDau.HasValue || k.NgayBatDau <= now) &&
+                                               (!k.NgayKetThuc.HasValue || k.NgayKetThuc >= now))
+                                        .Select(k => k.GiaTriGiam)
+                                        .DefaultIfEmpty(0m)
+                                        .Max();
+                                }
+                            }
+                            catch { percent = 0m; }
+
+                            if (percent > 0m)
+                            {
+                                <span class="text-danger fw-bold">-@percent.ToString("0.##")%</span>
+                            }
+                            else if ((sp.GiamGia ?? 0m) > 0m)
+                            {
+                                <span class="text-danger fw-bold">-@((sp.GiamGia ?? 0m).ToString("0.##"))%</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        }
                     </td>
                     <td>
                         <span class="badge @statusClass" style="font-size: 14px; padding: 6px 10px;">

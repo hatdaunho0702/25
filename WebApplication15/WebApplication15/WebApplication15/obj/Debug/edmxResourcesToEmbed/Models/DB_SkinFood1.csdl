@@ -121,6 +121,7 @@
     <NavigationProperty Name="PhieuNhaps" Relationship="Self.FK__PhieuNhap__MaND__5FB337D6" FromRole="NguoiDung" ToRole="PhieuNhap" />
     <NavigationProperty Name="PhieuXuats" Relationship="Self.FK__PhieuXuat__MaND__6A30C649" FromRole="NguoiDung" ToRole="PhieuXuat" />
     <NavigationProperty Name="TaiKhoans" Relationship="Self.FK__TaiKhoan__MaND__3D5E1FD2" FromRole="NguoiDung" ToRole="TaiKhoan" />
+    <Property Name="Avatar" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
   </EntityType>
   <EntityType Name="NhaCungCap">
     <Key>

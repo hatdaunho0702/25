@@ -1,0 +1,75 @@
+﻿@model WebApplication15.Models.KhuyenMai
+
+@{
+    ViewBag.Title = "Xem chi tiết Khuyến mãi";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="m-0">Chi tiết Khuyến mãi</h5>
+        <div>
+            <a href="@Url.Action("Edit", new { id = Model.MaKM })" class="btn btn-sm btn-info"><i class="fa fa-edit"></i> Sửa</a>
+            <a href="@Url.Action("Index")" class="btn btn-sm btn-secondary">Quay lại</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Mã KM</dt>
+            <dd class="col-sm-9">@Model.MaKM</dd>
+
+            <dt class="col-sm-3">Mã Code</dt>
+            <dd class="col-sm-9">@Model.MaCode</dd>
+
+            <dt class="col-sm-3">Tên chương trình</dt>
+            <dd class="col-sm-9">@Model.TenChuongTrinh</dd>
+
+            <dt class="col-sm-3">Loại giảm</dt>
+            <dd class="col-sm-9">@Model.LoaiGiamGia</dd>
+
+            <dt class="col-sm-3">Giá trị giảm</dt>
+            <dd class="col-sm-9">
+                @if (Model.LoaiGiamGia == "PhanTram")
+                {
+                    <span class="text-danger">-@Model.GiaTriGiam% (Tối đa: @string.Format("{0:N0}", Model.GiamToiDa))</span>
+                }
+                else
+                {
+                    <span class="text-danger">-@string.Format("{0:N0}", Model.GiaTriGiam) đ</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">Thời gian</dt>
+            <dd class="col-sm-9">Từ: @(Model.NgayBatDau?.ToString("dd/MM/yyyy")) - Đến: @(Model.NgayKetThuc?.ToString("dd/MM/yyyy"))</dd>
+
+            <dt class="col-sm-3">Trạng thái</dt>
+            <dd class="col-sm-9">@(Model.TrangThai == true ? "Đã phát hành" : "Chưa phát hành")</dd>
+
+            <dt class="col-sm-3">Số lượng phát hành</dt>
+            <dd class="col-sm-9">@Model.SoLuongPhatHanh</dd>
+
+            <dt class="col-sm-3">Số lượng đã dùng</dt>
+            <dd class="col-sm-9">@Model.SoLuongDaDung</dd>
+
+            <dt class="col-sm-3">Đơn hàng tối thiểu</dt>
+            <dd class="col-sm-9">@Model.DonHangToiThieu</dd>
+
+            <dt class="col-sm-3">Sản phẩm áp dụng</dt>
+            <dd class="col-sm-9">
+                @if (Model.SanPhams != null && Model.SanPhams.Any())
+                {
+                    <ul>
+                        @foreach (var p in Model.SanPhams)
+                        {
+                            <li>@p.TenSP (Mã: @p.MaSP)</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <span class="text-muted">Áp dụng cho tất cả sản phẩm</span>
+                }
+            </dd>
+        </dl>
+    </div>
+</div>

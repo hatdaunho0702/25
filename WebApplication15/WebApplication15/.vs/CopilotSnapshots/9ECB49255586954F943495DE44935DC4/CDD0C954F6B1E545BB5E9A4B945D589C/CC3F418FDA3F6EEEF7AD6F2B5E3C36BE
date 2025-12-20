@@ -1,0 +1,223 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+
+    @Styles.Render("~/Content/css")
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="~/Content/styles.scss.css" rel="stylesheet" />
+    <style>
+        .user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: inline-block;
+            vertical-align: middle;
+            border: 1px solid rgba(0,0,0,0.06);
+        }
+        .user-avatar-wrap { width:36px; height:36px; display:inline-block; border-radius:50%; overflow:hidden; }
+    </style>
+    <link href="~/CSS/chatbox.css" rel="stylesheet" />
+    <link href="~/Content/cssnew.scss.css" rel="stylesheet" />
+    <link href="~/Content/responsive.css" rel="stylesheet" />
+    <link href="~/Content/MyCusTomLayOut.css" rel="stylesheet" />
+    <link href="~/CSS/StyleSheet1.css" rel="stylesheet" />
+    @Scripts.Render("~/bundles/modernizr")
+    <style>
+    </style>
+</head>
+
+
+<body>
+    @*banner*@
+    <section class="top-page-banner" style="text-align: center; background-color: #000; line-height: 0;">
+        <a href="#">
+            <picture>
+                <source media="(min-width:768px)"
+                        srcset="https://cdn.hstatic.net/files/1000006063/file/1920x50__dcc483700bc146ce9904885d5c1c11af.jpg"
+                        rel="nofollow">
+                <source media="(max-width:767px)"
+                        srcset="https://cdn.hstatic.net/files/1000006063/file/414x68_2794ebe66cb348e1a76b6f94c2fee1b6.jpg"
+                        rel="nofollow">
+                <img src="https://cdn.hstatic.net/files/1000006063/file/414x68_2794ebe66cb348e1a76b6f94c2fee1b6.jpg "
+                     alt="Banner"
+                     style="width:auto; max-width: 100%;"
+                     class=" ls-is-cached lazyloaded"
+                     rel="nofollow">
+            </picture>
+        </a>
+    </section>
+
+    @**@
+    <section class="f-header-top">
+        <div class="container">
+            <div class="f-header-top-wrap">
+                <div class="f-header-top-mb">
+                    <a href="javascript:void(0);" class="js-toggle-mobile-menu">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2.58611 8.03711C1.15784 8.03711 0 9.13981 0 10.5001C0 11.8603 1.15784 12.963 2.58611 12.963C4.01439 12.963 5.17223 11.8603 5.17223 10.5001C5.17223 9.13981 4.01439 8.03711 2.58611 8.03711ZM2.58611 11.9577C1.74083 11.9577 1.05556 11.3051 1.05556 10.5001C1.05556 9.69504 1.74083 9.0424 2.58611 9.0424C3.4314 9.0424 4.11667 9.69504 4.11667 10.5001C4.11667 11.3051 3.43145 11.9577 2.58611 11.9577Z" fill="#212121"></path>
+                            <path d="M18.8945 9.99744H6.96668C6.67519 9.99744 6.4389 10.2225 6.4389 10.5001C6.4389 10.7777 6.67519 11.0027 6.96668 11.0027H18.8945C19.186 11.0027 19.4222 10.7777 19.4222 10.5001C19.4222 10.2225 19.186 9.99744 18.8945 9.99744Z" fill="#212121"></path>
+                            <path d="M2.58611 1C1.15784 1 0 2.10271 0 3.46297C0 4.82322 1.15784 5.92593 2.58611 5.92593C4.01439 5.92593 5.17223 4.82322 5.17223 3.46297C5.17223 2.10271 4.01439 1 2.58611 1ZM2.58611 4.92064C1.74083 4.92064 1.05556 4.268 1.05556 3.46297C1.05556 2.65793 1.74083 2.00529 2.58611 2.00529C3.4314 2.00529 4.11667 2.65793 4.11667 3.46297C4.11667 4.268 3.43145 4.92064 2.58611 4.92064Z" fill="#212121"></path>
+                            <path d="M6.96668 3.96562H18.8945C19.186 3.96562 19.4222 3.74059 19.4222 3.46297C19.4222 3.18536 19.186 2.96033 18.8945 2.96033H6.96668C6.67519 2.96033 6.4389 3.18536 6.4389 3.46297C6.4389 3.74059 6.67519 3.96562 6.96668 3.96562Z" fill="#212121"></path>
+                            <path d="M2.58611 15.074C1.15784 15.074 0 16.1767 0 17.5369C0 18.8972 1.15784 19.9999 2.58611 19.9999C4.01439 19.9999 5.17223 18.8972 5.17223 17.5369C5.17223 16.1767 4.01439 15.074 2.58611 15.074ZM4.11667 17.5369C4.11667 18.342 3.4314 18.9946 2.58611 18.9946C1.74083 18.9946 1.05556 18.342 1.05556 17.5369C1.05556 16.7319 1.74083 16.0793 2.58611 16.0793C3.4314 16.0793 4.11667 16.7319 4.11667 17.5369Z" fill="#212121"></path>
+                            <path d="M18.8945 17.0343H6.96668C6.67519 17.0343 6.4389 17.2593 6.4389 17.5369C6.4389 17.8146 6.67519 18.0396 6.96668 18.0396H18.8945C19.186 18.0396 19.4222 17.8146 19.4222 17.5369C19.4222 17.2593 19.186 17.0343 18.8945 17.0343Z" fill="#212121"></path>
+                        </svg>
+                    </a>
+                </div>
+
+                <div class="f-header-top-logo">
+                    <a href="@Url.Action("Index", "Home")" class="top-logo">
+                        <img class="img-fluid" alt="THẾ GIỚI SKINFOOD" src="//theme.hstatic.net/1000006063/1001370907/14/logo.png?v=1968" rel="nofollow">
+                    </a>
+                </div>
+
+                <div class="f-header-top-search">
+                    <form action="@Url.Action("TimKiem", "Home")" method="get" class="d-flex">
+                        <input type="text" name="keyword" class="form-control" placeholder="Tìm sản phẩm..." />
+                        <button type="submit" class="btn btn-primary ms-2">Tìm</button>
+                    </form>
+
+                    <div class="f-header-top-search-keywords">
+                    </div>
+                </div>
+
+                <div class="f-header-top-tools">
+                    <div class="f-header-top-info">
+                        Hotline: 1900 JQKA
+                    </div>
+
+                    <span class="vertical-bar">|</span>
+
+                    <div class="f-header-top-icons">
+                        <a href="@Url.Action("Account", "User")" class="f-header-top-icon-account" title="Tài khoản">
+                            @if (!string.IsNullOrEmpty(avatarFile))
+                            {
+                                var avatarPath = Url.Content("~/Content/avatars/" + avatarFile);
+                                <span class="user-avatar-wrap"><img src="@avatarPath" alt="avatar" class="user-avatar" /></span>
+                            }
+                            else
+                            {
+                                <svg width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M11 13.125C14.3827 13.125 17.125 10.3827 17.125 7C17.125 3.61726 14.3827 0.875 11 0.875C7.61723 0.875 4.87497 3.61726 4.87497 7C4.87497 10.3827 7.61723 13.125 11 13.125ZM11 14C14.866 14 18 10.866 18 7C18 3.13401 14.866 0 11 0C7.13398 0 3.99997 3.13401 3.99997 7C3.99997 10.866 7.13398 14 11 14Z" fill="#212121"></path>
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0.859157 20.9996C0.859202 20.9994 0.859254 20.9991 0.429561 20.8972C-0.000131505 20.7952 -6.79857e-05 20.7949 1.77457e-06 20.7946L0.000172552 20.7938L0.000627901 20.7917L0.00200095 20.7855L0.00665644 20.7651C0.0106313 20.748 0.0163807 20.724 0.0240861 20.6937C0.0394944 20.6329 0.0627409 20.5464 0.0952824 20.4378C0.160337 20.2207 0.262719 19.9148 0.414187 19.5496C0.716819 18.82 1.21751 17.8489 2.01193 16.8775C3.61168 14.9212 6.37431 13 11 13C15.6257 13 18.3883 14.9212 19.9881 16.8775C20.7825 17.8489 21.2832 18.82 21.5858 19.5496C21.7373 19.9148 21.8397 20.2207 21.9047 20.4378C21.9373 20.5464 21.9605 20.6329 21.9759 20.6937C21.9836 20.724 21.9894 20.748 21.9933 20.7651L21.998 20.7855L21.9994 20.7917L21.9998 20.7938L22 20.7946C22.0001 20.7949 22.0001 20.7952 21.5704 20.8972C21.1407 20.9991 21.1408 20.9994 21.1408 20.9996L21.1405 20.9981L21.1379 20.9866C21.1353 20.9756 21.1311 20.9578 21.125 20.9337C21.1128 20.8856 21.0932 20.8124 21.0648 20.7178C21.008 20.5284 20.9164 20.2537 20.7788 19.922C20.5034 19.258 20.0461 18.3709 19.321 17.4843C17.8818 15.7242 15.3592 13.9291 11 13.9291C6.64081 13.9291 4.11823 15.7242 2.67897 17.4843C1.9539 18.3709 1.49664 19.258 1.2212 19.922C1.08363 20.2537 0.99195 20.5284 0.935197 20.7178C0.906834 20.8124 0.887241 20.8856 0.875037 20.9337C0.868935 20.9578 0.864685 20.9756 0.862111 20.9866L0.859488 20.9981L0.859157 20.9996ZM21.1409 20.9999C21.1409 21 21.1409 21 21.1409 20.9999L21.1409 20.9999Z" fill="#212121"></path>
+                                </svg>
+                            }
+                        </a>
+                        <a href="@Url.Action("Index", "GioHang")" class="f-header-top-icon-cart">
+                            <svg width="17" height="23" viewBox="0 0 17 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16.4591 6.78643C16.4536 6.78643 16.4536 6.78643 16.4481 6.78643H13.2468V4.44242C13.2468 1.99161 11.1714 0 8.63799 0C6.10455 0 4.02922 1.99161 4.02922 4.44242V6.78643H0.551948C0.253896 6.78109 0.00551948 7.01069 0 7.29902C0 7.30436 0 7.30436 0 7.30969V19.772C0 21.2456 1.23636 22.4363 2.75974 22.4363H14.2403C15.7636 22.4363 17 21.2456 17 19.772V7.30969C17 7.02136 16.7571 6.78643 16.4591 6.78643ZM5.13312 4.44242C5.13312 2.57895 6.71169 1.06789 8.63799 1.06789C10.5643 1.06789 12.1429 2.57895 12.1429 4.44242V6.78643H5.13312V4.44242ZM15.8961 19.7666C15.8961 20.6476 15.1565 21.3631 14.2403 21.3631H2.75974C1.84903 21.3631 1.1039 20.653 1.1039 19.772V7.85432H4.02922V10.9565C4.02922 11.2502 4.2776 11.4905 4.58117 11.4905C4.88474 11.4905 5.13312 11.2502 5.13312 10.9565V7.85432H12.1429V10.9565C12.1429 11.2502 12.3912 11.4905 12.6948 11.4905C12.9984 11.4905 13.2468 11.2502 13.2468 10.9565V7.85432H15.8961V19.7666Z" fill="#212121"></path>
+                            </svg>
+                            <sup class="badge bg-danger">
+                                @(Session["Cart"] != null ? ((WebApplication15.Models.Cart)Session["Cart"]).SoMatHang() : 0)
+                            </sup>
+                        </a>
+                        <a href="@Url.Action("Index", "LienHe")" class="f-header-top-icon-account">
+                            <i class="bi bi-telephone-fill" style="font-size: 20px;"></i>
+                        </a>
+                            <a href="javascript:void(0)" class="f-header-top-icon-menu">
+                                <svg width="19" height="10" viewBox="0 0 19 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <line x1="19" y1="0.5" y2="0.5" stroke="#212121"></line>
+                                    <line x1="19" y1="9.5" y2="9.5" stroke="#212121"></line>
+                                </svg>
+                            </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @Html.Action("MenuChinh", "Home")
+
+
+    <div class="container body-content">
+        @RenderBody() <hr />
+
+
+
+
+
+
+        <footer class="footer-pink pt-5 pb-4 mt-5">
+            <div class="container">
+
+                <div class="row">
+
+                    <!-- Cột 1 -->
+                    <div class="col-md-4 col-sm-12 mb-4">
+                        <h5 class="footer-title">SkinFood Shop</h5>
+                        <p class="footer-text">
+                            Mỹ phẩm chính hãng – an toàn – chất lượng.
+                            Tự tin lan tỏa vẻ đẹp tự nhiên của bạn!
+                        </p>
+
+                        <p class="footer-text"><i class="bi bi-geo-alt-fill"></i> 140 Lê Trọng Tấn, TP.HCM</p>
+                        <p class="footer-text"><i class="bi bi-telephone-fill"></i> 0911513170</p>
+                        <p class="footer-text"><i class="bi bi-envelope-fill"></i> skinfood@gmail.com</p>
+
+                        <div class="d-flex gap-3 fs-4 mt-2">
+                            <a href="https://www.facebook.com/aominhthuan.692232" class="social-icon"><i class="fa-brands fa-facebook"></i></a>
+                            <a href="https://www.instagram.com/t_thuantt/" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="#" class="social-icon"><i class="fa-brands fa-youtube"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- Cột 2 -->
+                    <div class="col-md-4 col-sm-6 mb-4">
+                        <h5 class="footer-title">Danh mục</h5>
+                        <ul class="list-unstyled">
+                            <li><a class="footer-link" href="#">Chăm sóc da</a></li>
+                            <li><a class="footer-link" href="#">Trang điểm</a></li>
+                            <li><a class="footer-link" href="#">Nước hoa</a></li>
+                            <li><a class="footer-link" href="#">Sản phẩm Sale</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Cột 3 -->
+                    <div class="col-md-4 col-sm-6 mb-4">
+                        <h5 class="footer-title">Hỗ trợ</h5>
+                        <ul class="list-unstyled">
+                            <li><a class="footer-link" href="/LienHe/HuongDanMuaHang">Hướng dẫn mua hàng</a></li>
+                            <li><a class="footer-link" href="/LienHe/ChinhSachDoiTra">Chính sách đổi trả</a></li>
+                            <li><a class="footer-link" href="/LienHe/ChinhSachBaoMat">Chính sách bảo mật</a></li>
+                            <li><a class="footer-link" href="/LienHe/Index">Liên hệ</a></li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <hr class="footer-line" />
+
+                <div class="text-center footer-copy">
+                    © @DateTime.Now.Year SkinFood – Đẹp mỗi ngày cùng bạn 🌸
+                </div>
+
+            </div>
+        </footer>
+
+
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+
+
+
+
+
+    @Html.Partial("_ChatBox")
+<script src="~/CSS/chatbox.js"></script>
+
+</body>
+
+
+
+
+
+</html>

@@ -99,6 +99,7 @@
     <EntitySetMapping Name="NguoiDungs">
       <EntityTypeMapping TypeName="DB_SkinFood1Model.NguoiDung">
         <MappingFragment StoreEntitySet="NguoiDung">
+          <ScalarProperty Name="Avatar" ColumnName="Avatar" />
           <ScalarProperty Name="MaND" ColumnName="MaND" />
           <ScalarProperty Name="HoTen" ColumnName="HoTen" />
           <ScalarProperty Name="SoDienThoai" ColumnName="SoDienThoai" />

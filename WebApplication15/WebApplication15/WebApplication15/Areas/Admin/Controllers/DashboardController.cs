@@ -28,156 +28,114 @@ namespace WebApplication15.Areas.Admin.Controllers
         {
             try
             {
-                // Thống kê cơ bản - dùng AsNoTracking cho các truy vấn chỉ đọc
-                var totalSanPham = db.SanPhams.AsNoTracking().Count();
-                var totalDonHang = db.DonHangs.AsNoTracking().Count();
-                var totalTaiKhoan = db.TaiKhoans.AsNoTracking().Count();
-                var totalNhaCungCap = db.NhaCungCaps.AsNoTracking().Count();
-                var totalNguoiDung = db.NguoiDungs.AsNoTracking().Count();
+                // ======================================
+                // 1. THỐNG KÊ CƠ BẢN (COUNT)
+                // ======================================
+                ViewBag.TotalSanPham = db.SanPhams.Count();
+                ViewBag.TotalDonHang = db.DonHangs.Count();
+                ViewBag.TotalTaiKhoan = db.TaiKhoans.Count();
+                ViewBag.TotalNhaCungCap = db.NhaCungCaps.Count();
+                ViewBag.TotalNguoiDung = db.NguoiDungs.Count();
 
-                ViewBag.TotalSanPham = totalSanPham;
-                ViewBag.TotalDonHang = totalDonHang;
-                ViewBag.TotalTaiKhoan = totalTaiKhoan;
-                ViewBag.TotalNhaCungCap = totalNhaCungCap;
-                ViewBag.TotalNguoiDung = totalNguoiDung;
+                // ======================================
+                // 2. THỐNG KÊ KHUYẾN MÃI
+                // ======================================
+                ViewBag.TotalKhuyenMai = db.KhuyenMais.Count();
+                ViewBag.KhuyenMaiDangHoatDong = db.KhuyenMais.Count(k => k.TrangThai == true);
 
-                // Thống kê Khuyến mãi
-                var totalKhuyenMai = db.KhuyenMais.AsNoTracking().Count();
-                var khuyenMaiDangHoatDong = db.KhuyenMais.AsNoTracking().Where(k => k.TrangThai == true).Count();
-                var khuyenMaiSapHetHan = db.KhuyenMais.AsNoTracking()
-                    .Where(k => k.NgayKetThuc.HasValue && k.NgayKetThuc.Value >= DateTime.Now && k.NgayKetThuc.Value <= DateTime.Now.AddDays(7))
+                // Khuyến mãi sắp hết hạn (7 ngày tới)
+                var next7Days = DateTime.Now.AddDays(7);
+                ViewBag.KhuyenMaiSapHetHan = db.KhuyenMais
+                    .Where(k => k.NgayKetThuc.HasValue && k.NgayKetThuc >= DateTime.Now && k.NgayKetThuc <= next7Days)
                     .ToList();
 
-                ViewBag.TotalKhuyenMai = totalKhuyenMai;
-                ViewBag.KhuyenMaiDangHoatDong = khuyenMaiDangHoatDong;
-                ViewBag.KhuyenMaiSapHetHan = khuyenMaiSapHetHan;
+                // ======================================
+                // 3. THỐNG KÊ TỒN KHO (Đã xóa phần Hạn Sử Dụng)
+                // ======================================
+                // Tính tổng tồn kho
+                ViewBag.SoLuongTonTatCa = db.SanPhams.Sum(sp => (int?)sp.SoLuongTon) ?? 0;
+                ViewBag.SanPhamHetHang = db.SanPhams.Count(sp => sp.SoLuongTon <= 0);
 
-                // Thống kê tồn kho - lấy tất cả sản phẩm
-                var allSanPhams = db.SanPhams.AsNoTracking().ToList();
-                var soLuongTonTatCa = allSanPhams.Sum(sp => sp.SoLuongTon ?? 0);
-                var sanPhamHetHang = allSanPhams.Where(sp => (sp.SoLuongTon ?? 0) <= 0).Count();
-
-                ViewBag.SoLuongTonTatCa = soLuongTonTatCa;
-                ViewBag.SanPhamHetHang = sanPhamHetHang;
-
-                // Doanh thu tháng này - Optimized
+                // ======================================
+                // 4. DOANH THU & ĐƠN HÀNG (OPTIMIZED)
+                // ======================================
                 var ngayDauThang = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                
-                // Lấy tất cả đơn hàng vào memory một lần để tránh multiple queries
-                var allDonHangs = db.DonHangs.AsNoTracking().ToList();
-                
-                var doanhThuThangNay = allDonHangs
-                    .Where(dh => dh.NgayDat.HasValue && dh.NgayDat.Value >= ngayDauThang && dh.NgayDat.Value <= DateTime.Now)
-                    .Sum(dh => dh.TongTien ?? 0m);
 
-                ViewBag.DoanhThuThangNay = doanhThuThangNay;
+                // Doanh thu tháng này
+                ViewBag.DoanhThuThangNay = db.DonHangs
+                    .Where(dh => dh.NgayDat >= ngayDauThang)
+                    .Sum(dh => (decimal?)dh.TongTien) ?? 0;
 
-                // ======================================
-                // THỐNG KÊ THANH TOÁN
-                // ======================================
+                // Đơn hàng đã thanh toán (Toàn bộ)
+                var daThanhToanQuery = db.DonHangs.Where(dh => dh.TrangThaiThanhToan == "Đã thanh toán" || dh.TrangThaiThanhToan == "Paid");
+                ViewBag.DonHangDaThanhToan = daThanhToanQuery.Count();
+                ViewBag.DoanhThuDaThanhToan = daThanhToanQuery.Sum(dh => (decimal?)dh.TongTien) ?? 0;
 
-                // Đơn hàng đã thanh toán
-                var donHangDaThanhToan = allDonHangs
-                    .Where(dh => dh.TrangThaiThanhToan == "Đã thanh toán" || dh.TrangThaiThanhToan == "Paid")
-                    .ToList();
+                // Đơn hàng chưa thanh toán (Toàn bộ)
+                var chuaThanhToanQuery = db.DonHangs.Where(dh => dh.TrangThaiThanhToan != "Đã thanh toán" && dh.TrangThaiThanhToan != "Paid");
+                ViewBag.DonHangChuaThanhToan = chuaThanhToanQuery.Count();
+                ViewBag.DoanhThuChuaThanhToan = chuaThanhToanQuery.Sum(dh => (decimal?)dh.TongTien) ?? 0;
 
-                // Đơn hàng chưa thanh toán
-                var donHangChuaThanhToan = allDonHangs
-                    .Where(dh => dh.TrangThaiThanhToan == "Chưa thanh toán" || dh.TrangThaiThanhToan == "Pending" || string.IsNullOrEmpty(dh.TrangThaiThanhToan))
-                    .ToList();
-
-                // Doanh thu từ các đơn hàng đã thanh toán
-                var doanhThuDaThanhToan = donHangDaThanhToan.Sum(dh => dh.TongTien ?? 0m);
-
-                // Doanh thu từ các đơn hàng chưa thanh toán
-                var doanhThuChuaThanhToan = donHangChuaThanhToan.Sum(dh => dh.TongTien ?? 0m);
-
-                ViewBag.DonHangDaThanhToan = donHangDaThanhToan.Count;
-                ViewBag.DonHangChuaThanhToan = donHangChuaThanhToan.Count;
-                ViewBag.DoanhThuDaThanhToan = doanhThuDaThanhToan;
-                ViewBag.DoanhThuChuaThanhToan = doanhThuChuaThanhToan;
-
-                // Top 10 đơn hàng chưa thanh toán (sắp xếp theo ngày cũ nhất)
-                var donHangChuaThanhToanTop10 = donHangChuaThanhToan
-                    .Where(dh => dh.NgayDat.HasValue)
-                    .OrderBy(dh => dh.NgayDat)
+                // Top 10 đơn hàng chưa thanh toán mới nhất
+                ViewBag.DonHangChuaThanhToanTop10 = chuaThanhToanQuery
+                    .OrderByDescending(dh => dh.NgayDat)
                     .Take(10)
+                    .Include(d => d.NguoiDung)
                     .ToList();
 
-                ViewBag.DonHangChuaThanhToanTop10 = donHangChuaThanhToanTop10;
-
-                // Đơn hàng đã thanh toán tháng này
-                var donHangDaThanhToanThangNay = donHangDaThanhToan
-                    .Where(dh => dh.NgayDat.HasValue && dh.NgayDat.Value >= ngayDauThang && dh.NgayDat.Value <= DateTime.Now)
-                    .Count();
-
-                ViewBag.DonHangDaThanhToanThangNay = donHangDaThanhToanThangNay;
-
                 // ======================================
-                // THỐNG KÊ DOANH THU CHO BIỂU ĐỒ
+                // 5. BIỂU ĐỒ (CHARTS)
                 // ======================================
+                // Để tối ưu, ta lấy dữ liệu thô cần thiết (Ngày + Tiền) của 5 năm trở lại đây về RAM 1 lần
+                var fiveYearsAgo = DateTime.Now.AddYears(-5);
+                var rawDataForChart = db.DonHangs.AsNoTracking()
+                    .Where(dh => dh.NgayDat >= fiveYearsAgo)
+                    .Select(dh => new { dh.NgayDat, dh.TongTien })
+                    .ToList();
 
-                // Doanh thu theo ngày (7 ngày gần nhất)
+                // -- Chart Ngày (7 ngày qua) --
                 var doanhThuTheoNgay = new List<decimal>();
                 var labelTheoNgay = new List<string>();
-                
                 for (int i = 6; i >= 0; i--)
                 {
-                    var ngay = DateTime.Now.AddDays(-i);
-                    var ngayBatDau = ngay.Date;
-                    var ngayKetThuc = ngayBatDau.AddDays(1);
-                    
-                    var doanhThu = allDonHangs
-                        .Where(dh => dh.NgayDat.HasValue && dh.NgayDat.Value >= ngayBatDau && dh.NgayDat.Value < ngayKetThuc)
-                        .Sum(dh => dh.TongTien ?? 0m);
-                    
-                    doanhThuTheoNgay.Add(doanhThu);
-                    labelTheoNgay.Add(ngay.ToString("dd/MM"));
+                    var d = DateTime.Now.AddDays(-i).Date;
+                    var sum = rawDataForChart
+                        .Where(x => x.NgayDat.HasValue && x.NgayDat.Value.Date == d)
+                        .Sum(x => x.TongTien ?? 0);
+                    doanhThuTheoNgay.Add(sum);
+                    labelTheoNgay.Add(d.ToString("dd/MM"));
                 }
 
-                // Doanh thu theo tháng (12 tháng gần nhất)
+                // -- Chart Tháng (12 tháng qua) --
                 var doanhThuTheoThang = new List<decimal>();
                 var labelTheoThang = new List<string>();
-                
                 for (int i = 11; i >= 0; i--)
                 {
-                    var thang = DateTime.Now.AddMonths(-i);
-                    var ngayDauThangTemp = new DateTime(thang.Year, thang.Month, 1);
-                    var ngayCuoiThang = ngayDauThangTemp.AddMonths(1);
-                    
-                    var doanhThu = allDonHangs
-                        .Where(dh => dh.NgayDat.HasValue && dh.NgayDat.Value >= ngayDauThangTemp && dh.NgayDat.Value < ngayCuoiThang)
-                        .Sum(dh => dh.TongTien ?? 0m);
-                    
-                    doanhThuTheoThang.Add(doanhThu);
-                    labelTheoThang.Add(thang.ToString("MM/yyyy"));
+                    var d = DateTime.Now.AddMonths(-i);
+                    var sum = rawDataForChart
+                        .Where(x => x.NgayDat.HasValue && x.NgayDat.Value.Month == d.Month && x.NgayDat.Value.Year == d.Year)
+                        .Sum(x => x.TongTien ?? 0);
+                    doanhThuTheoThang.Add(sum);
+                    labelTheoThang.Add(d.ToString("MM/yyyy"));
                 }
 
-                // Doanh thu theo năm (5 năm gần nhất)
+                // -- Chart Năm (5 năm qua) --
                 var doanhThuTheoNam = new List<decimal>();
                 var labelTheoNam = new List<string>();
-                
                 for (int i = 4; i >= 0; i--)
                 {
-                    var nam = DateTime.Now.Year - i;
-                    var ngayDauNam = new DateTime(nam, 1, 1);
-                    var ngayCuoiNam = new DateTime(nam, 12, 31).AddDays(1);
-                    
-                    var doanhThu = allDonHangs
-                        .Where(dh => dh.NgayDat.HasValue && dh.NgayDat.Value >= ngayDauNam && dh.NgayDat.Value < ngayCuoiNam)
-                        .Sum(dh => dh.TongTien ?? 0m);
-                    
-                    doanhThuTheoNam.Add(doanhThu);
-                    labelTheoNam.Add(nam.ToString());
+                    var y = DateTime.Now.Year - i;
+                    var sum = rawDataForChart
+                        .Where(x => x.NgayDat.HasValue && x.NgayDat.Value.Year == y)
+                        .Sum(x => x.TongTien ?? 0);
+                    doanhThuTheoNam.Add(sum);
+                    labelTheoNam.Add(y.ToString());
                 }
 
-                // Chuyển sang JSON để dùng trong JavaScript
                 ViewBag.DoanhThuTheoNgay = Newtonsoft.Json.JsonConvert.SerializeObject(doanhThuTheoNgay);
                 ViewBag.LabelTheoNgay = Newtonsoft.Json.JsonConvert.SerializeObject(labelTheoNgay);
-                
                 ViewBag.DoanhThuTheoThang = Newtonsoft.Json.JsonConvert.SerializeObject(doanhThuTheoThang);
                 ViewBag.LabelTheoThang = Newtonsoft.Json.JsonConvert.SerializeObject(labelTheoThang);
-                
                 ViewBag.DoanhThuTheoNam = Newtonsoft.Json.JsonConvert.SerializeObject(doanhThuTheoNam);
                 ViewBag.LabelTheoNam = Newtonsoft.Json.JsonConvert.SerializeObject(labelTheoNam);
 
@@ -185,36 +143,19 @@ namespace WebApplication15.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                // Log lỗi và hiển thị thông báo cho user
-                ViewBag.ErrorMessage = "Có lỗi xảy ra khi tải dashboard: " + ex.Message;
-                
-                // Khởi tạo các giá trị mặc định để tránh lỗi view
-                ViewBag.TotalSanPham = 0;
-                ViewBag.TotalDonHang = 0;
-                ViewBag.TotalTaiKhoan = 0;
-                ViewBag.TotalNhaCungCap = 0;
-                ViewBag.TotalNguoiDung = 0;
-                ViewBag.SoLuongTonTatCa = 0;
-                ViewBag.SanPhamHetHang = 0;
-                ViewBag.DoanhThuThangNay = 0m;
-                ViewBag.DonHangDaThanhToan = 0;
-                ViewBag.DonHangChuaThanhToan = 0;
-                ViewBag.DoanhThuDaThanhToan = 0m;
-                ViewBag.DoanhThuChuaThanhToan = 0m;
-                ViewBag.DonHangChuaThanhToanTop10 = new List<DonHang>();
-                ViewBag.DonHangDaThanhToanThangNay = 0;
+                // Gán lỗi để hiển thị ở View
+                ViewBag.ErrorMessage = "Lỗi tải Dashboard: " + ex.Message + (ex.InnerException != null ? " (" + ex.InnerException.Message + ")" : "");
+
+                // Khởi tạo giá trị mặc định tránh Crash View
                 ViewBag.DoanhThuTheoNgay = "[]";
                 ViewBag.LabelTheoNgay = "[]";
                 ViewBag.DoanhThuTheoThang = "[]";
                 ViewBag.LabelTheoThang = "[]";
                 ViewBag.DoanhThuTheoNam = "[]";
                 ViewBag.LabelTheoNam = "[]";
+                ViewBag.DonHangChuaThanhToanTop10 = new List<DonHang>();
+                // Đã xóa khởi tạo list hết hạn
 
-                // Defaults for Khuyến mãi
-                ViewBag.TotalKhuyenMai = 0;
-                ViewBag.KhuyenMaiDangHoatDong = 0;
-                ViewBag.KhuyenMaiSapHetHan = new List<KhuyenMai>();
-                
                 return View();
             }
         }

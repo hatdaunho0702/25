@@ -1,21 +1,31 @@
 ﻿@{
-    ViewBag.Title = "Dashboard Overview";
+    ViewBag.Title = "Tổng Quan Hệ Thống";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
 <div class="dashboard-container fade-in-up">
+    @* --- PHẦN HIỂN THỊ LỖI NẾU CÓ --- *@
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i> <strong>Đã xảy ra lỗi!</strong> @ViewBag.ErrorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="fw-bold text-dark mb-1">👋 Xin chào, Quản trị viên!</h2>
-            <p class="text-muted">Dưới đây là tổng quan tình hình kinh doanh của SkinFood.</p>
+            <p class="text-muted">Tổng quan tình hình kinh doanh SkinFood.</p>
         </div>
         <div>
             <button class="btn btn-primary shadow-sm"><i class="fas fa-download me-2"></i>Xuất Báo Cáo</button>
         </div>
     </div>
 
+    @* --- Hàng 1: Thống kê chính --- *@
     <div class="row g-4 mb-4">
         <div class="col-xl-3 col-md-6">
             <div class="card stat-card border-start-warning h-100">
@@ -24,15 +34,12 @@
                         <div>
                             <div class="text-uppercase text-muted small fw-bold mb-1">Doanh Thu Tháng</div>
                             <h3 class="text-warning fw-bold mb-0">
-                                @String.Format(System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), "{0:c0}", ViewBag.DoanhThuThangNay)
+                                @String.Format(System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), "{0:c0}", ViewBag.DoanhThuThangNay ?? 0)
                             </h3>
                         </div>
                         <div class="icon-circle bg-light-warning text-warning">
                             <i class="fas fa-dollar-sign fa-lg"></i>
                         </div>
-                    </div>
-                    <div class="mt-3 text-muted small">
-                        <span class="text-success"><i class="fas fa-arrow-up"></i> 12%</span> so với tháng trước
                     </div>
                 </div>
             </div>
@@ -44,13 +51,12 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="text-uppercase text-muted small fw-bold mb-1">Tổng Đơn Hàng</div>
-                            <h3 class="text-success fw-bold mb-0">@ViewBag.TotalDonHang</h3>
+                            <h3 class="text-success fw-bold mb-0">@(ViewBag.TotalDonHang ?? 0)</h3>
                         </div>
                         <div class="icon-circle bg-light-success text-success">
                             <i class="fas fa-shopping-bag fa-lg"></i>
                         </div>
                     </div>
-                    <div class="mt-3 text-muted small">Đơn hàng trong toàn hệ thống</div>
                 </div>
             </div>
         </div>
@@ -61,13 +67,12 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="text-uppercase text-muted small fw-bold mb-1">Tổng Sản Phẩm</div>
-                            <h3 class="text-primary fw-bold mb-0">@ViewBag.TotalSanPham</h3>
+                            <h3 class="text-primary fw-bold mb-0">@(ViewBag.TotalSanPham ?? 0)</h3>
                         </div>
                         <div class="icon-circle bg-light-primary text-primary">
                             <i class="fas fa-box-open fa-lg"></i>
                         </div>
                     </div>
-                    <div class="mt-3 text-muted small">Mặt hàng đang kinh doanh</div>
                 </div>
             </div>
         </div>
@@ -78,67 +83,24 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="text-uppercase text-muted small fw-bold mb-1">Khách Hàng</div>
-                            <h3 class="text-info fw-bold mb-0">@ViewBag.TotalTaiKhoan</h3>
+                            <h3 class="text-info fw-bold mb-0">@(ViewBag.TotalTaiKhoan ?? 0)</h3>
                         </div>
                         <div class="icon-circle bg-light-info text-info">
                             <i class="fas fa-users fa-lg"></i>
                         </div>
                     </div>
-                    <div class="mt-3 text-muted small">Tài khoản đã đăng ký</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Supplier summary row -->
+    @* --- Hàng 2: Biểu đồ & Kho --- *@
     <div class="row g-4 mb-4">
-        <div class="col-xl-3 col-md-6">
-            <div class="card stat-card border-start-secondary h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="text-uppercase text-muted small fw-bold mb-1">Nhà cung cấp</div>
-                            <h3 class="text-secondary fw-bold mb-0">@(ViewBag.TotalNhaCungCap ?? 0)</h3>
-                        </div>
-                        <div class="icon-circle bg-light-secondary text-secondary">
-                            <i class="fas fa-truck fa-lg"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3 text-muted small">
-                        <a href="@Url.Action("Index", "NhaCungCap", new { area = "Admin" })" class="text-decoration-none">Quản lý nhà cung cấp</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Promotions card -->
-        <div class="col-xl-3 col-md-6">
-            <div class="card stat-card border-start-warning h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="text-uppercase text-muted small fw-bold mb-1">Khuyến Mãi</div>
-                            <h3 class="text-warning fw-bold mb-0">@ViewBag.TotalKhuyenMai</h3>
-                            <small class="text-muted d-block">Đang hoạt động: @ViewBag.KhuyenMaiDangHoatDong</small>
-                        </div>
-                        <div class="icon-circle bg-light-warning text-warning">
-                            <i class="fas fa-tag fa-lg"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3 text-muted small">
-                        <a href="@Url.Action("Index", "KhuyenMais", new { area = "Admin" })" class="text-decoration-none">Quản lý khuyến mãi</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row g-4 mb-4">
+        @* Cột Trái: Biểu đồ *@
         <div class="col-lg-8">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-chart-line me-2"></i>Biểu Đồ Doanh Thu</h6>
-
                     <ul class="nav nav-pills nav-sm" id="chartTabs" role="tablist">
                         <li class="nav-item"><button class="nav-link active btn-sm py-1 px-3" data-bs-toggle="tab" data-bs-target="#ngay">Ngày</button></li>
                         <li class="nav-item"><button class="nav-link btn-sm py-1 px-3" data-bs-toggle="tab" data-bs-target="#thang">Tháng</button></li>
@@ -155,6 +117,7 @@
             </div>
         </div>
 
+        @* Cột Phải: Thông tin kho & Thanh toán *@
         <div class="col-lg-4">
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-white py-3">
@@ -169,7 +132,7 @@
                             <h6 class="mb-0">Tổng tồn kho</h6>
                             <small class="text-muted">Toàn bộ chi nhánh</small>
                         </div>
-                        <div class="fw-bold">@ViewBag.SoLuongTonTatCa</div>
+                        <div class="fw-bold">@(ViewBag.SoLuongTonTatCa ?? 0)</div>
                     </div>
                     <hr class="my-2 dashed">
                     <div class="d-flex align-items-center">
@@ -180,7 +143,7 @@
                             <h6 class="mb-0 text-danger">Hết hàng</h6>
                             <small class="text-muted">Cần nhập thêm ngay</small>
                         </div>
-                        <div class="fw-bold text-danger">@ViewBag.SanPhamHetHang</div>
+                        <div class="fw-bold text-danger">@(ViewBag.SanPhamHetHang ?? 0)</div>
                     </div>
                 </div>
             </div>
@@ -193,17 +156,16 @@
                     <div class="mb-3">
                         <div class="d-flex justify-content-between mb-1">
                             <span class="small font-weight-bold text-success">Đã thanh toán (@ViewBag.DonHangDaThanhToan đơn)</span>
-                            <span class="small text-success">@String.Format(System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), "{0:c0}", ViewBag.DoanhThuDaThanhToan)</span>
+                            <span class="small text-success">@String.Format(System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), "{0:c0}", ViewBag.DoanhThuDaThanhToan ?? 0)</span>
                         </div>
                         <div class="progress" style="height: 6px;">
                             <div class="progress-bar bg-success" role="progressbar" style="width: 70%"></div>
                         </div>
                     </div>
-
                     <div>
                         <div class="d-flex justify-content-between mb-1">
                             <span class="small font-weight-bold text-warning">Chưa thanh toán (@ViewBag.DonHangChuaThanhToan đơn)</span>
-                            <span class="small text-warning">@String.Format(System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), "{0:c0}", ViewBag.DoanhThuChuaThanhToan)</span>
+                            <span class="small text-warning">@String.Format(System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), "{0:c0}", ViewBag.DoanhThuChuaThanhToan ?? 0)</span>
                         </div>
                         <div class="progress" style="height: 6px;">
                             <div class="progress-bar bg-warning" role="progressbar" style="width: 30%"></div>
@@ -214,64 +176,8 @@
         </div>
     </div>
 
-    @if ((ViewBag.SanPhamDaHetHan != null && ViewBag.SanPhamDaHetHan.Count > 0) || (ViewBag.SanPhamSapHetHan != null && ViewBag.SanPhamSapHetHan.Count > 0))
-    {
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card border-danger shadow-sm">
-                    <div class="card-header bg-danger text-white d-flex align-items-center">
-                        <i class="fas fa-bell me-2"></i> <strong>Cảnh Báo Hạn Sử Dụng</strong>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Sản Phẩm</th>
-                                        <th>Trạng Thái</th>
-                                        <th>Hạn Dùng</th>
-                                        <th>Tồn Kho</th>
-                                        <th>Hành Động</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if (ViewBag.SanPhamDaHetHan != null)
-                                    {
-                                        foreach (WebApplication15.Areas.Admin.Models.SanPhamCanhBaoViewModel sp in ViewBag.SanPhamDaHetHan)
-                                        {
-                                            <tr class="bg-light-danger">
-                                                <td class="fw-bold text-danger">@sp.TenSP</td>
-                                                <td><span class="badge bg-danger rounded-pill">Đã Hết Hạn</span></td>
-                                                <td>@sp.HanSuDung.ToString("dd/MM/yyyy")</td>
-                                                <td>@sp.SoLuongTon</td>
-                                                <td><a href="#" class="btn btn-sm btn-outline-danger">Xử lý</a></td>
-                                            </tr>
-                                        }
-                                    }
-                                    @if (ViewBag.SanPhamSapHetHan != null)
-                                    {
-                                        foreach (WebApplication15.Areas.Admin.Models.SanPhamCanhBaoViewModel sp in ViewBag.SanPhamSapHetHan)
-                                        {
-                                            int ngayConLai = (int)(sp.HanSuDung - DateTime.Now).TotalDays;
-                                            <tr>
-                                                <td class="fw-bold text-dark">@sp.TenSP</td>
-                                                <td><span class="badge bg-warning text-dark rounded-pill">Sắp Hết Hạn</span></td>
-                                                <td>@sp.HanSuDung.ToString("dd/MM/yyyy")</td>
-                                                <td>@sp.SoLuongTon</td>
-                                                <td><small class="text-muted">Còn @ngayConLai ngày</small></td>
-                                            </tr>
-                                        }
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-
-    @if (ViewBag.DonHangChuaThanhToanTop10 != null && ViewBag.DonHangChuaThanhToanTop10.Count > 0)
+    @* --- Bảng Đơn Hàng Chờ Thanh Toán --- *@
+    @if (ViewBag.DonHangChuaThanhToanTop10 != null && ((List<WebApplication15.Models.DonHang>)ViewBag.DonHangChuaThanhToanTop10).Any())
     {
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
@@ -292,7 +198,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var dh in ViewBag.DonHangChuaThanhToanTop10)
+                            @foreach (var dh in (List<WebApplication15.Models.DonHang>)ViewBag.DonHangChuaThanhToanTop10)
                             {
                                 TimeSpan thoiGianConLai = DateTime.Now - (dh.NgayDat ?? DateTime.Now);
                                 <tr>
@@ -330,11 +236,11 @@
 @section scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Cấu hình chung cho Chart đẹp hơn
+        // Cấu hình chung cho Chart
         Chart.defaults.font.family = "'Segoe UI', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif";
         Chart.defaults.color = '#858796';
 
-        // Lấy dữ liệu
+        // Lấy dữ liệu từ ViewBag (đã check null ở controller)
         var doanhThuTheoNgay = @Html.Raw(ViewBag.DoanhThuTheoNgay);
         var labelTheoNgay = @Html.Raw(ViewBag.LabelTheoNgay);
         var doanhThuTheoThang = @Html.Raw(ViewBag.DoanhThuTheoThang);
@@ -345,157 +251,165 @@
         // Hàm format tiền tệ VN
         const formatCurrency = (value) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
 
-        // 1. Chart Ngày (Dạng Bar với Gradient)
-        var ctxNgay = document.getElementById('chartNgay').getContext('2d');
-        var gradientNgay = ctxNgay.createLinearGradient(0, 0, 0, 400);
-        gradientNgay.addColorStop(0, 'rgba(78, 115, 223, 0.8)');
-        gradientNgay.addColorStop(1, 'rgba(78, 115, 223, 0.1)');
+        // 1. Chart Ngày
+        var ctxNgay = document.getElementById('chartNgay');
+        if(ctxNgay) {
+            var ctx = ctxNgay.getContext('2d');
+            var gradientNgay = ctx.createLinearGradient(0, 0, 0, 400);
+            gradientNgay.addColorStop(0, 'rgba(78, 115, 223, 0.8)');
+            gradientNgay.addColorStop(1, 'rgba(78, 115, 223, 0.1)');
 
-        new Chart(ctxNgay, {
-            type: 'bar',
-            data: {
-                labels: labelTheoNgay,
-                datasets: [{
-                    label: 'Doanh Thu',
-                    data: doanhThuTheoNgay,
-                    backgroundColor: gradientNgay,
-                    borderColor: '#4e73df',
-                    borderWidth: 1,
-                    borderRadius: 5,
-                    barPercentage: 0.6
-                }]
-            },
-            options: {
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: "rgb(255,255,255)",
-                        bodyColor: "#858796",
-                        titleColor: '#6e707e',
-                        borderColor: '#dddfeb',
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labelTheoNgay,
+                    datasets: [{
+                        label: 'Doanh Thu',
+                        data: doanhThuTheoNgay,
+                        backgroundColor: gradientNgay,
+                        borderColor: '#4e73df',
                         borderWidth: 1,
-                        padding: 10,
-                        displayColors: false,
-                        callbacks: { label: (c) => 'Doanh thu: ' + formatCurrency(c.raw) }
-                    }
+                        borderRadius: 5,
+                        barPercentage: 0.6
+                    }]
                 },
-                scales: {
-                    y: { beginAtZero: true, grid: { borderDash: [2] }, ticks: { callback: (v) => formatCurrency(v) } },
-                    x: { grid: { display: false } }
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: { label: (c) => 'Doanh thu: ' + formatCurrency(c.raw) }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { callback: (v) => formatCurrency(v) } },
+                        x: { grid: { display: false } }
+                    }
                 }
-            }
-        });
+            });
+        }
 
-        // 2. Chart Tháng (Dạng Line mềm mại)
-        var ctxThang = document.getElementById('chartThang').getContext('2d');
-        new Chart(ctxThang, {
-            type: 'line',
-            data: {
-                labels: labelTheoThang,
-                datasets: [{
-                    label: 'Doanh Thu',
-                    data: doanhThuTheoThang,
-                    borderColor: '#1cc88a',
-                    backgroundColor: 'rgba(28, 200, 138, 0.1)',
-                    pointRadius: 4,
-                    pointBackgroundColor: "#1cc88a",
-                    pointBorderColor: "#fff",
-                    pointHoverRadius: 6,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: "rgb(255,255,255)",
-                        bodyColor: "#858796",
-                        titleColor: '#6e707e',
-                        borderColor: '#dddfeb',
-                        borderWidth: 1,
-                        padding: 10,
-                        displayColors: false,
-                        callbacks: { label: (c) => 'Doanh thu: ' + formatCurrency(c.raw) }
-                    }
+        // 2. Chart Tháng
+        var ctxThang = document.getElementById('chartThang');
+        if(ctxThang) {
+            new Chart(ctxThang.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: labelTheoThang,
+                    datasets: [{
+                        label: 'Doanh Thu',
+                        data: doanhThuTheoThang,
+                        borderColor: '#1cc88a',
+                        backgroundColor: 'rgba(28, 200, 138, 0.1)',
+                        pointRadius: 4,
+                        pointBackgroundColor: "#1cc88a",
+                        fill: true,
+                        tension: 0.4
+                    }]
                 },
-                scales: {
-                    y: { beginAtZero: true, grid: { borderDash: [2] }, ticks: { callback: (v) => formatCurrency(v) } },
-                    x: { grid: { display: false } }
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: { label: (c) => 'Doanh thu: ' + formatCurrency(c.raw) }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { callback: (v) => formatCurrency(v) } },
+                        x: { grid: { display: false } }
+                    }
                 }
-            }
-        });
+            });
+        }
 
-        // 3. Chart Năm (Dạng Bar)
-        var ctxNam = document.getElementById('chartNam').getContext('2d');
-        new Chart(ctxNam, {
-            type: 'bar',
-            data: {
-                labels: labelTheoNam,
-                datasets: [{
-                    label: 'Doanh Thu',
-                    data: doanhThuTheoNam,
-                    backgroundColor: '#36b9cc',
-                    borderRadius: 5,
-                    barPercentage: 0.5
-                }]
-            },
-            options: {
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: { label: (c) => 'Doanh thu: ' + formatCurrency(c.raw) }
-                    }
+        // 3. Chart Năm
+        var ctxNam = document.getElementById('chartNam');
+        if(ctxNam) {
+            new Chart(ctxNam.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: labelTheoNam,
+                    datasets: [{
+                        label: 'Doanh Thu',
+                        data: doanhThuTheoNam,
+                        backgroundColor: '#36b9cc',
+                        borderRadius: 5,
+                        barPercentage: 0.5
+                    }]
                 },
-                scales: {
-                    y: { beginAtZero: true, ticks: { callback: (v) => formatCurrency(v) } },
-                    x: { grid: { display: false } }
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: { label: (c) => 'Doanh thu: ' + formatCurrency(c.raw) }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { callback: (v) => formatCurrency(v) } },
+                        x: { grid: { display: false } }
+                    }
                 }
-            }
-        });
+            });
+        }
     </script>
 }
 
 <style>
-    /* Tổng quan */
     body {
-        background-color: #f8f9fc; /* Màu nền sáng nhẹ */
+        background-color: #f8f9fc;
         font-family: 'Nunito', sans-serif;
     }
+
     .fade-in-up {
         animation: fadeInUp 0.5s ease-out;
     }
+
     @@keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
-    /* Cards */
     .card {
         border: none;
-        border-radius: 0.75rem; /* Bo tròn góc */
+        border-radius: 0.75rem;
         background-color: #fff;
         transition: transform 0.2s ease-in-out;
     }
+
     .stat-card:hover {
-        transform: translateY(-3px); /* Hiệu ứng nổi khi hover */
-        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+        transform: translateY(-3px);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
     }
+
     .shadow-sm {
-        box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15)!important;
+        box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15) !important;
     }
 
-    /* Border trái màu sắc */
-    .border-start-primary { border-left: 0.25rem solid #4e73df!important; }
-    .border-start-success { border-left: 0.25rem solid #1cc88a!important; }
-    .border-start-info { border-left: 0.25rem solid #36b9cc!important; }
-    .border-start-warning { border-left: 0.25rem solid #f6c23e!important; }
-    .border-start-secondary { border-left: 0.25rem solid #6c757d!important; }
+    .border-start-primary {
+        border-left: 0.25rem solid #4e73df !important;
+    }
 
-    /* Icon Circles */
+    .border-start-success {
+        border-left: 0.25rem solid #1cc88a !important;
+    }
+
+    .border-start-info {
+        border-left: 0.25rem solid #36b9cc !important;
+    }
+
+    .border-start-warning {
+        border-left: 0.25rem solid #f6c23e !important;
+    }
+
     .icon-circle {
         height: 3rem;
         width: 3rem;
@@ -504,6 +418,7 @@
         align-items: center;
         justify-content: center;
     }
+
     .icon-square {
         height: 2.5rem;
         width: 2.5rem;
@@ -513,34 +428,63 @@
         justify-content: center;
     }
 
-    /* Màu nền nhạt cho icon */
-    .bg-light-primary { background-color: rgba(78, 115, 223, 0.1); }
-    .bg-light-success { background-color: rgba(28, 200, 138, 0.1); }
-    .bg-light-info { background-color: rgba(54, 185, 204, 0.1); }
-    .bg-light-warning { background-color: rgba(246, 194, 62, 0.1); }
-    .bg-light-danger { background-color: rgba(231, 74, 59, 0.1); }
-    .bg-light-secondary { background-color: #eaecf4; }
+    .bg-light-primary {
+        background-color: rgba(78, 115, 223, 0.1);
+    }
 
-    /* Text Colors matching Bootstrap 5 variables but defined explicitly just in case */
-    .text-primary { color: #4e73df!important; }
-    .text-success { color: #1cc88a!important; }
-    .text-info { color: #36b9cc!important; }
-    .text-warning { color: #f6c23e!important; }
-    .text-danger { color: #e74a3b!important; }
-    .text-secondary { color: #6c757d!important; }
+    .bg-light-success {
+        background-color: rgba(28, 200, 138, 0.1);
+    }
 
-    /* Nav Pills nhỏ gọn */
-    .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    .bg-light-info {
+        background-color: rgba(54, 185, 204, 0.1);
+    }
+
+    .bg-light-warning {
+        background-color: rgba(246, 194, 62, 0.1);
+    }
+
+    .bg-light-danger {
+        background-color: rgba(231, 74, 59, 0.1);
+    }
+
+    .bg-light-secondary {
+        background-color: #eaecf4;
+    }
+
+    .text-primary {
+        color: #4e73df !important;
+    }
+
+    .text-success {
+        color: #1cc88a !important;
+    }
+
+    .text-info {
+        color: #36b9cc !important;
+    }
+
+    .text-warning {
+        color: #f6c23e !important;
+    }
+
+    .text-danger {
+        color: #e74a3b !important;
+    }
+
+    .nav-pills .nav-link.active {
         background-color: #4e73df;
     }
-    .nav-link { color: #858796; }
 
-    /* Tables */
+    .nav-link {
+        color: #858796;
+    }
+
     .table-hover tbody tr:hover {
         background-color: rgba(78, 115, 223, 0.05);
     }
-    .badge { font-weight: 600; }
 
-    /* Utilities */
-    .dashed { border-top: 1px dashed #e3e6f0; }
+    .dashed {
+        border-top: 1px dashed #e3e6f0;
+    }
 </style>

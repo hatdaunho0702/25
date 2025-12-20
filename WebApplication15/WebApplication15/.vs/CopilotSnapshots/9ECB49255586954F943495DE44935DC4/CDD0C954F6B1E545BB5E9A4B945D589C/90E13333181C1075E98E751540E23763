@@ -1,0 +1,11 @@
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace WebApplication15.Models
+{
+    public partial class NguoiDung
+    {
+        [NotMapped]
+        public string Avatar { get; set; }
+    }
+}

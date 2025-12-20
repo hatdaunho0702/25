@@ -1,0 +1,10 @@
+﻿using System;
+
+namespace WebApplication15.Models
+{
+    public partial class NguoiDung
+    {
+        // Avatar filename stored in DB column 'Avatar' (NVARCHAR(50)).
+        public string Avatar { get; set; }
+    }
+}

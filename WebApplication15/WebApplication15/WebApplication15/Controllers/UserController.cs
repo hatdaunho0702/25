@@ -54,8 +54,47 @@ namespace WebApplication15.Controllers
                 NguoiDung nd = data.NguoiDungs
                     .FirstOrDefault(n => n.MaND == user.MaND);
 
+                // If avatar is stored in session previously (or from db if extended), keep it
+                // Here we try to use stored avatar filename from user input if any
+                // Note: Avatar is not persisted in DB by default; if you want to persist, add column.
+
                 Session["User"] = user;
-                Session["NguoiDung"] = nd;
+                if (nd != null)
+                {
+                    // Try to get persisted avatar from DB in case the EF model wasn't updated to include Avatar property
+                    try
+                    {
+                        var avatarFromDb = data.Database.SqlQuery<string>("SELECT Avatar FROM NguoiDung WHERE MaND = @p0", nd.MaND).FirstOrDefault();
+                        if (!string.IsNullOrEmpty(avatarFromDb))
+                        {
+                            nd.Avatar = avatarFromDb;
+                        }
+                    }
+                    catch
+                    {
+                        // ignore SQL read errors
+                    }
+
+                    // If we have a SelectedAvatar in Session (just after registration), prefer it and persist to DB
+                    var key = "SelectedAvatar_" + user.MaND;
+                    if (Session[key] != null)
+                    {
+                        var sel = Session[key] as string;
+                        if (!string.IsNullOrEmpty(sel) && sel != nd.Avatar)
+                        {
+                            nd.Avatar = sel;
+                            try
+                            {
+                                data.Database.ExecuteSqlCommand("UPDATE NguoiDung SET Avatar = @p0 WHERE MaND = @p1", sel, nd.MaND);
+                            }
+                            catch { /* ignore DB save errors here */ }
+                        }
+                    }
+
+                    // ensure session NguoiDung has avatar
+                    Session["NguoiDung"] = nd;
+                }
+
                 Session["Role"] = user.VaiTro;
 
                 if (user.VaiTro == "Admin")
@@ -87,6 +126,15 @@ namespace WebApplication15.Controllers
                 string gioitinh = form["GioiTinh"];
                 string username = form["TenDangNhap"];
                 string password = form["MatKhau"];
+                string confirmPassword = form["NhapLaiMatKhau"]; // add confirm
+                string selectedAvatar = form["Avatar"]; // new field
+
+                // Server-side check: passwords must match
+                if (string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(confirmPassword) || password.Trim() != confirmPassword.Trim())
+                {
+                    ViewBag.Error = "Mật khẩu xác nhận không khớp. Vui lòng kiểm tra lại.";
+                    return View("Register");
+                }
 
                 if (string.IsNullOrWhiteSpace(hoten) || string.IsNullOrWhiteSpace(username) || 
                     string.IsNullOrWhiteSpace(password))
@@ -131,6 +179,27 @@ namespace WebApplication15.Controllers
 
                 data.TaiKhoans.Add(tk);
                 data.SaveChanges();
+
+                // Persist avatar into DB column directly in case EF model doesn't map it yet
+                if (!string.IsNullOrEmpty(selectedAvatar))
+                {
+                    try
+                    {
+                        data.Database.ExecuteSqlCommand("UPDATE NguoiDung SET Avatar = @p0 WHERE MaND = @p1", selectedAvatar, nd.MaND);
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                }
+
+                // Save avatar selection linked with MaND so after login we can set it in session
+                if (!string.IsNullOrEmpty(selectedAvatar))
+                {
+                    // store in Session (persists until session ends) and TempData (one-time) as fallback
+                    Session["SelectedAvatar_" + nd.MaND] = selectedAvatar;
+                    TempData["SelectedAvatar_" + nd.MaND] = selectedAvatar;
+                }
 
                 TempData["Success"] = "Đăng ký thành công! Bạn có thể đăng nhập.";
                 return RedirectToAction("Login", "User");
@@ -272,6 +341,34 @@ namespace WebApplication15.Controllers
             };
 
             return View(model);
+        }
+
+        // Returns a redirect to the avatar image for the given user (maND).
+        // Layout will use this action as the <img src="..."> so server decides path.
+        public ActionResult Avatar(int maND)
+        {
+            try
+            {
+                // Check session selected avatar first
+                var key = "SelectedAvatar_" + maND;
+                if (Session[key] != null)
+                {
+                    var sel = Session[key] as string;
+                    if (!string.IsNullOrEmpty(sel))
+                        return Redirect(Url.Content("~/Content/avatars/" + sel));
+                }
+
+                // Otherwise read from DB
+                var nd = data.NguoiDungs.FirstOrDefault(n => n.MaND == maND);
+                if (nd != null && !string.IsNullOrEmpty(nd.Avatar))
+                {
+                    return Redirect(Url.Content("~/Content/avatars/" + nd.Avatar));
+                }
+            }
+            catch { }
+
+            // fallback default avatar
+            return Redirect(Url.Content("~/Content/avatars/default.png"));
         }
     }
 }

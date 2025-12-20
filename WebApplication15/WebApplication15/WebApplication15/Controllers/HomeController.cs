@@ -27,6 +27,47 @@ namespace WebApplication15.Controllers
                                              || (!s.TrangThaiSanPham.ToLower().Contains("tạm") && !s.TrangThaiSanPham.ToLower().Contains("ngừng")));
         }
 
+        // Áp dụng thông tin khuyến mãi đang hoạt động cho các sản phẩm (nếu sản phẩm không có GiamGia trực tiếp)
+        private void ApplyActivePromotionsToProducts(List<SanPham> products)
+        {
+            if (products == null || products.Count == 0) return;
+
+            var now = DateTime.Now;
+            var activePromos = data.KhuyenMais
+                .Where(k => k.TrangThai == true
+                            && (k.NgayBatDau == null || k.NgayBatDau <= now)
+                            && (k.NgayKetThuc == null || k.NgayKetThuc >= now))
+                .ToList();
+
+            if (!activePromos.Any()) return;
+
+            foreach (var p in products)
+            {
+                // Nếu sản phẩm đã có GiamGia > 0 thì giữ nguyên
+                if ((p.GiamGia ?? 0m) > 0m) continue;
+
+                // Tìm khuyến mãi áp dụng cho sản phẩm (nếu có)
+                var promo = activePromos.FirstOrDefault(k => k.SanPhams.Any(sp => sp.MaSP == p.MaSP));
+                if (promo == null) continue;
+
+                // Nếu khuyến mãi theo % -> gán phần trăm
+                if (!string.IsNullOrEmpty(promo.LoaiGiamGia) && promo.LoaiGiamGia.Equals("PhanTram", StringComparison.OrdinalIgnoreCase))
+                {
+                    p.GiamGia = promo.GiaTriGiam;
+                }
+                else if (!string.IsNullOrEmpty(promo.LoaiGiamGia) && promo.LoaiGiamGia.Equals("TienMat", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Nếu khuyến mãi là tiền mặt, chuyển sang phần trăm so với giá bán (lưu ý: chỉ để hiển thị/ứng xử trên client)
+                    if (p.GiaBan.HasValue && p.GiaBan.Value > 0m)
+                    {
+                        var percent = (promo.GiaTriGiam / p.GiaBan.Value) * 100m;
+                        // Không vượt quá 100%
+                        p.GiamGia = percent > 100m ? 100m : Math.Round(percent, 2);
+                    }
+                }
+            }
+        }
+
         public ActionResult Index(int? maTH)
         {
             try
@@ -52,6 +93,9 @@ namespace WebApplication15.Controllers
                     .Where(x => (x.GiamGia ?? 0) > 0 || activeKmProductIds.Contains(x.MaSP))
                     .Take(10)
                     .ToList();
+
+                // Nếu sản phẩm nằm trong chương trình khuyến mãi nhưng không có GiamGia trực tiếp, áp dụng phần trăm tạm thời để hiển thị
+                ApplyActivePromotionsToProducts(spSale);
 
                 var spNew = PublicProducts()
                     .OrderByDescending(x => x.MaSP)
@@ -220,7 +264,7 @@ namespace WebApplication15.Controllers
                 return HttpNotFound(); 
             }
 
-            // Không cho người dùng xem các sản phẩm Tạm ngưng / Ngừng kinh doanh
+            // Không cho người dùng xem các sản phẩm Tạm ngừng / Ngừng kinh doanh
             if (!string.IsNullOrEmpty(sanPham.TrangThaiSanPham))
             {
                 var tt = sanPham.TrangThaiSanPham.Trim().ToLower();
@@ -228,6 +272,56 @@ namespace WebApplication15.Controllers
                 {
                     return HttpNotFound();
                 }
+            }
+
+            // Áp dụng khuyến mãi đang hoạt động cho sản phẩm (nếu có) — chỉ tính toán ở bộ nhớ để hiển thị
+            try
+            {
+                var now = DateTime.Now;
+                var activePromos = data.KhuyenMais
+                    .Where(k => k.TrangThai == true
+                                && (k.NgayBatDau == null || k.NgayBatDau <= now)
+                                && (k.NgayKetThuc == null || k.NgayKetThuc >= now))
+                    .ToList();
+
+                var promosForProduct = activePromos.Where(k => k.SanPhams.Any(sp => sp.MaSP == sanPham.MaSP)).ToList();
+                if (promosForProduct.Any())
+                {
+                    decimal bestPercent = 0m;
+                    decimal basePrice = sanPham.GiaBan ?? 0m;
+
+                    foreach (var promo in promosForProduct)
+                    {
+                        decimal effectivePercent = 0m;
+                        if (!string.IsNullOrEmpty(promo.LoaiGiamGia) && promo.LoaiGiamGia.Equals("PhanTram", StringComparison.OrdinalIgnoreCase))
+                        {
+                            effectivePercent = promo.GiaTriGiam;
+                        }
+                        else if (!string.IsNullOrEmpty(promo.LoaiGiamGia) && promo.LoaiGiamGia.Equals("TienMat", StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (basePrice > 0m)
+                            {
+                                effectivePercent = (promo.GiaTriGiam / basePrice) * 100m;
+                            }
+                        }
+
+                        if (effectivePercent > bestPercent) bestPercent = effectivePercent;
+                    }
+
+                    if (bestPercent > 0m)
+                    {
+                        // Nếu sản phẩm đã có GiamGia thực tế thấp hơn khuyến mại, ghi đè tạm thời để hiển thị
+                        if ((sanPham.GiamGia ?? 0m) <= 0m || bestPercent > (sanPham.GiamGia ?? 0m))
+                        {
+                            // Không lưu vào DB, chỉ hiển thị
+                            sanPham.GiamGia = Math.Round(bestPercent, 2);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // im lặng nếu lỗi, không ảnh hưởng hiển thị
             }
 
             var danhGiaList = data.DanhGias
@@ -248,219 +342,171 @@ namespace WebApplication15.Controllers
             return View(sanPham);
         }
 
-        public ActionResult TatCaSanPham(string searchString, decimal? minPrice, decimal? maxPrice, string sortOrder)
-        {
-            // 1. Lấy nguồn dữ liệu (chưa execute)
-            var query = PublicProducts().AsQueryable();
-
-            // 2. Tìm kiếm theo tên (nếu có)
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                query = query.Where(x => x.TenSP.Contains(searchString));
-            }
-
-            // 3. LOGIC LỌC GIÁ MỚI: Tính toán giá sau giảm
-            // Công thức: Giá Thực = GiaBan * (1 - GiamGia / 100)
-            if (minPrice.HasValue)
-            {
-                query = query.Where(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m) >= minPrice.Value);
-            }
-
-            if (maxPrice.HasValue)
-            {
-                query = query.Where(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m) <= maxPrice.Value);
-            }
-
-            // 4. Sắp xếp (Sort)
-            ViewBag.CurrentSort = sortOrder; // Lưu lại để hiện lên View
-            switch (sortOrder)
-            {
-                case "price_asc": // Giá tăng dần (theo giá thực tế)
-                    query = query.OrderBy(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m));
-                    break;
-                case "price_desc": // Giá giảm dần
-                    query = query.OrderByDescending(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m));
-                    break;
-                case "name_asc":
-                    query = query.OrderBy(x => x.TenSP);
-                    break;
-                default: // Mặc định: Mới nhất lên đầu
-                    query = query.OrderByDescending(x => x.MaSP);
-                    break;
-            }
-
-            // 5. Lưu lại giá trị bộ lọc để hiển thị lại trên View
-            ViewBag.SearchString = searchString;
-            ViewBag.MinPrice = minPrice;
-            ViewBag.MaxPrice = maxPrice;
-
-            return View(query.ToList());
-        }
-
         public ActionResult SanPhamHot(string searchString, decimal? minPrice, decimal? maxPrice, string sortOrder)
         {
-            // 1. Lấy dữ liệu
-            var query = PublicProducts().AsQueryable();
-
-            // 2. Tìm kiếm
-            if (!string.IsNullOrEmpty(searchString))
+            try
             {
-                query = query.Where(x => x.TenSP.Contains(searchString));
-            }
+                var products = PublicProducts();
 
-            // 3. Lọc theo GIÁ THỰC TẾ (Giá sau giảm)
-            if (minPrice.HasValue)
+                // Tìm theo tên
+                if (!string.IsNullOrEmpty(searchString))
+                {
+                    products = products.Where(p => p.TenSP.Contains(searchString));
+                }
+
+                // Lọc theo mức giá (sử dụng Giá bán làm cơ sở)
+                if (minPrice.HasValue)
+                {
+                    products = products.Where(p => (p.GiaBan ?? 0m) >= minPrice.Value);
+                }
+                if (maxPrice.HasValue)
+                {
+                    products = products.Where(p => (p.GiaBan ?? 0m) <= maxPrice.Value);
+                }
+
+                // Sắp xếp
+                if (sortOrder == "price_asc")
+                {
+                    products = products.OrderBy(p => p.GiaBan);
+                }
+                else if (sortOrder == "price_desc")
+                {
+                    products = products.OrderByDescending(p => p.GiaBan);
+                }
+                else
+                {
+                    // Mặc định sắp xếp theo tiêu chí "hot" (ở đây tạm dùng GiaBan giảm dần)
+                    products = products.OrderByDescending(p => p.GiaBan);
+                }
+
+                var list = products.Take(100).ToList(); // giới hạn 100
+
+                ViewBag.SearchString = searchString;
+                ViewBag.MinPrice = minPrice;
+                ViewBag.MaxPrice = maxPrice;
+                ViewBag.CurrentSort = sortOrder;
+
+                return View(list);
+            }
+            catch (Exception ex)
             {
-                query = query.Where(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m) >= minPrice.Value);
+                System.Diagnostics.Debug.WriteLine("Lỗi trong SanPhamHot: " + ex.Message);
+                return View(new List<SanPham>());
             }
-
-            if (maxPrice.HasValue)
-            {
-                query = query.Where(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m) <= maxPrice.Value);
-            }
-
-            // 4. Sắp xếp
-            ViewBag.CurrentSort = sortOrder;
-            switch (sortOrder)
-            {
-                case "price_asc":
-                    query = query.OrderBy(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m));
-                    break;
-                case "price_desc":
-                    query = query.OrderByDescending(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m));
-                    break;
-                case "name_asc":
-                    query = query.OrderBy(x => x.TenSP);
-                    break;
-                default:
-                    // Mặc định HOT: Ưu tiên giá trị cao (hoặc bạn có thể sort theo lượt xem nếu có)
-                    query = query.OrderByDescending(x => x.GiaBan);
-                    break;
-            }
-
-            // 5. Lưu ViewBag
-            ViewBag.SearchString = searchString;
-            ViewBag.MinPrice = minPrice;
-            ViewBag.MaxPrice = maxPrice;
-
-            return View(query.ToList());
         }
 
         public ActionResult SanPhamSale(string searchString, decimal? minPrice, decimal? maxPrice, string sortOrder)
         {
-            var now = DateTime.Now;
-            // Lấy danh sách MaSP từ các khuyến mại đang hoạt động (đã phát hành và trong khoảng thời gian)
-            var activeKmProductIds = data.KhuyenMais
-                .Where(k => k.TrangThai == true
-                            && (k.NgayBatDau == null || k.NgayBatDau <= now)
-                            && (k.NgayKetThuc == null || k.NgayKetThuc >= now))
-                .SelectMany(k => k.SanPhams.Select(s => s.MaSP))
-                .Distinct()
-                .ToList();
-
-            // 1. Chỉ lấy sản phẩm đang có giảm giá (> 0) hoặc nằm trong chương trình khuyến mãi đang phát hành
-            var query = PublicProducts().Where(x => (x.GiamGia ?? 0) > 0 || activeKmProductIds.Contains(x.MaSP)).AsQueryable();
-
-            // 2. Tìm kiếm theo tên (nếu có nhập)
-            if (!string.IsNullOrEmpty(searchString))
+            try
             {
-                query = query.Where(x => x.TenSP.Contains(searchString));
-            }
+                var now = DateTime.Now;
 
-            // 3. Lọc theo GIÁ THỰC TẾ (Giá sau khi trừ % giảm)
-            if (minPrice.HasValue)
+                var activeKmProductIds = data.KhuyenMais
+                    .Where(k => k.TrangThai == true
+                                && (k.NgayBatDau == null || k.NgayBatDau <= now)
+                                && (k.NgayKetThuc == null || k.NgayKetThuc >= now))
+                    .SelectMany(k => k.SanPhams.Select(s => s.MaSP))
+                    .Distinct()
+                    .ToList();
+
+                var products = PublicProducts()
+                    .Where(p => (p.GiamGia ?? 0m) > 0m || activeKmProductIds.Contains(p.MaSP));
+
+                // Tìm theo tên
+                if (!string.IsNullOrEmpty(searchString))
+                {
+                    products = products.Where(p => p.TenSP.Contains(searchString));
+                }
+
+                // Lọc theo mức giá (dựa trên Giá bán)
+                if (minPrice.HasValue)
+                {
+                    products = products.Where(p => (p.GiaBan ?? 0m) >= minPrice.Value);
+                }
+                if (maxPrice.HasValue)
+                {
+                    products = products.Where(p => (p.GiaBan ?? 0m) <= maxPrice.Value);
+                }
+
+                // Sắp xếp
+                if (sortOrder == "price_asc")
+                {
+                    products = products.OrderBy(p => p.GiaBan);
+                }
+                else if (sortOrder == "price_desc")
+                {
+                    products = products.OrderByDescending(p => p.GiaBan);
+                }
+                else
+                {
+                    // Mặc định: giảm nhiều nhất
+                    products = products.OrderByDescending(p => p.GiamGia ?? 0m);
+                }
+
+                var list = products.Take(200).ToList();
+
+                // Áp dụng tạm thời khuyến mãi (nếu sản phẩm thuộc chương trình km nhưng không có GiamGia trực tiếp)
+                ApplyActivePromotionsToProducts(list);
+
+                ViewBag.SearchString = searchString;
+                ViewBag.MinPrice = minPrice;
+                ViewBag.MaxPrice = maxPrice;
+                ViewBag.CurrentSort = sortOrder;
+
+                return View(list);
+            }
+            catch (Exception ex)
             {
-                query = query.Where(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m) >= minPrice.Value);
-            }
-
-            if (maxPrice.HasValue)
-            {
-                query = query.Where(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m) <= maxPrice.Value);
-            }
-
-            // 4. Sắp xếp
-            ViewBag.CurrentSort = sortOrder;
-            switch (sortOrder)
-            {
-                case "price_asc": // Giá thấp đến cao
-                    query = query.OrderBy(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m));
-                    break;
-                case "price_desc": // Giá cao đến thấp
-                    query = query.OrderByDescending(x => (x.GiaBan ?? 0) * (1 - (x.GiamGia ?? 0) / 100m));
-                    break;
-                case "name_asc": // Tên A-Z
-                    query = query.OrderBy(x => x.TenSP);
-                    break;
-                default: // Mặc định: Giảm giá sâu nhất lên đầu (Ưu tiên sản phẩm sale mạnh)
-                    query = query.OrderByDescending(x => x.GiamGia);
-                    break;
-            }
-
-            // 5. Lưu lại dữ liệu lọc để hiện lại trên View
-            ViewBag.SearchString = searchString;
-            ViewBag.MinPrice = minPrice;
-            ViewBag.MaxPrice = maxPrice;
-
-            return View(query.ToList());
-        }
-
-        public ActionResult TimKiem(string keyword)
-        {
-            keyword = keyword?.Trim();
-
-            if (string.IsNullOrEmpty(keyword))
+                System.Diagnostics.Debug.WriteLine("Lỗi trong SanPhamSale: " + ex.Message);
                 return View(new List<SanPham>());
-
-            var ketQua = PublicProducts()
-                .Where(sp =>
-                    sp.TenSP.Contains(keyword) ||
-                    sp.ThuongHieu.TenTH.Contains(keyword) ||
-                    sp.LoaiSP.TenLoai.Contains(keyword)
-                )
-                .ToList();
-
-            ViewBag.TuKhoa = keyword;
-
-            return View(ketQua);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult ThemDanhGia(int MaSP, int Diem, string NoiDung)
-        {
-            if (Session["User"] == null || Session["NguoiDung"] == null)
-            {
-                return RedirectToAction("Login", "User");
             }
+        }
 
-            var nd = (NguoiDung)Session["NguoiDung"];
-            int maND = nd.MaND;
-
-            DanhGia dg = new DanhGia
+        public ActionResult TatCaSanPham(string searchString, decimal? minPrice, decimal? maxPrice, string sortOrder)
+        {
+            try
             {
-                MaSP = MaSP,
-                MaND = maND,
-                Diem = Diem,
-                NoiDung = NoiDung,
-                NgayDanhGia = DateTime.Now
-            };
+                var products = PublicProducts();
 
-            data.DanhGias.Add(dg);
-            data.SaveChanges();
+                // Tìm theo tên
+                if (!string.IsNullOrEmpty(searchString))
+                {
+                    products = products.Where(p => p.TenSP.Contains(searchString));
+                }
 
-            return RedirectToAction("ChiTietSP", new { maSP = MaSP });
-        }
+                // Lọc theo mức giá
+                if (minPrice.HasValue)
+                {
+                    products = products.Where(p => (p.GiaBan ?? 0m) >= minPrice.Value);
+                }
+                if (maxPrice.HasValue)
+                {
+                    products = products.Where(p => (p.GiaBan ?? 0m) <= maxPrice.Value);
+                }
 
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-            return View();
-        }
+                // Sắp xếp
+                switch (sortOrder)
+                {
+                    case "price_asc": products = products.OrderBy(p => p.GiaBan); break;
+                    case "price_desc": products = products.OrderByDescending(p => p.GiaBan); break;
+                    case "name_asc": products = products.OrderBy(p => p.TenSP); break;
+                    default: products = products.OrderByDescending(p => p.MaSP); break; // newest
+                }
 
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-            return View();
+                var list = products.ToList();
+
+                ViewBag.SearchString = searchString;
+                ViewBag.MinPrice = minPrice;
+                ViewBag.MaxPrice = maxPrice;
+                ViewBag.CurrentSort = sortOrder;
+
+                return View(list);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Lỗi trong TatCaSanPham: " + ex.Message);
+                return View(new List<SanPham>());
+            }
         }
     }
 }

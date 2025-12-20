@@ -149,10 +149,46 @@ namespace WebApplication15.Areas.Admin.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    // Ensure TrangThai binds correctly from dropdown string
-                    // Model.TrangThai is nullable bool, if form posts "true" or "false" it will bind automatically.
+                    // Load existing entity
+                    var existing = db.KhuyenMais.Find(model.MaKM);
+                    if (existing == null)
+                    {
+                        ModelState.AddModelError("", "Không tìm thấy khuyến mãi.");
+                        return View(model);
+                    }
 
-                    db.Entry(model).State = EntityState.Modified;
+                    // Update simple fields
+                    existing.TenChuongTrinh = model.TenChuongTrinh;
+                    existing.MaCode = model.MaCode;
+                    existing.LoaiGiamGia = model.LoaiGiamGia;
+                    existing.GiaTriGiam = model.GiaTriGiam;
+                    existing.GiamToiDa = model.GiamToiDa;
+                    existing.DonHangToiThieu = model.DonHangToiThieu;
+                    existing.SoLuongPhatHanh = model.SoLuongPhatHanh;
+                    existing.SoLuongDaDung = model.SoLuongDaDung;
+
+                    // Preserve dates if not provided in form: only overwrite when user supplies values
+                    if (model.NgayBatDau.HasValue)
+                    {
+                        existing.NgayBatDau = model.NgayBatDau;
+                    }
+
+                    if (model.NgayKetThuc.HasValue)
+                    {
+                        existing.NgayKetThuc = model.NgayKetThuc;
+                    }
+
+                    // TrangThai can be changed directly
+                    existing.TrangThai = model.TrangThai;
+
+                    // Validate date order if both present on existing
+                    if (existing.NgayBatDau.HasValue && existing.NgayKetThuc.HasValue && existing.NgayBatDau.Value >= existing.NgayKetThuc.Value)
+                    {
+                        ModelState.AddModelError("NgayKetThuc", "Ngày kết thúc phải lớn hơn ngày bắt đầu.");
+                        return View(existing);
+                    }
+
+                    db.Entry(existing).State = EntityState.Modified;
                     db.SaveChanges();
                     TempData["SuccessMessage"] = "Cập nhật khuyến mãi thành công";
                     return RedirectToAction("Index");

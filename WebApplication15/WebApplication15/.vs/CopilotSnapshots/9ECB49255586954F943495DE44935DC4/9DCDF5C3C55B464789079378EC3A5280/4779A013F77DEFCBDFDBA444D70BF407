@@ -1,0 +1,315 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng ký tài khoản</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="~/CSS/SaoRoi.css" rel="stylesheet" />
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f19; /* Nền tối sâu */
+            color: #e2e8f0;
+            height: 100vh;
+            overflow: hidden; /* Ẩn thanh cuộn trang chính */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- Vùng chứa chính --- */
+        .register-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 420px; /* Cố định chiều rộng nhỏ gọn */
+            padding: 20px;
+        }
+
+        /* --- Thẻ Glassmorphism Tinh Gọn --- */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.4); /* Nền tối, độ trong cao */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 30px 25px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            max-height: 90vh; /* Giới hạn chiều cao */
+            overflow-y: auto; /* Cuộn dọc nếu màn hình nhỏ */
+            /* Tùy chỉnh thanh cuộn cho đẹp */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.2) transparent;
+        }
+
+            .glass-panel::-webkit-scrollbar {
+                width: 4px;
+            }
+
+            .glass-panel::-webkit-scrollbar-thumb {
+                background: rgba(255,255,255,0.2);
+                border-radius: 4px;
+            }
+
+        /* --- Header --- */
+        .header-title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+            .header-title h4 {
+                font-weight: 600;
+                font-size: 1.5rem;
+                letter-spacing: -0.5px;
+                color: #fff;
+                margin-bottom: 5px;
+            }
+
+            .header-title p {
+                font-size: 0.85rem;
+                color: #94a3b8;
+            }
+
+        /* --- Form Inputs Minimalist --- */
+        .form-floating {
+            margin-bottom: 12px; /* Khoảng cách giữa các ô nhỏ lại */
+        }
+
+        .form-control, .form-select {
+            background: rgba(0, 0, 0, 0.2) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff !important;
+            font-size: 0.9rem;
+            height: 50px; /* Chiều cao nhỏ gọn hơn */
+        }
+
+            .form-control:focus, .form-select:focus {
+                background: rgba(0, 0, 0, 0.4) !important;
+                border-color: #38bdf8; /* Màu xanh dương nhạt (Sky Blue) */
+                box-shadow: none; /* Bỏ shadow lòe loẹt */
+            }
+
+        .form-floating label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            padding-top: 0.85rem;
+        }
+
+        /* Chỉnh label khi focus */
+        .form-floating > .form-control:focus ~ label,
+        .form-floating > .form-control:not(:placeholder-shown) ~ label,
+        .form-floating > .form-select ~ label {
+            opacity: 0.8;
+            transform: scale(0.85) translateY(-0.7rem) translateX(0.15rem);
+            color: #38bdf8;
+        }
+
+        /* --- Avatar Mini --- */
+        .avatar-scroll {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 5px 0;
+        }
+
+        .avatar-item {
+            cursor: pointer;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+            transform: scale(0.9);
+        }
+
+            .avatar-item img {
+                width: 45px; /* Nhỏ lại */
+                height: 45px;
+                border-radius: 50%;
+                border: 2px solid transparent;
+                object-fit: cover;
+            }
+
+            .avatar-item:hover {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            .avatar-item.active {
+                opacity: 1;
+                transform: scale(1.15);
+            }
+
+                .avatar-item.active img {
+                    border-color: #38bdf8;
+                    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+                }
+
+        /* --- Button Pro --- */
+        .btn-submit {
+            background: #38bdf8;
+            color: #0f172a;
+            font-weight: 600;
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+            .btn-submit:hover {
+                background: #7dd3fc;
+                transform: translateY(-1px);
+            }
+
+        /* --- Footer Link --- */
+        .login-link {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+            .login-link a {
+                color: #38bdf8;
+                text-decoration: none;
+                font-weight: 500;
+            }
+
+        /* Fix nền trắng auto-fill chrome */
+        input:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 30px #161e2e inset !important;
+            -webkit-text-fill-color: white !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="night">
+        @for (int i = 0; i < 30; i++)
+        {<div class="shooting_star"></div>}
+    </div>
+
+    <div class="register-container">
+        @using (Html.BeginForm("RegisterSubmit", "User", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="glass-panel fade-in">
+
+                <div class="header-title">
+                    <h4>Tạo Tài Khoản</h4>
+                    <p>Nhập thông tin để bắt đầu hành trình</p>
+                </div>
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger py-2" style="font-size:0.8rem;">@ViewBag.Error</div>
+                }
+
+                <div class="row g-2">
+                    <div class="col-7">
+                        <div class="form-floating">
+                            <input type="text" name="HoTen" id="HoTen" required class="form-control" placeholder="Tên" />
+                            <label>Họ và tên</label>
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-floating">
+                            <select name="GioiTinh" class="form-select ps-3">
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                            </select>
+                            <label>Giới tính</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="form-floating">
+                            <input type="date" name="NgaySinh" class="form-control" placeholder="Ngày sinh" />
+                            <label>Ngày sinh</label>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-floating">
+                            <input type="text" name="SoDienThoai" class="form-control" placeholder="SĐT" />
+                            <label>Điện thoại</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-floating">
+                    <input type="text" name="DiaChi" class="form-control" placeholder="Địa chỉ" />
+                    <label>Địa chỉ</label>
+                </div>
+
+                <div class="my-3 border-bottom border-secondary opacity-25"></div>
+
+                <div class="form-floating">
+                    <input type="email" name="TenDangNhap" required class="form-control" placeholder="Email" />
+                    <label>Email đăng nhập</label>
+                </div>
+
+                <div class="form-floating">
+                    <input type="password" name="MatKhau" required class="form-control" placeholder="Mật khẩu" />
+                    <label>Mật khẩu</label>
+                </div>
+
+                <div class="form-floating">
+                    <input type="password" name="NhapLaiMatKhau" required class="form-control" placeholder="Nhập lại" />
+                    <label>Xác nhận mật khẩu</label>
+                </div>
+
+                <div class="text-center mt-3 mb-1">
+                    <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #64748b;">Chọn Avatar</span>
+                </div>
+                <div class="avatar-scroll">
+                    <label class="avatar-item active">
+                        <input type="radio" name="Avatar" value="1.jpg" hidden checked />
+                        <img src="~/Content/avatars/1.jpg" />
+                    </label>
+                    <label class="avatar-item">
+                        <input type="radio" name="Avatar" value="2.jpg" hidden />
+                        <img src="~/Content/avatars/2.jpg" />
+                    </label>
+                    <label class="avatar-item">
+                        <input type="radio" name="Avatar" value="3.jpg" hidden />
+                        <img src="~/Content/avatars/3.jpg" />
+                    </label>
+                    <label class="avatar-item">
+                        <input type="radio" name="Avatar" value="4.jpg" hidden />
+                        <img src="~/Content/avatars/4.jpg" />
+                    </label>
+                </div>
+
+                <button class="btn-submit">Đăng Ký</button>
+
+                <div class="login-link">
+                    Đã có tài khoản? <a href="@Url.Action("Login", "User")">Đăng nhập ngay</a>
+                </div>
+            </div>
+        }
+    </div>
+
+    <script>
+        // Script chọn avatar đơn giản
+        const items = document.querySelectorAll('.avatar-item');
+        items.forEach(item => {
+            item.addEventListener('click', () => {
+                items.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                item.querySelector('input').checked = true;
+            });
+        });
+    </script>
+</body>
+</html>

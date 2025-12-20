@@ -126,6 +126,7 @@
     <Property Name="GioiTinh" Type="nvarchar" MaxLength="10" />
     <Property Name="NgaySinh" Type="date" />
     <Property Name="NgayTao" Type="datetime" />
+    <Property Name="Avatar" Type="nvarchar" MaxLength="50" />
   </EntityType>
   <EntityType Name="NhaCungCap">
     <Key>
