@@ -221,15 +221,6 @@
       <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SanPham.Extension.cs" />
-    <Compile Include="Models\sp_helpdiagramdefinition_Result.cs">
-      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\sp_helpdiagrams_Result.cs">
-      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\sysdiagram.cs">
-      <DependentUpon>DB_SkinFood1.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\TaiKhoan.cs">
       <DependentUpon>DB_SkinFood1.tt</DependentUpon>
     </Compile>
@@ -332,6 +323,11 @@
     <Content Include="Areas\Admin\Views\PhieuXuat\Details.cshtml" />
     <Content Include="Areas\Admin\Views\NhaCungCap\Index.cshtml" />
     <Content Include="Areas\Admin\Views\NhaCungCap\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\KhuyenMais\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\KhuyenMais\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\KhuyenMais\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\KhuyenMais\Delete.cshtml" />
+    <Content Include="Areas\Admin\Views\KhuyenMais\Details.cshtml" />
     <EntityDeploy Include="Models\DB_SkinFood1.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>DB_SkinFood1.Designer.cs</LastGenOutput>
@@ -339,11 +335,6 @@
     <Content Include="Models\DB_SkinFood1.edmx.diagram">
       <DependentUpon>DB_SkinFood1.edmx</DependentUpon>
     </Content>
-    <Content Include="Areas\Admin\Views\KhuyenMais\Index.cshtml" />
-    <Content Include="Areas\Admin\Views\KhuyenMais\Create.cshtml" />
-    <Content Include="Areas\Admin\Views\KhuyenMais\Edit.cshtml" />
-    <Content Include="Areas\Admin\Views\KhuyenMais\Delete.cshtml" />
-    <Content Include="Areas\Admin\Views\KhuyenMais\Details.cshtml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />

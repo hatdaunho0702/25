@@ -17,10 +17,21 @@ namespace WebApplication15.Areas.Admin.Controllers
         private DB_SkinFood1Entities db = new DB_SkinFood1Entities();
 
         // GET: Admin/NguoiDungs
-        public ActionResult Index()
+        public ActionResult Index(string search)
         {
-            var nguoiDungs = db.NguoiDungs.ToList();
-            return View(nguoiDungs);
+            ViewBag.Search = search;
+
+            var nguoiDungs = db.NguoiDungs.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var s = search.Trim().ToLower();
+                nguoiDungs = nguoiDungs.Where(n => ((n.HoTen ?? "").ToLower().Contains(s)
+                                                   || (n.SoDienThoai ?? "").Contains(s)
+                                                   || ((n.DiaChi ?? "").ToLower().Contains(s))));
+            }
+
+            return View(nguoiDungs.ToList());
         }
 
         // GET: Admin/NguoiDungs/Details/5
@@ -128,9 +139,9 @@ namespace WebApplication15.Areas.Admin.Controllers
         }
 
         // POST: Admin/NguoiDungs/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult Delete(int id)
         {
             try
             {
@@ -140,6 +151,10 @@ namespace WebApplication15.Areas.Admin.Controllers
                     db.NguoiDungs.Remove(nguoiDung);
                     db.SaveChanges();
                     TempData["SuccessMessage"] = "Xóa người dùng thành công!";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy người dùng để xóa.";
                 }
             }
             catch (System.Data.Entity.Infrastructure.DbUpdateException)

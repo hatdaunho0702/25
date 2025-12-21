@@ -20,5 +20,9 @@ namespace WebApplication15.Models
         public string SoDienThoai { get; set; }
         public string NoiDung { get; set; }
         public Nullable<System.DateTime> NgayGui { get; set; }
+        public Nullable<int> MaND { get; set; }
+        public string TrangThai { get; set; }
+    
+        public virtual NguoiDung NguoiDung { get; set; }
     }
 }

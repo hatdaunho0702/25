@@ -9,8 +9,10 @@ namespace WebApplication15.Controllers
 {
     public class ChatController : Controller
     {
-        // Lưu ý: Thay thế API key của bạn ở đây
+        // 1. Dán GitHub Personal Access Token của bạn vào đây
+        // Lấy key tại: https://github.com/settings/tokens (hoặc từ trang Marketplace khi chọn model)
         private readonly string apiKey = "";
+
         public ActionResult ChatAI()
         {
             return View();
@@ -23,7 +25,7 @@ namespace WebApplication15.Controllers
             {
                 if (string.IsNullOrWhiteSpace(apiKey))
                 {
-                    return Content("Vui lòng cấu hình API key trong ChatController.");
+                    return Content("Vui lòng cấu hình GitHub Token trong ChatController.");
                 }
 
                 if (string.IsNullOrWhiteSpace(message))
@@ -33,13 +35,15 @@ namespace WebApplication15.Controllers
 
                 using (var httpClient = new HttpClient())
                 {
+                    // Header Authorization vẫn giữ nguyên định dạng Bearer
                     httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
                     httpClient.Timeout = TimeSpan.FromSeconds(30);
 
-                    // Sửa request body theo API OpenAI đúng
+                    // 2. Cấu hình Body Request
                     var requestBody = new
                     {
-                        model = "gpt-3.5-turbo",
+                        // QUAN TRỌNG: GitHub Models thường dùng 'gpt-4o' hoặc 'gpt-4o-mini'
+                        model = "gpt-4o",
                         messages = new[]
                         {
                             new
@@ -63,14 +67,14 @@ namespace WebApplication15.Controllers
                         "application/json"
                     );
 
-                    // Sửa endpoint đúng theo API OpenAI
-                    var response = await httpClient.PostAsync("https://api.openai.com/v1/chat/completions", content);
-                    
+                    // 3. Đổi Endpoint sang Server của GitHub Models (Azure AI Inference)
+                    var response = await httpClient.PostAsync("https://models.inference.ai.azure.com/chat/completions", content);
+
                     if (!response.IsSuccessStatusCode)
                     {
                         var errorContent = await response.Content.ReadAsStringAsync();
                         System.Diagnostics.Debug.WriteLine($"API Error: {errorContent}");
-                        return Content($"Lỗi từ API: {response.StatusCode}");
+                        return Content($"Lỗi từ API GitHub: {response.StatusCode} - {errorContent}");
                     }
 
                     var responseString = await response.Content.ReadAsStringAsync();

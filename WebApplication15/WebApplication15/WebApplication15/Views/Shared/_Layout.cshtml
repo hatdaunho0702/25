@@ -3,11 +3,10 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <title>@ViewBag.Title - SkinFood Shop</title>
 
     @Styles.Render("~/Content/css")
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="~/Content/styles.scss.css" rel="stylesheet" />
@@ -21,7 +20,80 @@
             vertical-align: middle;
             border: 1px solid rgba(0,0,0,0.06);
         }
-        .user-avatar-wrap { width:36px; height:36px; display:inline-block; border-radius:50%; overflow:hidden; }
+
+        .user-avatar-wrap {
+            width: 36px;
+            height: 36px;
+            display: inline-block;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        /* CSS cho Dropdown thông báo */
+        .notif-dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            z-index: 1000;
+            min-width: 320px;
+            padding: 0;
+            margin: 0;
+            background-color: #fff;
+            border: 1px solid rgba(0,0,0,.15);
+            border-radius: .25rem;
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,.175);
+            list-style: none;
+        }
+
+        .notif-container:hover .notif-dropdown-menu {
+            display: block;
+        }
+        /* Hover để hiện menu (hoặc dùng JS click) */
+        .notif-header {
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .notif-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #f1f1f1;
+            display: block;
+            text-decoration: none;
+            color: #333;
+            transition: 0.2s;
+        }
+
+            .notif-item:hover {
+                background-color: #f8f9fa;
+                text-decoration: none;
+                color: #000;
+            }
+
+        .notif-content {
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .notif-time {
+            font-size: 11px;
+            color: #888;
+            text-align: right;
+        }
+
+        .badge-notif {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            padding: 3px 6px;
+            border-radius: 50%;
+            background-color: #dc3545;
+            color: white;
+            font-size: 10px;
+        }
     </style>
     <link href="~/CSS/chatbox.css" rel="stylesheet" />
     <link href="~/Content/cssnew.scss.css" rel="stylesheet" />
@@ -29,44 +101,27 @@
     <link href="~/Content/MyCusTomLayOut.css" rel="stylesheet" />
     <link href="~/CSS/StyleSheet1.css" rel="stylesheet" />
     @Scripts.Render("~/bundles/modernizr")
-    <style>
-    </style>
 </head>
-
 
 <body>
     @*banner*@
     <section class="top-page-banner" style="text-align: center; background-color: #000; line-height: 0;">
         <a href="#">
             <picture>
-                <source media="(min-width:768px)"
-                        srcset="https://cdn.hstatic.net/files/1000006063/file/1920x50__dcc483700bc146ce9904885d5c1c11af.jpg"
-                        rel="nofollow">
-                <source media="(max-width:767px)"
-                        srcset="https://cdn.hstatic.net/files/1000006063/file/414x68_2794ebe66cb348e1a76b6f94c2fee1b6.jpg"
-                        rel="nofollow">
-                <img src="https://cdn.hstatic.net/files/1000006063/file/414x68_2794ebe66cb348e1a76b6f94c2fee1b6.jpg "
-                     alt="Banner"
-                     style="width:auto; max-width: 100%;"
-                     class=" ls-is-cached lazyloaded"
-                     rel="nofollow">
+                <source media="(min-width:768px)" srcset="https://cdn.hstatic.net/files/1000006063/file/1920x50__dcc483700bc146ce9904885d5c1c11af.jpg" rel="nofollow">
+                <source media="(max-width:767px)" srcset="https://cdn.hstatic.net/files/1000006063/file/414x68_2794ebe66cb348e1a76b6f94c2fee1b6.jpg" rel="nofollow">
+                <img src="https://cdn.hstatic.net/files/1000006063/file/414x68_2794ebe66cb348e1a76b6f94c2fee1b6.jpg" alt="Banner" style="width:auto; max-width: 100%;" class="ls-is-cached lazyloaded" rel="nofollow">
             </picture>
         </a>
     </section>
 
-    @**@
     <section class="f-header-top">
         <div class="container">
             <div class="f-header-top-wrap">
                 <div class="f-header-top-mb">
                     <a href="javascript:void(0);" class="js-toggle-mobile-menu">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M2.58611 8.03711C1.15784 8.03711 0 9.13981 0 10.5001C0 11.8603 1.15784 12.963 2.58611 12.963C4.01439 12.963 5.17223 11.8603 5.17223 10.5001C5.17223 9.13981 4.01439 8.03711 2.58611 8.03711ZM2.58611 11.9577C1.74083 11.9577 1.05556 11.3051 1.05556 10.5001C1.05556 9.69504 1.74083 9.0424 2.58611 9.0424C3.4314 9.0424 4.11667 9.69504 4.11667 10.5001C4.11667 11.3051 3.43145 11.9577 2.58611 11.9577Z" fill="#212121"></path>
-                            <path d="M18.8945 9.99744H6.96668C6.67519 9.99744 6.4389 10.2225 6.4389 10.5001C6.4389 10.7777 6.67519 11.0027 6.96668 11.0027H18.8945C19.186 11.0027 19.4222 10.7777 19.4222 10.5001C19.4222 10.2225 19.186 9.99744 18.8945 9.99744Z" fill="#212121"></path>
-                            <path d="M2.58611 1C1.15784 1 0 2.10271 0 3.46297C0 4.82322 1.15784 5.92593 2.58611 5.92593C4.01439 5.92593 5.17223 4.82322 5.17223 3.46297C5.17223 2.10271 4.01439 1 2.58611 1ZM2.58611 4.92064C1.74083 4.92064 1.05556 4.268 1.05556 3.46297C1.05556 2.65793 1.74083 2.00529 2.58611 2.00529C3.4314 2.00529 4.11667 2.65793 4.11667 3.46297C4.11667 4.268 3.43145 4.92064 2.58611 4.92064Z" fill="#212121"></path>
-                            <path d="M6.96668 3.96562H18.8945C19.186 3.96562 19.4222 3.74059 19.4222 3.46297C19.4222 3.18536 19.186 2.96033 18.8945 2.96033H6.96668C6.67519 2.96033 6.4389 3.18536 6.4389 3.46297C6.4389 3.74059 6.67519 3.96562 6.96668 3.96562Z" fill="#212121"></path>
-                            <path d="M2.58611 15.074C1.15784 15.074 0 16.1767 0 17.5369C0 18.8972 1.15784 19.9999 2.58611 19.9999C4.01439 19.9999 5.17223 18.8972 5.17223 17.5369C5.17223 16.1767 4.01439 15.074 2.58611 15.074ZM4.11667 17.5369C4.11667 18.342 3.4314 18.9946 2.58611 18.9946C1.74083 18.9946 1.05556 18.342 1.05556 17.5369C1.05556 16.7319 1.74083 16.0793 2.58611 16.0793C3.4314 16.0793 4.11667 16.7319 4.11667 17.5369Z" fill="#212121"></path>
-                            <path d="M18.8945 17.0343H6.96668C6.67519 17.0343 6.4389 17.2593 6.4389 17.5369C6.4389 17.8146 6.67519 18.0396 6.96668 18.0396H18.8945C19.186 18.0396 19.4222 17.8146 19.4222 17.5369C19.4222 17.2593 19.186 17.0343 18.8945 17.0343Z" fill="#212121"></path>
+                            <path d="M2.58611 8.03711C1.15784 8.03711 0 9.13981 0 10.5001C0 11.8603 1.15784 12.963 2.58611 12.963C4.01439 12.963 5.17223 11.8603 5.17223 10.5001C5.17223 9.13981 4.01439 8.03711 2.58611 8.03711Z" fill="#212121"></path>
                         </svg>
                     </a>
                 </div>
@@ -82,52 +137,104 @@
                         <input type="text" name="keyword" class="form-control" placeholder="Tìm sản phẩm..." />
                         <button type="submit" class="btn btn-primary ms-2">Tìm</button>
                     </form>
-
-                    <div class="f-header-top-search-keywords">
-                    </div>
                 </div>
 
                 <div class="f-header-top-tools">
-                    <div class="f-header-top-info">
-                        Hotline: 1900 JQKA
-                    </div>
-
+                    <div class="f-header-top-info">Hotline: 1900 JQKA</div>
                     <span class="vertical-bar">|</span>
 
-                    @{ 
-                        var nd = Session["NguoiDung"] as WebApplication15.Models.NguoiDung; 
-                        string avatarFile = null; 
+                    @* --- PHẦN LOGIC C# XỬ LÝ USER & THÔNG BÁO --- *@
+                    @{
+                        // 1. Xác định User
+                        var nd = Session["NguoiDung"] as WebApplication15.Models.NguoiDung;
+                        var tk = Session["User"] as WebApplication15.Models.TaiKhoan;
+
+                        // Xử lý Avatar
+                        string avatarFile = null;
                         if (nd != null) { avatarFile = nd.Avatar; }
-                        // fallback: if user logged in but NguoiDung not stored, try SelectedAvatar in session by MaND
-                        if (string.IsNullOrEmpty(avatarFile) && Session["User"] != null)
+                        if (string.IsNullOrEmpty(avatarFile) && tk != null)
                         {
-                            var tk = Session["User"] as WebApplication15.Models.TaiKhoan;
-                            if (tk != null)
+                            var key = "SelectedAvatar_" + tk.MaND;
+                            if (Session[key] != null) { avatarFile = Session[key] as string; }
+                        }
+
+                        // Tạo link ảnh Avatar
+                        string imgSrc = null;
+                        if (tk != null) { imgSrc = Url.Action("Avatar", "User", new { maND = tk.MaND }); }
+                        if (string.IsNullOrEmpty(imgSrc) && !string.IsNullOrEmpty(avatarFile))
+                        {
+                            imgSrc = Url.Content("~/Content/avatars/" + avatarFile);
+                        }
+
+                        // 2. Lấy danh sách Thông báo (Phản hồi từ Admin)
+                        int currentUserId = 0;
+                        if (tk != null) { currentUserId = tk.MaND; }
+                        else if (nd != null) { currentUserId = nd.MaND; }
+
+                        List<WebApplication15.Models.LienHe> listNotif = new List<WebApplication15.Models.LienHe>();
+                        if (currentUserId > 0)
+                        {
+                            try
                             {
-                                var key = "SelectedAvatar_" + tk.MaND;
-                                if (Session[key] != null)
+                                using (var db = new WebApplication15.Models.DB_SkinFood1Entities())
                                 {
-                                    avatarFile = Session[key] as string;
+                                    listNotif = db.LienHes
+                                        .Where(l => l.MaND == currentUserId && l.TrangThai != null && l.TrangThai.StartsWith("PHANHOI|"))
+                                        .OrderByDescending(l => l.NgayGui)
+                                        .ToList();
                                 }
                             }
+                            catch { }
                         }
                     }
+                    @* --- KẾT THÚC LOGIC C# --- *@
 
-                    <div class="f-header-top-icons">
-                        <a href="@Url.Action("Account", "User")" class="f-header-top-icon-account" title="Tài khoản">
-                            @{ 
-                                var sessionTk = Session["User"] as WebApplication15.Models.TaiKhoan;
-                                string imgSrc = null;
-                                if (sessionTk != null)
-                                {
-                                    imgSrc = Url.Action("Avatar", "User", new { maND = sessionTk.MaND });
-                                }
-                                if (string.IsNullOrEmpty(imgSrc) && !string.IsNullOrEmpty(avatarFile))
-                                {
-                                    imgSrc = Url.Content("~/Content/avatars/" + avatarFile);
-                                }
-                            }
+                    <div class="f-header-top-icons d-flex align-items-center">
 
+                        @* === BẮT ĐẦU: NÚT THÔNG BÁO (MỚI THÊM) === *@
+                        <div class="notif-container" style="position: relative; margin-right: 15px; cursor: pointer;">
+                            <a href="#" style="color: #212121; position: relative;">
+                                <i class="fa-regular fa-bell" style="font-size: 20px;"></i>
+                                @if (listNotif != null && listNotif.Count > 0)
+                                {
+                                    <span class="badge-notif">@listNotif.Count</span>
+                                }
+                            </a>
+
+                            <ul class="notif-dropdown-menu">
+                                <li class="notif-header">Thông báo phản hồi</li>
+                                @if (listNotif != null && listNotif.Count > 0)
+                                {
+                                    <div style="max-height: 300px; overflow-y: auto;">
+                                        @foreach (var item in listNotif)
+                                        {
+                                            string phanHoi = item.TrangThai.Replace("PHANHOI|", "");
+                                            <a href="@Url.Action("Index", "LienHe")" class="notif-item">
+                                                <div style="font-weight: bold; color: #007bff; font-size: 13px;">
+                                                    <i class="fa fa-reply"></i> Admin phản hồi:
+                                                </div>
+                                                <div class="notif-content">@phanHoi</div>
+                                                <div class="text-muted" style="font-size: 11px;">
+                                                    Câu hỏi: @(item.NoiDung.Length > 25 ? item.NoiDung.Substring(0, 25) + "..." : item.NoiDung)
+                                                </div>
+                                                <div class="notif-time">
+                                                    @(item.NgayGui.HasValue ? item.NgayGui.Value.ToString("dd/MM/yyyy HH:mm") : "")
+                                                </div>
+                                            </a>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <li class="p-3 text-center text-muted">Không có thông báo mới</li>
+                                }
+                            </ul>
+                        </div>
+                        @* === KẾT THÚC: NÚT THÔNG BÁO === *@
+
+
+                        @* Icon Tài khoản (Giữ nguyên) *@
+                        <a href="@Url.Action("Account", "User")" class="f-header-top-icon-account" title="Tài khoản" style="margin-right: 15px;">
                             @if (!string.IsNullOrEmpty(imgSrc))
                             {
                                 <span class="user-avatar-wrap"><img src="@imgSrc" alt="avatar" class="user-avatar" /></span>
@@ -140,7 +247,9 @@
                                 </svg>
                             }
                         </a>
-                        <a href="@Url.Action("Index", "GioHang")" class="f-header-top-icon-cart">
+
+                        @* Icon Giỏ hàng (Giữ nguyên) *@
+                        <a href="@Url.Action("Index", "GioHang")" class="f-header-top-icon-cart" style="margin-right: 15px;">
                             <svg width="17" height="23" viewBox="0 0 17 23" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M16.4591 6.78643C16.4536 6.78643 16.4536 6.78643 16.4481 6.78643H13.2468V4.44242C13.2468 1.99161 11.1714 0 8.63799 0C6.10455 0 4.02922 1.99161 4.02922 4.44242V6.78643H0.551948C0.253896 6.78109 0.00551948 7.01069 0 7.29902C0 7.30436 0 7.30436 0 7.30969V19.772C0 21.2456 1.23636 22.4363 2.75974 22.4363H14.2403C15.7636 22.4363 17 21.2456 17 19.772V7.30969C17 7.02136 16.7571 6.78643 16.4591 6.78643ZM5.13312 4.44242C5.13312 2.57895 6.71169 1.06789 8.63799 1.06789C10.5643 1.06789 12.1429 2.57895 12.1429 4.44242V6.78643H5.13312V4.44242ZM15.8961 19.7666C15.8961 20.6476 15.1565 21.3631 14.2403 21.3631H2.75974C1.84903 21.3631 1.1039 20.653 1.1039 19.772V7.85432H4.02922V10.9565C4.02922 11.2502 4.2776 11.4905 4.58117 11.4905C4.88474 11.4905 5.13312 11.2502 5.13312 10.9565V7.85432H12.1429V10.9565C12.1429 11.2502 12.3912 11.4905 12.6948 11.4905C12.9984 11.4905 13.2468 11.2502 13.2468 10.9565V7.85432H15.8961V19.7666Z" fill="#212121"></path>
                             </svg>
@@ -148,15 +257,18 @@
                                 @(Session["Cart"] != null ? ((WebApplication15.Models.Cart)Session["Cart"]).SoMatHang() : 0)
                             </sup>
                         </a>
+
+                        @* Icon Liên hệ (Giữ nguyên) *@
                         <a href="@Url.Action("Index", "LienHe")" class="f-header-top-icon-account">
                             <i class="bi bi-telephone-fill" style="font-size: 20px;"></i>
                         </a>
-                            <a href="javascript:void(0)" class="f-header-top-icon-menu">
-                                <svg width="19" height="10" viewBox="0 0 19 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <line x1="19" y1="0.5" y2="0.5" stroke="#212121"></line>
-                                    <line x1="19" y1="9.5" y2="9.5" stroke="#212121"></line>
-                                </svg>
-                            </a>
+
+                        <a href="javascript:void(0)" class="f-header-top-icon-menu">
+                            <svg width="19" height="10" viewBox="0 0 19 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <line x1="19" y1="0.5" y2="0.5" stroke="#212121"></line>
+                                <line x1="19" y1="9.5" y2="9.5" stroke="#212121"></line>
+                            </svg>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -165,32 +277,22 @@
 
     @Html.Action("MenuChinh", "Home")
 
-
     <div class="container body-content">
-        @RenderBody() <hr />
-
-
-
-
-
+        @RenderBody()
+        <hr />
 
         <footer class="footer-pink pt-5 pb-4 mt-5">
             <div class="container">
-
                 <div class="row">
-
-                    <!-- Cột 1 -->
                     <div class="col-md-4 col-sm-12 mb-4">
                         <h5 class="footer-title">SkinFood Shop</h5>
                         <p class="footer-text">
                             Mỹ phẩm chính hãng – an toàn – chất lượng.
                             Tự tin lan tỏa vẻ đẹp tự nhiên của bạn!
                         </p>
-
                         <p class="footer-text"><i class="bi bi-geo-alt-fill"></i> 140 Lê Trọng Tấn, TP.HCM</p>
                         <p class="footer-text"><i class="bi bi-telephone-fill"></i> 0911513170</p>
                         <p class="footer-text"><i class="bi bi-envelope-fill"></i> skinfood@gmail.com</p>
-
                         <div class="d-flex gap-3 fs-4 mt-2">
                             <a href="#" class="social-icon"><i class="fa-brands fa-facebook"></i></a>
                             <a href="#" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
@@ -198,7 +300,6 @@
                         </div>
                     </div>
 
-                    <!-- Cột 2 -->
                     <div class="col-md-4 col-sm-6 mb-4">
                         <h5 class="footer-title">Danh mục</h5>
                         <ul class="list-unstyled">
@@ -209,7 +310,6 @@
                         </ul>
                     </div>
 
-                    <!-- Cột 3 -->
                     <div class="col-md-4 col-sm-6 mb-4">
                         <h5 class="footer-title">Hỗ trợ</h5>
                         <ul class="list-unstyled">
@@ -219,36 +319,33 @@
                             <li><a class="footer-link" href="/LienHe/Index">Liên hệ</a></li>
                         </ul>
                     </div>
-
                 </div>
-
                 <hr class="footer-line" />
-
                 <div class="text-center footer-copy">
                     © @DateTime.Now.Year SkinFood – Đẹp mỗi ngày cùng bạn 🌸
                 </div>
-
             </div>
         </footer>
-
-
     </div>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 
-
-
-
-
     @Html.Partial("_ChatBox")
-<script src="~/CSS/chatbox.js"></script>
+    <script src="~/CSS/chatbox.js"></script>
 
+    @* Script xử lý hover cho dropdown menu thông báo *@
+    <script>
+        $(document).ready(function () {
+            // Nếu dùng mobile, click để mở menu
+            $('.notif-container > a').click(function (e) {
+                if ($(window).width() < 768) {
+                    e.preventDefault();
+                    $(this).next('.notif-dropdown-menu').toggle();
+                }
+            });
+        });
+    </script>
 </body>
-
-
-
-
-
 </html>

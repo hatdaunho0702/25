@@ -1,0 +1,318 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using WebApplication15.Models;
+
+namespace WebApplication15.Controllers
+{
+    public class HomeController : Controller
+    {
+        private DB_SkinFood1Entities data = new DB_SkinFood1Entities();
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                data?.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private IQueryable<SanPham> PublicProducts()
+        {
+            // Trả về các sản phẩm được phép hiển thị cho người dùng (không hiển thị Tạm ngưng / Ngừng kinh doanh)
+            return data.SanPhams.Where(s => s.TrangThaiSanPham == null
+                                             || (!s.TrangThaiSanPham.ToLower().Contains("tạm") && !s.TrangThaiSanPham.ToLower().Contains("ngừng")));
+        }
+
+        // Áp dụng thông tin khuyến mãi đang hoạt động cho các sản phẩm (nếu sản phẩm không có GiamGia trực tiếp)
+        private void ApplyActivePromotionsToProducts(List<SanPham> products)
+        {
+            if (products == null || products.Count == 0) return;
+
+            var now = DateTime.Now;
+            var activePromos = data.KhuyenMais
+                .Where(k => k.TrangThai == true
+                            && (k.NgayBatDau == null || k.NgayBatDau <= now)
+                            && (k.NgayKetThuc == null || k.NgayKetThuc >= now))
+                .ToList();
+
+            if (!activePromos.Any()) return;
+
+            foreach (var p in products)
+            {
+                // Nếu sản phẩm đã có GiamGia > 0 thì giữ nguyên
+                if ((p.GiamGia ?? 0m) > 0m) continue;
+
+                // Tìm khuyến mãi áp dụng cho sản phẩm (nếu có)
+                var promo = activePromos.FirstOrDefault(k => k.SanPhams.Any(sp => sp.MaSP == p.MaSP));
+                if (promo == null) continue;
+
+                // Nếu khuyến mãi theo % -> gán phần trăm
+                if (!string.IsNullOrEmpty(promo.LoaiGiamGia) && promo.LoaiGiamGia.Equals("PhanTram", StringComparison.OrdinalIgnoreCase))
+                {
+                    p.GiamGia = promo.GiaTriGiam;
+                }
+                else if (!string.IsNullOrEmpty(promo.LoaiGiamGia) && promo.LoaiGiamGia.Equals("TienMat", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Nếu khuyến mãi là tiền mặt, chuyển sang phần trăm so với giá bán (lưu ý: chỉ để hiển thị/ứng xử trên client)
+                    if (p.GiaBan.HasValue && p.GiaBan.Value > 0m)
+                    {
+                        var percent = (promo.GiaTriGiam / p.GiaBan.Value) * 100m;
+                        // Không vượt quá 100%
+                        p.GiamGia = percent > 100m ? 100m : Math.Round(percent, 2);
+                    }
+                }
+            }
+        }
+
+        public ActionResult Index(int? maTH)
+        {
+            try
+            {
+                var spHot = PublicProducts()
+                    .OrderByDescending(x => x.GiaBan)
+                    .Take(10)
+                    .ToList();
+
+                // Thay đổi: lấy cả sản phẩm có GiamGia > 0 HOẶC được áp dụng trong các chương trình Khuyến mãi đang phát hành
+                var now = DateTime.Now;
+
+                // Lấy danh sách MaSP từ các khuyến mại đang hoạt động
+                var activeKmProductIds = data.KhuyenMais
+                    .Where(k => k.TrangThai == true
+                                && (k.NgayBatDau == null || k.NgayBatDau <= now)
+                                && (k.NgayKetThuc == null || k.NgayKetThuc >= now))
+                    .SelectMany(k => k.SanPhams.Select(s => s.MaSP))
+                    .Distinct()
+                    .ToList();
+
+                var spSale = PublicProducts()
+                    .Where(x => (x.GiamGia ?? 0) > 0 || activeKmProductIds.Contains(x.MaSP))
+                    .Take(10)
+                    .ToList();
+
+                // Nếu sản phẩm nằm trong chương trình khuyến mãi nhưng không có GiamGia trực tiếp, áp dụng phần trăm tạm thời để hiển thị
+                ApplyActivePromotionsToProducts(spSale);
+
+                var spNew = PublicProducts()
+                    .OrderByDescending(x => x.MaSP)
+                    .Take(10)
+                    .ToList();
+
+                var thuongHieuList = data.ThuongHieux.ToList();
+                List<SanPham> spTheoTH;
+                ThuongHieu thChon = null;
+
+                if (maTH == null)
+                {
+                    spTheoTH = new List<SanPham>();
+                }
+                else
+                {
+                    spTheoTH = PublicProducts().Where(s => s.MaTH == maTH).ToList();
+                    thChon = data.ThuongHieux.Find(maTH);
+                }
+
+                var viewModel = new HomeViewModel
+                {
+                    DsSanPham = PublicProducts()
+                        .OrderByDescending(s => s.MaSP)
+                        .Take(20)
+                        .ToList(),
+                    HotProducts = spHot,
+                    SaleProducts = spSale,
+                    NewProducts = spNew,
+                    ThuongHieuList = thuongHieuList,
+                    SanPhamTheoTH = spTheoTH,
+                    ThuongHieuDangChon = thChon
+                };
+
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Lỗi trong Index: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+
+                var emptyViewModel = new HomeViewModel
+                {
+                    DsSanPham = new List<SanPham>(),
+                    HotProducts = new List<SanPham>(),
+                    SaleProducts = new List<SanPham>(),
+                    NewProducts = new List<SanPham>(),
+                    ThuongHieuList = new List<ThuongHieu>(),
+                    SanPhamTheoTH = new List<SanPham>(),
+                    ThuongHieuDangChon = null
+                };
+
+                ViewBag.ErrorMessage = "Không thể kết nối cơ sở dữ liệu. Vui lòng kiểm tra lại kết nối.";
+                return View(emptyViewModel);
+            }
+        }
+
+        public ActionResult DanhMucSP()
+        {
+            var danhMucs = data.DanhMucs.ToList();
+            return View(danhMucs);
+        }
+
+        public ActionResult LoaiSP()
+        {
+            var loai = data.LoaiSPs.ToList();
+            return View(loai);
+        }
+
+        public ActionResult SanPhamTheoDanhMuc(int maDM)
+        {
+            var danhMuc = data.DanhMucs.ToList();
+            var loaiSP = data.LoaiSPs.ToList();
+
+            var sanPham = PublicProducts()
+                .Where(sp => sp.MaDM == maDM)
+                .ToList();
+
+            var model = new HomeViewModel
+            {
+                DsSanPham = sanPham ?? new List<SanPham>(),
+                DSDanhMuc = danhMuc,
+                DsLoaiSP = loaiSP
+            };
+
+            ViewBag.TenDanhMuc = danhMuc.FirstOrDefault(dm => dm.MaDM == maDM)?.TenDM ?? "Không xác định";
+
+            return View(model);
+        }
+
+        public ActionResult SanPhamTheoLoai(int id)
+        {
+            var sp = PublicProducts().Where(s => s.MaLoai == id).ToList();
+            var loai = data.LoaiSPs.FirstOrDefault(l => l.MaLoai == id);
+
+            ViewBag.TenLoai = loai?.TenLoai ?? "Không xác định";
+
+            return View(sp);
+        }
+
+        // Added: TimKiem action to handle search requests and render TimKiem view
+        public ActionResult TimKiem(string keyword)
+        {
+            try
+            {
+                ViewBag.TuKhoa = keyword;
+
+                if (string.IsNullOrWhiteSpace(keyword))
+                {
+                    return View(new List<SanPham>());
+                }
+
+                var kw = keyword.Trim().ToLower();
+
+                var results = PublicProducts()
+                    .Where(sp => ((sp.TenSP ?? "").ToLower().Contains(kw) || (sp.MoTa ?? "").ToLower().Contains(kw)))
+                    .ToList();
+
+                return View(results);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Lỗi trong TimKiem: " + ex.Message);
+                return View(new List<SanPham>());
+            }
+        }
+
+        [ChildActionOnly]
+        public ActionResult MenuChinh()
+        {
+            try
+            {
+                var danhMucList = data.DanhMucs
+                    .Where(dm => dm.MaDM >= 1 && dm.MaDM <= 6)
+                    .Take(5)
+                    .OrderBy(dm => dm.MaDM)
+                    .ToList();
+
+                return PartialView("_MenuChinh", danhMucList);
+            }
+            catch (Exception)
+            {
+                return PartialView("_MenuChinh", new List<DanhMuc>());
+            }
+        }
+
+        [ChildActionOnly]
+        public ActionResult MenuLoai(int maDM)
+        {
+            try
+            {
+                var loaiList = data.LoaiSPs
+                    .Where(l => l.MaDM == maDM)
+                    .ToList();
+
+                return PartialView("_MenuLoai", loaiList);
+            }
+            catch (Exception)
+            {
+                return PartialView("_MenuLoai", new List<LoaiSP>());
+            }
+        }
+
+        [ChildActionOnly]
+        public ActionResult MenuDanhMuc()
+        {
+            try
+            {
+                var danhMucList = data.DanhMucs.ToList();
+                return PartialView("_MenuDanhMuc", danhMucList);
+            }
+            catch (Exception)
+            {
+                return PartialView("_MenuDanhMuc", new List<DanhMuc>());
+            }
+        }
+
+        // NOTE: ChiTietSP implementation exists later in this file together with ThemDanhGia.
+        // The earlier duplicate was removed to fix CS0111 (duplicate member) and keep a single implementation.
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ThemDanhGia(int MaSP, int Diem, string NoiDung)
+        {
+            // Require login
+            var tk = Session["User"] as WebApplication15.Models.TaiKhoan;
+            if (tk == null)
+            {
+                TempData["ErrorMessage"] = "Vui lòng đăng nhập để gửi đánh giá.";
+                return RedirectToAction("ChiTietSP", new { maSP = MaSP });
+            }
+
+            try
+            {
+                var dg = new WebApplication15.Models.DanhGia
+                {
+                    MaSP = MaSP,
+                    MaND = tk.MaND,
+                    Diem = Diem,
+                    NoiDung = NoiDung,
+                    NgayDanhGia = DateTime.Now,
+                    DuocApprove = false
+                };
+
+                data.DanhGias.Add(dg);
+                data.SaveChanges();
+                TempData["SuccessMessage"] = "Gửi đánh giá thành công. Đánh giá sẽ được hiển thị sau khi được duyệt.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Có lỗi khi gửi đánh giá: " + ex.Message;
+            }
+
+            return RedirectToAction("ChiTietSP", new { maSP = MaSP });
+        }
+    }
+}

@@ -12,6 +12,26 @@
 }
 <link href="~/CSS/DanhGiaSoSao.css" rel="stylesheet" />
 
+<style>
+    .short-description {
+        color: #6c757d;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+</style>
+
+@functions {
+    // Trả về text thuần từ HTML và cắt ngắn nếu dài
+    public string TruncatePlain(string html, int maxLen)
+    {
+        if (string.IsNullOrEmpty(html)) return string.Empty;
+        var text = System.Text.RegularExpressions.Regex.Replace(html, "<.*?>", string.Empty);
+        text = System.Net.WebUtility.HtmlDecode(text);
+        if (text.Length <= maxLen) return text;
+        return text.Substring(0, maxLen).TrimEnd() + "...";
+    }
+}
+
 <div class="container my-5">
     @* --- PHẦN 1: THÔNG TIN SẢN PHẨM --- *@
     <div class="card shadow-sm border-0 mb-5">
@@ -35,6 +55,12 @@
                     </nav>
 
                     <h2 class="font-weight-bold text-dark mb-3">@Model.TenSP</h2>
+
+                    @* Thêm mô tả ngắn ngay dưới tiêu đề (plain text, rút gọn) *@
+                    @if (!string.IsNullOrEmpty(Model.MoTa))
+                    {
+                        <p class="short-description">@TruncatePlain(Model.MoTa, 240)</p>
+                    }
 
                     <div class="mb-3">
                         <span class="badge bg-info text-white me-2 p-2">@ViewBag.TenThuongHieu</span>

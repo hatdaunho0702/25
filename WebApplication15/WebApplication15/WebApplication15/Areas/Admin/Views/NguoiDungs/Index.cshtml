@@ -8,9 +8,14 @@
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center bg-white">
             <h5 class="m-0 font-weight-bold text-primary">Danh Sách Người Dùng</h5>
-            <a href="@Url.Action("Create")" class="btn btn-success btn-sm shadow-sm">
-                <i class="fa fa-plus"></i> Thêm mới
-            </a>
+            <form class="form-inline" method="get" action="@Url.Action("Index")">
+                <div class="input-group">
+                    <input type="text" name="search" value="@(ViewBag.Search ?? "")" class="form-control form-control-sm" placeholder="Tìm theo tên, sđt, địa chỉ..." />
+                    <div class="input-group-append">
+                        <button class="btn btn-sm btn-outline-primary" type="submit">Tìm</button>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <div class="card-body">
@@ -63,9 +68,13 @@
                                         <a href="@Url.Action("Details", new { id = item.MaND })" class="btn btn-info btn-sm" title="Chi tiết">
                                             Xem
                                         </a>
-                                        <a href="@Url.Action("Delete", new { id = item.MaND })" class="btn btn-danger btn-sm" title="Xóa">
-                                            Xóa
-                                        </a>
+
+                                        @using (Html.BeginForm("Delete", "NguoiDungs", FormMethod.Post, new { area = "Admin", @class = "d-inline" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            @Html.Hidden("id", item.MaND)
+                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn chắc chắn muốn xóa người dùng này?')" title="Xóa">Xóa</button>
+                                        }
                                     </div>
                                 </td>
                             </tr>

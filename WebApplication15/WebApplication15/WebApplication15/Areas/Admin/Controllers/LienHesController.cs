@@ -46,6 +46,45 @@ namespace WebApplication15.Areas.Admin.Controllers
             return View(lienHe);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Reply(int id, string PhanHoi)
+        {
+            // 1. Kiểm tra nội dung nhập vào
+            if (string.IsNullOrWhiteSpace(PhanHoi))
+            {
+                TempData["ErrorMessage"] = "Vui lòng nhập nội dung phản hồi.";
+                return RedirectToAction("Details", new { id = id });
+            }
+
+            try
+            {
+                // 2. Tìm liên hệ trong DB
+                var lien = db.LienHes.Find(id);
+                if (lien == null)
+                {
+                    TempData["ErrorMessage"] = "Không tìm thấy liên hệ.";
+                    return RedirectToAction("Index");
+                }
+
+                // 3. Cập nhật trạng thái: Thêm tiền tố "PHANHOI|" để đánh dấu
+                // Ví dụ: Admin nhập "Chào bạn", DB sẽ lưu "PHANHOI|Chào bạn"
+                lien.TrangThai = "PHANHOI|" + PhanHoi.Trim();
+
+                db.Entry(lien).State = EntityState.Modified;
+                db.SaveChanges();
+
+                TempData["SuccessMessage"] = "Đã gửi phản hồi thành công!";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Lỗi: " + ex.Message;
+            }
+
+            // Quay lại trang chi tiết để admin thấy kết quả vừa nhập
+            return RedirectToAction("Details", new { id = id });
+        }
+
         // GET: Admin/LienHes/Create
         public ActionResult Create()
         {
