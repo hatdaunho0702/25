@@ -232,21 +232,24 @@ BEGIN
 END
 GO
 -- Trigger Bán Hàng
-CREATE TRIGGER trg_CapNhatKho_BanHang ON ChiTietDonHangs AFTER INSERT, UPDATE, DELETE AS
-BEGIN
-    IF EXISTS (SELECT * FROM deleted) UPDATE sp SET sp.SoLuongTon = sp.SoLuongTon + d.SoLuong FROM SanPham sp JOIN deleted d ON sp.MaSP = d.MaSP;
-    IF EXISTS (SELECT * FROM inserted) UPDATE sp SET sp.SoLuongTon = sp.SoLuongTon - i.SoLuong FROM SanPham sp JOIN inserted i ON sp.MaSP = i.MaSP;
-END
-GO
--- Trigger Trạng Thái
-CREATE TRIGGER trg_TuDongCapNhatTrangThai ON SanPham AFTER UPDATE AS
+ALTER TRIGGER trg_CapNhatKho_BanHang ON ChiTietDonHangs 
+AFTER INSERT AS
 BEGIN
     SET NOCOUNT ON;
-    IF UPDATE(SoLuongTon)
-    BEGIN
-        UPDATE sp SET sp.TrangThaiSanPham = N'Hết hàng' FROM SanPham sp JOIN inserted i ON sp.MaSP = i.MaSP WHERE i.SoLuongTon <= 0 AND sp.TrangThaiSanPham <> N'Hết hàng';
-        UPDATE sp SET sp.TrangThaiSanPham = N'Kinh doanh' FROM SanPham sp JOIN inserted i ON sp.MaSP = i.MaSP WHERE i.SoLuongTon > 0 AND sp.TrangThaiSanPham = N'Hết hàng';
-    END
+
+    -- 1. Trừ tồn kho
+    UPDATE sp 
+    SET sp.SoLuongTon = sp.SoLuongTon - i.SoLuong 
+    FROM SanPham sp 
+    JOIN inserted i ON sp.MaSP = i.MaSP;
+
+    -- 2. KIỂM TRA NGAY LẬP TỨC: Nếu có sản phẩm nào bị âm kho -> Hủy và Báo lỗi
+    IF EXISTS (SELECT 1 FROM SanPham WHERE SoLuongTon < 0)
+    
+        ROLLBACK TRANSACTION; -- Hủy lệnh Insert ChiTietDonHang vừa rồi
+        RAISERROR (N'Lỗi: Sản phẩm đã hết hàng hoặc không đủ số lượng tồn kho!', 16, 1);
+        RETURN;
+    
 END
 GO
 

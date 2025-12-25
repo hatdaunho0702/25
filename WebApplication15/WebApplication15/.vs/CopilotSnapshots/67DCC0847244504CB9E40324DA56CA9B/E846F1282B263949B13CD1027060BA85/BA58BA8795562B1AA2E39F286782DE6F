@@ -158,9 +158,53 @@ namespace WebApplication15.Areas.Admin.Controllers
 
                         foreach (var d in details)
                         {
-                            // Gán MaPN cho chi tiết
-                            d.MaPN = phieuNhap.MaPN;
+                            // --- NEW: nếu nhà cung cấp của phiếu nhập khác với nhà cung cấp gần nhất của sản phẩm ---
+                            var originalProduct = db.SanPhams
+                                .Include(p => p.ChiTietPhieuNhaps.Select(ct => ct.PhieuNhap))
+                                .FirstOrDefault(p => p.MaSP == d.MaSP);
 
+                            if (originalProduct != null)
+                            {
+                                // Lấy nhà cung cấp gần nhất đã nhập cho sản phẩm này
+                                var recentSupplierId = originalProduct.ChiTietPhieuNhaps
+                                    .OrderByDescending(ct => ct.PhieuNhap.NgayNhap)
+                                    .Select(ct => ct.PhieuNhap.MaNCC)
+                                    .FirstOrDefault();
+
+                                // Nếu có recent supplier và khác với supplier của phiếu nhập hiện tại → tạo bản copy sản phẩm
+                                if (recentSupplierId != 0 && phieuNhap.MaNCC != recentSupplierId && phieuNhap.MaNCC != null)
+                                {
+                                    var copy = new SanPham
+                                    {
+                                        TenSP = originalProduct.TenSP,
+                                        GiamGia = originalProduct.GiamGia,
+                                        GiaBan = 0m, // theo yêu cầu
+                                        MoTa = originalProduct.MoTa,
+                                        HinhAnh = originalProduct.HinhAnh,
+                                        SoLuongTon = 0, // sẽ được cập nhật bên dưới
+                                        MaDM = originalProduct.MaDM,
+                                        MaTH = originalProduct.MaTH,
+                                        MaLoai = originalProduct.MaLoai,
+                                        LoaiDa = originalProduct.LoaiDa,
+                                        VanDeChiRi = originalProduct.VanDeChiRi,
+                                        TonDaMau = originalProduct.TonDaMau,
+                                        ThanhPhanChiNhYeu = originalProduct.ThanhPhanChiNhYeu,
+                                        SoLanSuDungMoiTuan = originalProduct.SoLanSuDungMoiTuan,
+                                        DoTinCay = originalProduct.DoTinCay,
+                                        KichCoTieuChuan = originalProduct.KichCoTieuChuan,
+                                        NgayNhapKho = DateTime.Now,
+                                        TrangThaiSanPham = "Tạm ngưng"
+                                    };
+
+                                    db.SanPhams.Add(copy);
+                                    db.SaveChanges();
+
+                                    // Gán lại MaSP trong detail để liên kết với sản phẩm mới
+                                    d.MaSP = copy.MaSP;
+                                }
+                            }
+
+                            d.MaPN = phieuNhap.MaPN; // Gán MaPN vừa sinh ra
                             d.ThanhTien = (d.SoLuong ?? 0) * (d.GiaNhap ?? 0);
 
                             db.ChiTietPhieuNhaps.Add(d);

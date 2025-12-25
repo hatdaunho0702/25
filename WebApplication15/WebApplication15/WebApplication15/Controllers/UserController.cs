@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using WebApplication15.Models;
 using System.Net;
+using Newtonsoft.Json;
 
 namespace WebApplication15.Controllers
 {
@@ -54,14 +55,9 @@ namespace WebApplication15.Controllers
                 NguoiDung nd = data.NguoiDungs
                     .FirstOrDefault(n => n.MaND == user.MaND);
 
-                // If avatar is stored in session previously (or from db if extended), keep it
-                // Here we try to use stored avatar filename from user input if any
-                // Note: Avatar is not persisted in DB by default; if you want to persist, add column.
-
                 Session["User"] = user;
                 if (nd != null)
                 {
-                    // Try to get persisted avatar from DB in case the EF model wasn't updated to include Avatar property
                     try
                     {
                         var avatarFromDb = data.Database.SqlQuery<string>("SELECT Avatar FROM NguoiDung WHERE MaND = @p0", nd.MaND).FirstOrDefault();
@@ -75,7 +71,6 @@ namespace WebApplication15.Controllers
                         // ignore SQL read errors
                     }
 
-                    // If we have a SelectedAvatar in Session (just after registration), prefer it and persist to DB
                     var key = "SelectedAvatar_" + user.MaND;
                     if (Session[key] != null)
                     {
@@ -91,11 +86,32 @@ namespace WebApplication15.Controllers
                         }
                     }
 
-                    // ensure session NguoiDung has avatar
                     Session["NguoiDung"] = nd;
                 }
 
                 Session["Role"] = user.VaiTro;
+
+                // Clear any anonymous/session cart before restoring the saved cart for this user
+                try
+                {
+                    Session["Cart"] = null;
+
+                    // After successful login: try to restore saved cart for this user from DB
+                    var savedJson = data.Database.SqlQuery<string>("SELECT CartJson FROM SavedCarts WHERE MaND = @p0", user.MaND).FirstOrDefault();
+                    if (!string.IsNullOrEmpty(savedJson))
+                    {
+                        var items = JsonConvert.DeserializeObject<List<GioHang>>(savedJson);
+                        if (items != null)
+                        {
+                            var cart = new Cart(items);
+                            Session["Cart"] = cart;
+                        }
+                    }
+                }
+                catch
+                {
+                    // ignore errors in restoring cart
+                }
 
                 if (user.VaiTro == "Admin")
                 {
@@ -294,11 +310,42 @@ namespace WebApplication15.Controllers
 
         public ActionResult Logout()
         {
+            // If user logged in, persist their current cart into DB so it can be restored on next login
+            try
+            {
+                var user = Session["User"] as TaiKhoan;
+                var cartObj = Session["Cart"] as Cart;
+                if (user != null && cartObj != null)
+                {
+                    // ensure SavedCarts table exists
+                    data.Database.ExecuteSqlCommand(@"IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='SavedCarts' AND xtype='U')
+                                                        CREATE TABLE SavedCarts (
+                                                            MaND INT PRIMARY KEY,
+                                                            CartJson NVARCHAR(MAX),
+                                                            Updated DATETIME
+                                                        )");
+
+                    var json = JsonConvert.SerializeObject(cartObj.list);
+                    var now = DateTime.Now;
+                    int updated = data.Database.ExecuteSqlCommand("UPDATE SavedCarts SET CartJson=@p0, Updated=@p1 WHERE MaND=@p2", json, now, user.MaND);
+                    if (updated == 0)
+                    {
+                        data.Database.ExecuteSqlCommand("INSERT INTO SavedCarts (MaND, CartJson, Updated) VALUES (@p0,@p1,@p2)", user.MaND, json, now);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Lỗi khi lưu giỏ hàng của user: " + ex.Message);
+            }
+
+            // Clear session completely so anonymous user has empty cart after logout
             Session.Remove("User");
             Session.Remove("NguoiDung");
             Session.Remove("Role");
             Session.Remove("Cart");
             Session.Clear();
+
             return RedirectToAction("Index", "Home");
         }
 

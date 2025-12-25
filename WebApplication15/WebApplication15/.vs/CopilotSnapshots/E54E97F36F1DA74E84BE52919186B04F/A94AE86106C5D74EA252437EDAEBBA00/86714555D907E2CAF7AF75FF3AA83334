@@ -25,15 +25,7 @@ namespace WebApplication15.Services
             if (string.IsNullOrEmpty(couponCode))
                 throw new ArgumentException("Mã không được để trống", nameof(couponCode));
 
-            // Try direct lookup first
             var km = _db.KhuyenMais.FirstOrDefault(x => x.MaCode == couponCode);
-
-            // Fallback: tolerant lookup (trim + case-insensitive). Load into memory then compare to avoid EF translation issues.
-            if (km == null)
-            {
-                var trimmed = couponCode?.Trim();
-                km = _db.KhuyenMais.ToList().FirstOrDefault(k => string.Equals(k.MaCode?.Trim(), trimmed, StringComparison.OrdinalIgnoreCase));
-            }
 
             // 1. Các bước Validate cơ bản
             if (km == null)

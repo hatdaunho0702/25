@@ -6,6 +6,13 @@
 
 <h2 class="mb-4 text-center text-primary">Xác nhận Thanh toán</h2>
 
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger text-center">
+        @TempData["Error"]
+    </div>
+}
+
 @if (Model.list == null || Model.list.Count == 0)
 {
     <div class="alert alert-warning text-center">
@@ -67,7 +74,7 @@ else
                         <span class="fw-bold">@Model.TongThanhTien().ToString("N0") đ</span>
                     </div>
                     <div class="mt-4">
-                        <a href="@Url.Action("PaymentMethod", "GioHang")" class="btn btn-success w-100 btn-lg">
+                        <a href="@Url.Action("PaymentConfirm", "GioHang")" class="btn btn-success w-100 btn-lg">
                             Xác nhận thanh toán
                         </a>
                     </div>

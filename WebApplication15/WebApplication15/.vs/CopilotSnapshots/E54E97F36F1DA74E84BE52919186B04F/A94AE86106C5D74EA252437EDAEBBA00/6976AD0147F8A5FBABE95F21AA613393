@@ -98,8 +98,8 @@
                             <div class="form-group">
                                 <label>Trạng thái</label>
                                 @Html.DropDownListFor(m => m.TrangThai, new List<SelectListItem> {
-                                    new SelectListItem { Text = "Phát hành (Active)", Value = "true", Selected = (Model?.TrangThai ?? true) },
-                                    new SelectListItem { Text = "Chưa phát hành (Draft)", Value = "false", Selected = (!(Model?.TrangThai ?? true)) }
+                                    new SelectListItem { Text = "Phát hành (Active)", Value = "true", Selected = (Model?.TrangThai ?? false) },
+                                    new SelectListItem { Text = "Chưa phát hành (Draft)", Value = "false", Selected = (!(Model?.TrangThai ?? false)) }
                                 }, new { @class = "form-control custom-select" })
                             </div>
                         </div>
@@ -110,11 +110,8 @@
 
         <div class="col-lg-5">
             <div class="card shadow mb-3">
-                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">Phạm vi áp dụng</h6>
-                    <div>
-                        <a href="@Url.Action("Index", "KhuyenMais")" class="btn btn-sm btn-secondary">Quay lại</a>
-                    </div>
                 </div>
                 <div class="card-body">
                     <div class="form-check form-check-inline">

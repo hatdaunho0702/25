@@ -1,87 +1,213 @@
 ﻿@model WebApplication15.Models.Cart
 
-<h2 class="mb-4">Giỏ hàng của bạn</h2>
-<div class="row">
-    <div class="col-lg-8">
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                @if (Model.list.Count > 0)
-                {
-                    <table class="table table-hover align-middle">
-                        <thead>
-                            <tr class="table-light">
-                                <th scope="col">Sản phẩm</th>
-                                <th scope="col" class="text-center">Giá (đ)</th>
-                                <th scope="col" class="text-center">Số lượng</th>
-                                <th scope="col" class="text-end">Tổng cộng (đ)</th>
-                                <th scope="col" class="text-center">Xóa</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.list)
-                            {
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <img src="@Url.Content("~/Content/images/" + item.AnhBia)" class="me-3" alt="@item.TenSP" width="40">
-                                            <span class="fw-bold">@item.TenSP</span>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">@item.GiaBan.ToString("N0")</td>
-                                    <td class="text-center">
-                                        <a href="@Url.Action("UpdateSLCart", "GioHang", new { id = item.MaSP, num = -1 })"
-                                           class="btn btn-sm btn-outline-danger" style="padding: 5px 15px; margin: 5px;">-</a>
-                                        <b>@item.SoLuong</b>
-                                        <a href="@Url.Action("UpdateSLCart", "GioHang", new { id = item.MaSP, num = 1 })"
-                                           class="btn btn-sm btn-outline-success" style="padding: 5px 15px; margin: 5px;">+</a>
-                                    </td>
-                                    <td class="text-end fw-bold">@item.ThanhTien.ToString("N0")</td>
-                                    <td class="text-center">
-                                        <a href="@Url.Action("RemoveFromCart", "GioHang", new { id = item.MaSP })"
-                                           class="btn btn-sm btn-outline-danger">Xóa</a>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                }
-                else
-                {
-                    <div class="text-center">Không có sản phẩm trong giỏ hàng</div>
-                }
+@{
+    ViewBag.Title = "Giỏ hàng";
+}
 
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <a href="/" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left"></i> Tiếp tục mua sắm
-                    </a>
+<div class="container py-5">
+    <div class="d-flex align-items-center mb-4">
+        <i class="bi bi-cart3 fs-3 me-2 text-primary"></i>
+        <h2 class="mb-0 fw-bold">Giỏ hàng của bạn (@Model.list.Count sản phẩm)</h2>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-3 mb-4">
+                <div class="card-body p-0">
+                    @if (Model.list.Count > 0)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th scope="col" class="py-3 ps-4" style="width: 40%;">Sản phẩm</th>
+                                        <th scope="col" class="py-3 text-center">Giá</th>
+                                        <th scope="col" class="py-3 text-center" style="width: 20%;">Số lượng</th>
+                                        <th scope="col" class="py-3 text-end">Thành tiền</th>
+                                        <th scope="col" class="py-3 text-center" style="width: 5%;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.list)
+                                    {
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0">
+                                                        <img src="@Url.Content("~/Content/images/" + item.AnhBia)"
+                                                             class="img-fluid rounded border"
+                                                             alt="@item.TenSP"
+                                                             style="width: 70px; height: 70px; object-fit: cover;">
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-3">
+                                                        <h6 class="mb-0 fw-bold text-dark">
+                                                            <a href="#" class="text-decoration-none text-dark">@item.TenSP</a>
+                                                        </h6>
+                                                        <small class="text-muted">Mã SP: @item.MaSP</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="fw-semibold text-dark">@item.GiaBan.ToString("N0")₫</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="d-flex justify-content-center align-items-center">
+                                                    <a href="@Url.Action("UpdateSLCart", "GioHang", new { id = item.MaSP, num = -1 })"
+                                                       class="btn btn-sm btn-outline-secondary rounded-end-0" style="width: 30px;">-</a>
+
+                                                    <input type="text" value="@item.SoLuong" class="form-control text-center rounded-0 border-secondary" style="width: 50px;" readonly />
+
+                                                    <a href="@Url.Action("UpdateSLCart", "GioHang", new { id = item.MaSP, num = 1 })"
+                                                       class="btn btn-sm btn-outline-secondary rounded-start-0" style="width: 30px;">+</a>
+                                                </div>
+                                            </td>
+                                            <td class="text-end fw-bold text-primary">
+                                                @item.ThanhTien.ToString("N0")₫
+                                            </td>
+                                            <td class="text-center pe-3">
+                                                <a href="@Url.Action("RemoveFromCart", "GioHang", new { id = item.MaSP })"
+                                                   class="text-danger" onclick="return confirm('Xóa sản phẩm?');">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <p class="fs-5 text-muted">Giỏ hàng trống</p>
+                            <a href="/" class="btn btn-primary mt-2">Mua sắm ngay</a>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-lg-4">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white fw-bold">
-                Tóm tắt đơn hàng
-            </div>
-            <div class="card-body">
-                <div class="d-flex justify-content-between mb-2">
-                    <span>Tổng tiền hàng:</span>
-                    <span class="fw-bold">@Model.TongThanhTien().ToString("N0") đ</span>
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-3" style="position: sticky; top: 20px;">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="mb-0 fw-bold">Tóm tắt đơn hàng</h5>
                 </div>
-                <div class="d-flex justify-content-between mb-2">
-                    <span>Phí vận chuyển:</span>
-                    <span class="fw-bold">0 đ</span>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2 text-muted">
+                        <span>Tạm tính:</span>
+                        <span id="subTotal">@Model.TongThanhTien().ToString("N0")₫</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3 text-muted">
+                        <span>Phí vận chuyển:</span>
+                        <span class="text-success">Miễn phí</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3 text-success fw-bold" id="discountRow" style="display:none;">
+                        <span>Voucher giảm:</span>
+                        <span id="discountAmount">-0₫</span>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <input type="text" id="couponCodeInput" class="form-control" placeholder="Mã giảm giá (VD: SALE50)">
+                        <button class="btn btn-outline-secondary" type="button" id="btnApplyCoupon">Áp dụng</button>
+                    </div>
+                    <div id="couponMessage" class="small mb-2"></div>
+
+                    @Html.AntiForgeryToken()
+
+                    <hr class="my-3">
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="fw-bold fs-5">Tổng cộng:</span>
+                        <span class="fw-bold fs-4 text-primary" id="finalTotal">@Model.TongThanhTien().ToString("N0")₫</span>
+                    </div>
+
+                    @if (Model.list.Count > 0)
+                    {
+                        <a href="@Url.Action("PaymentConfirm", "GioHang")" class="btn btn-primary w-100 py-2 fw-bold text-uppercase rounded-3 shadow-sm">
+                            Tiến hành Thanh toán
+                        </a>
+                    }
                 </div>
-                <hr />
-                <div class="d-flex justify-content-between mb-3 text-danger fs-5">
-                    <span class="fw-bold">TỔNG CỘNG:</span>
-                    <span class="fw-bold">@Model.TongThanhTien().ToString("N0") đ</span>
-                </div>
-                <a href="@Url.Action("PaymentConfirm", "GioHang")" class="btn btn-success w-100 btn-lg">
-                    Tiến hành Thanh toán
-                </a>
             </div>
         </div>
     </div>
 </div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            console.log("Script giỏ hàng đã sẵn sàng!");
+
+            $('#btnApplyCoupon').click(function (e) {
+                e.preventDefault();
+
+                var code = $('#couponCodeInput').val();
+                var messageBox = $('#couponMessage');
+                var btn = $(this);
+
+                if (!code) {
+                    messageBox.text("Vui lòng nhập mã giảm giá").removeClass("text-success").addClass("text-danger");
+                    return;
+                }
+
+                var antiForgeryToken = $('input[name="__RequestVerificationToken"]').val();
+
+                var originalText = btn.text();
+                btn.prop('disabled', true).text('Đang check...');
+
+                // Prefer the secure endpoint but fallback to AJAX-only one for debugging
+                var url = '@Url.Action("ApplyDiscount", "GioHang")';
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    headers: {
+                        'RequestVerificationToken': antiForgeryToken,
+                        '__RequestVerificationToken': antiForgeryToken
+                    },
+                    data: { code: code, __RequestVerificationToken: antiForgeryToken },
+                    success: function (res) {
+                        handleCouponResponse(res, btn, messageBox);
+                    },
+                    error: function (xhr) {
+                        // If secure endpoint fails (likely antiforgery), try fallback no-token endpoint
+                        console.warn('ApplyDiscount failed, trying AJAX fallback', xhr.status);
+
+                        $.ajax({
+                            url: '@Url.Action("ApplyDiscountAjax", "GioHang")',
+                            type: 'POST',
+                            data: { code: code },
+                            success: function (res) {
+                                handleCouponResponse(res, btn, messageBox);
+                            },
+                            error: function (xhr2) {
+                                console.error('Fallback coupon AJAX failed', xhr2);
+                                btn.prop('disabled', false).text(originalText);
+                                messageBox.text('Lỗi kết nối server. Vui lòng thử lại.').addClass('text-danger');
+                            }
+                        });
+                    }
+                });
+
+                function handleCouponResponse(res, btn, messageBox) {
+                    btn.prop('disabled', false).text(originalText);
+                    if (res.success) {
+                        messageBox.removeClass("text-danger").addClass("text-success").text(res.message);
+                        $('#discountRow').show();
+                        $('#discountAmount').text("-" + res.discountAmount);
+                        $('#finalTotal').text(res.newTotal);
+                        if (res.newSubTotal) { $('#subTotal').text(res.newSubTotal); }
+                        $('#couponCodeInput').prop('readonly', true);
+                        btn.text('Đã áp dụng').prop('disabled', true).removeClass('btn-outline-secondary').addClass('btn-success');
+                    } else {
+                        messageBox.removeClass("text-success").addClass("text-danger").text(res.message);
+                        $('#discountRow').hide();
+                        $('#finalTotal').text($('#subTotal').text());
+                    }
+                }
+            });
+        });
+    </script>
+}
