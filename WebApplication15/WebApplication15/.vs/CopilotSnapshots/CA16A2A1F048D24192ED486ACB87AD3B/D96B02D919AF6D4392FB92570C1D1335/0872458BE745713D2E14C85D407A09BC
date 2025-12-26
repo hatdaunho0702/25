@@ -260,6 +260,7 @@ else
 
     <div class="mb-4">
         <a href="@Url.Action("Index")" class="btn btn-secondary">← Quay lại</a>
+        <a href="@Url.Action("Delete", new { id = Model.MaDH })" class="btn btn-danger" onclick="return confirm('Bạn chắc chắn muốn xóa đơn hàng này?')">🗑️ Xóa đơn hàng</a>
     </div>
 }
 

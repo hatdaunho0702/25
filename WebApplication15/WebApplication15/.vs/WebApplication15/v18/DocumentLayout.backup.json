@@ -7,16 +7,20 @@
       "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\views\\baocao\\doanhthuchitiet.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\areas\\admin\\controllers\\baocaocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|D:\\25\\25\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\controllers\\baocaocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\controllers\\baocaocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\areas\\admin\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|D:\\25\\25\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\areas\\admin\\models\\revenueviewmodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|D:\\25\\25\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\models\\revenueviewmodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\models\\revenueviewmodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\areas\\admin\\views\\donhang\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\views\\donhang\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,7 +30,7 @@
       "DocumentGroups": [
         {
           "DockedHeight": 239,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Bookmark",
@@ -50,6 +54,19 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Details.cshtml",
+              "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\DonHang\\Details.cshtml",
+              "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Views\\DonHang\\Details.cshtml",
+              "ToolTip": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\DonHang\\Details.cshtml",
+              "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\DonHang\\Details.cshtml",
+              "ViewState": "AgIAACMBAAAAAAAAAGBnwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-26T12:25:45.088Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 3,
               "Title": "RevenueViewModels.cs",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Models\\RevenueViewModels.cs",
@@ -58,8 +75,7 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Models\\RevenueViewModels.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-26T07:20:38.527Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-26T07:20:38.527Z"
             },
             {
               "$type": "Document",
@@ -71,8 +87,7 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\Shared\\_Layout.cshtml",
               "ViewState": "AgIAAPgAAAAAAAAAAAAYwAUBAABWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-12-26T07:07:02.486Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-26T07:07:02.486Z"
             },
             {
               "$type": "Document",
@@ -82,7 +97,7 @@
               "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Views\\BaoCao\\DoanhThuChiTiet.cshtml",
               "ToolTip": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\BaoCao\\DoanhThuChiTiet.cshtml",
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\BaoCao\\DoanhThuChiTiet.cshtml",
-              "ViewState": "AgIAAEoBAAAAAAAAAAAAAF4BAAAVAAAAAAAAAA==",
+              "ViewState": "AgIAAEoBAAAAAAAAAAAAAFYBAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-12-26T07:03:33.712Z",
               "EditorCaption": ""
@@ -97,8 +112,7 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Controllers\\BaoCaoController.cs",
               "ViewState": "AgIAAHcAAAAAAAAAAAAgwCUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-26T07:03:12.85Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-26T07:03:12.85Z"
             }
           ]
         },
