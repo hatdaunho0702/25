@@ -478,5 +478,20 @@ namespace WebApplication15.Controllers
             if (dh != null) { dh.TrangThaiThanhToan = "Đã thanh toán"; data.SaveChanges(); ClearCartSession(); }
             return RedirectToAction("Index", "Home");
         }
+
+        [HttpGet]
+        public ActionResult GetAvailableStock(int id)
+        {
+            try
+            {
+                var sp = data.SanPhams.Find(id);
+                int available = sp?.SoLuongTon ?? 0;
+                return Json(new { success = true, available = available }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message, available = 0 }, JsonRequestBehavior.AllowGet);
+            }
+        }
     }
 }

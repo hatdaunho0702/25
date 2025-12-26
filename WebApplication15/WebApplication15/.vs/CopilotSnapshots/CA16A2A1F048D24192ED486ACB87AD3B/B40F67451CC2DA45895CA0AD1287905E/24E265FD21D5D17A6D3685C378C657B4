@@ -1,0 +1,235 @@
+﻿@model WebApplication15.Models.Cart
+@{
+    ViewBag.Title = "Giỏ hàng";
+
+    // --- PHẦN 1: TÍNH TOÁN & KHAI BÁO BIẾN (Code C#) ---
+    decimal subTotalValue = 0m;
+    decimal discountAmountDecimal = 0m;
+
+    // 1. Tính tổng tiền hàng
+    if (Model != null)
+    {
+        subTotalValue = Model.TongThanhTien();
+    }
+
+    // 2. Lấy giảm giá từ Session
+    if (Session["DiscountAmount"] != null)
+    {
+        decimal.TryParse(Session["DiscountAmount"].ToString(), out discountAmountDecimal);
+    }
+
+    // 3. Lấy mã code cũ nếu có
+    var discountCode = Session["DiscountCode"] as string ?? "";
+
+    // 4. Tính tổng cuối
+    decimal finalTotalValue = subTotalValue - discountAmountDecimal;
+    if (finalTotalValue < 0) { finalTotalValue = 0; }
+
+    bool hasDiscount = discountAmountDecimal > 0;
+
+    // 5. Định dạng tiền tệ
+    string subTotalFormatted = subTotalValue.ToString("N0") + "₫";
+    string discountAmountFormatted = discountAmountDecimal.ToString("N0") + "₫";
+    string finalTotalFormatted = finalTotalValue.ToString("N0") + "₫";
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger mt-3 container">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        @TempData["Error"]
+    </div>
+}
+
+<div class="container py-5">
+    <div class="d-flex align-items-center mb-4">
+        <i class="bi bi-cart3 fs-3 me-2 text-primary"></i>
+        <h2 class="mb-0 fw-bold">Giỏ hàng của bạn (@(Model != null ? Model.list.Count : 0) sản phẩm)</h2>
+    </div>
+
+    @if (Model == null || Model.list.Count == 0)
+    {
+        <div class="alert alert-warning text-center">
+            <p>Giỏ hàng đang trống.</p>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Mua sắm ngay</a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-3 mb-4">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="ps-4">Sản phẩm</th>
+                                        <th class="text-center">Giá</th>
+                                        <th class="text-center">Số lượng</th>
+                                        <th class="text-end pe-4">Thành tiền</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.list)
+                                    {
+                                        var imgUrl = Url.Content("~/Content/images/" + (string.IsNullOrEmpty(item.AnhBia) ? "placeholder.png" : item.AnhBia));
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center">
+                                                    <img src="@imgUrl" class="rounded border me-3" style="width:70px;height:70px;object-fit:cover;" />
+                                                    <div>
+                                                        <strong>@item.TenSP</strong><br />
+                                                        <small class="text-muted">Mã: @item.MaSP</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">@item.GiaBan.ToString("N0")₫</td>
+                                            <td class="text-center">
+                                                <a href="@Url.Action("UpdateSLCart", "GioHang", new { id = item.MaSP, num = -1 })" class="btn btn-sm btn-outline-secondary">-</a>
+                                                
+                                                <form method="post" action="@Url.Action("UpdateQuantity", "GioHang")" class="d-inline-block ms-2 me-2 quantity-form" style="display:inline;">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="id" value="@item.MaSP" />
+                                                    <input type="number" name="quantity" class="form-control form-control-sm quantity-input" value="@item.SoLuong" min="1" step="1" style="width:90px; display:inline-block; text-align:center;" />
+                                                </form>
+                                                
+                                                <a href="@Url.Action("UpdateSLCart", "GioHang", new { id = item.MaSP, num = 1 })" class="btn btn-sm btn-outline-secondary">+</a>
+                                            </td>
+                                            <td class="text-end pe-4 fw-bold">@item.ThanhTien.ToString("N0")₫</td>
+                                            <td>
+                                                <a href="@Url.Action("RemoveFromCart", "GioHang", new { id = item.MaSP })" class="text-danger" onclick="return confirm('Xóa sản phẩm này?')"><i class="bi bi-trash"></i></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm rounded-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Tạm tính</span>
+                            <span id="subTotal">@subTotalFormatted</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2 text-success" id="discountRow" style="display:@(hasDiscount ? "flex" : "none") !important;">
+                            <span>Voucher giảm</span>
+                            <span id="discountAmount">-@discountAmountFormatted</span>
+                        </div>
+
+                        <div class="input-group mb-3 mt-3">
+                            <input id="couponCodeInput" type="text" class="form-control" placeholder="Mã giảm giá" value="@discountCode" @(hasDiscount ? "readonly" : "")>
+                            <button class="btn @(hasDiscount ? "btn-success" : "btn-outline-primary")" type="button" id="btnApplyCoupon" @(hasDiscount ? "disabled" : "")>
+                                @(hasDiscount ? "Đã áp dụng" : "Áp dụng")
+                            </button>
+                        </div>
+                        <div id="couponMessage" class="small mb-3"></div>
+                        @Html.AntiForgeryToken()
+
+                        <hr />
+
+                        <div class="d-flex justify-content-between fw-bold fs-5 mb-4">
+                            <span>Tổng cộng</span>
+                            <span class="text-primary" id="finalTotal">@finalTotalFormatted</span>
+                        </div>
+
+                        <a href="@Url.Action("PaymentReview", "GioHang")" class="btn btn-primary w-100 fw-bold">Thanh toán</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#btnApplyCoupon').click(function (e) {
+                e.preventDefault();
+                var btn = $(this);
+                var input = $('#couponCodeInput');
+                var message = $('#couponMessage');
+                var code = input.val().trim();
+                var token = $('input[name="__RequestVerificationToken"]').val();
+
+                if (!code) {
+                    message.text('Vui lòng nhập mã giảm giá.').addClass('text-danger');
+                    return;
+                }
+
+                btn.prop('disabled', true).text('Đang xử lý...');
+                message.text('').removeClass('text-danger text-success');
+
+                $.ajax({
+                    url: '/GioHang/ApplyDiscountAjax',
+                    type: 'POST',
+                    data: { maGiamGia: code, __RequestVerificationToken: token },
+                    success: function (res) {
+                        if (res.success) {
+                            // Cập nhật giao diện khi thành công
+                            $('#subTotal').text(res.subTotalFormatted);
+                            $('#discountAmount').text('-' + res.discountAmountFormatted);
+                            $('#finalTotal').text(res.finalTotalFormatted);
+
+                            $('#discountRow').css('display', 'flex'); // Hiện dòng giảm giá
+
+                            input.prop('readonly', true);
+                            btn.text('Đã áp dụng').addClass('btn-success').removeClass('btn-outline-primary');
+                            message.text('Áp dụng mã thành công!').addClass('text-success');
+                        } else {
+                            // Báo lỗi
+                            btn.prop('disabled', false).text('Áp dụng');
+                            message.text(res.message).addClass('text-danger');
+                        }
+                    },
+                    error: function () {
+                        btn.prop('disabled', false).text('Áp dụng');
+                        message.text('Lỗi kết nối server.').addClass('text-danger');
+                    }
+                });
+            });
+
+            // Submit quantity form on change (allow typing large numbers)
+            $('.quantity-input').on('change', function () {
+                var $input = $(this);
+                var val = parseInt($input.val(), 10) || 1;
+                if (val < 1) val = 1;
+
+                var id = $input.closest('form.quantity-form').find('input[name="id"]').val();
+                // call server to get available
+                $.getJSON('/GioHang/GetAvailableStock', { id: id })
+                    .done(function (res) {
+                        if (res && res.success) {
+                            var available = parseInt(res.available, 10) || 0;
+                            if (available < val) {
+                                // notify user and set to available
+                                alert('Số lượng vượt quá tồn kho. Hiện chỉ còn ' + available + ' sản phẩm.');
+                                if (available <= 0) {
+                                    // remove item by submitting quantity 0
+                                    $input.val(0);
+                                } else {
+                                    $input.val(available);
+                                }
+                            }
+                        }
+                        // submit form to update session/cart totals
+                        $input.closest('form.quantity-form').submit();
+                    })
+                    .fail(function () {
+                        // On error, still submit
+                        $input.closest('form.quantity-form').submit();
+                    });
+            });
+
+            // Also allow Enter key to submit when inside the number input
+            $('.quantity-input').on('keypress', function (e) {
+                if (e.which === 13) { e.preventDefault(); $(this).trigger('change'); }
+            });
+        });
+    </script>
+}

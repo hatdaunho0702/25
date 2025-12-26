@@ -199,9 +199,31 @@
                 var $input = $(this);
                 var val = parseInt($input.val(), 10) || 1;
                 if (val < 1) val = 1;
-                $input.val(val);
-                var $form = $input.closest('form.quantity-form');
-                if ($form.length) $form.submit();
+
+                var id = $input.closest('form.quantity-form').find('input[name="id"]').val();
+                // call server to get available
+                $.getJSON('/GioHang/GetAvailableStock', { id: id })
+                    .done(function (res) {
+                        if (res && res.success) {
+                            var available = parseInt(res.available, 10) || 0;
+                            if (available < val) {
+                                // notify user and set to available
+                                alert('Số lượng vượt quá tồn kho. Hiện chỉ còn ' + available + ' sản phẩm.');
+                                if (available <= 0) {
+                                    // remove item by submitting quantity 0
+                                    $input.val(0);
+                                } else {
+                                    $input.val(available);
+                                }
+                            }
+                        }
+                        // submit form to update session/cart totals
+                        $input.closest('form.quantity-form').submit();
+                    })
+                    .fail(function () {
+                        // On error, still submit
+                        $input.closest('form.quantity-form').submit();
+                    });
             });
 
             // Also allow Enter key to submit when inside the number input
