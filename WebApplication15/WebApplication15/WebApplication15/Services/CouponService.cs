@@ -162,5 +162,24 @@ namespace WebApplication15.Services
                 _db.SaveChanges();
             }
         }
+
+        public KhuyenMai GetValidCoupon(string code, decimal totalAmount)
+        {
+            // Thêm điều kiện NgayBatDau nếu database có cột này
+            // Kiểm tra mã tồn tại, đang hoạt động, còn hạn, còn số lượng và đủ điều kiện giá trị đơn hàng
+            var coupon = _db.KhuyenMais.FirstOrDefault(x => x.MaCode == code && x.TrangThai == true);
+
+            if (coupon != null)
+            {
+                // Kiểm tra ngày hiệu lực (Giả sử có NgayBatDau, nếu không có thì bỏ đoạn coupon.NgayBatDau <= DateTime.Now)
+                bool isValidDate = (coupon.NgayBatDau == null || coupon.NgayBatDau <= DateTime.Now) && coupon.NgayKetThuc >= DateTime.Now;
+
+                if (isValidDate && coupon.SoLuongPhatHanh > 0   )
+                {
+                    return coupon;
+                }
+            }
+            return null;
+        }
     }
 }

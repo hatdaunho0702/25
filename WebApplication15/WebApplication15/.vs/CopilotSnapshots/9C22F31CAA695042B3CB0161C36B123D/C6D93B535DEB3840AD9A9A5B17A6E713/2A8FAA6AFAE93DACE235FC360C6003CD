@@ -1,0 +1,693 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using WebApplication15.Models;
+using WebApplication15.Services;
+using System.Web.Helpers;
+
+namespace WebApplication15.Controllers
+{
+    public class GioHangController : Controller
+    {
+        // Biến kết nối CSDL của bạn tên là 'data'
+        private DB_SkinFood1Entities data = new DB_SkinFood1Entities();
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                data?.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        // GET: GioHang
+        public ActionResult Index()
+        {
+            Cart cart = (Cart)Session["Cart"];
+            if (cart == null)
+                cart = new Cart();
+
+            return View(cart);
+        }
+
+        // Thêm sản phẩm vào giỏ
+        public ActionResult AddToCart(int id)
+        {
+            if (Session["User"] == null) // Bắt buộc đăng nhập
+            {
+                return RedirectToAction("Login", "User");
+            }
+
+            Cart cart = (Cart)Session["Cart"];
+            if (cart == null)
+                cart = new Cart();
+
+            int result = cart.Them(id);
+            if (result == 1)
+            {
+                Session["Cart"] = cart;
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        // Thêm sản phẩm vào giỏ từ các trang danh sách (giữ nguyên trang hiện tại)
+        public ActionResult ThemGioHang(int maSP, string url = null)
+        {
+            if (Session["User"] == null)
+            {
+                return RedirectToAction("Login", "User");
+            }
+
+            Cart cart = (Cart)Session["Cart"];
+            if (cart == null)
+                cart = new Cart();
+
+            int result = cart.Them(maSP);
+            if (result == 1)
+            {
+                Session["Cart"] = cart;
+            }
+
+            if (!string.IsNullOrEmpty(url) && Url.IsLocalUrl(url))
+            {
+                return Redirect(url);
+            }
+
+            var refUrl = Request.UrlReferrer?.ToString();
+            if (!string.IsNullOrEmpty(refUrl) && Url.IsLocalUrl(refUrl))
+            {
+                return Redirect(refUrl);
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        // Xóa sản phẩm khỏi giỏ
+        public ActionResult RemoveFromCart(int id)
+        {
+            if (Session["User"] == null)
+            {
+                return RedirectToAction("Login", "User");
+            }
+
+            Cart cart = (Cart)Session["Cart"];
+            if (cart == null)
+                cart = new Cart();
+
+            int result = cart.Xoa(id);
+            if (result == 1)
+            {
+                Session["Cart"] = cart;
+
+                try
+                {
+                    var sessionUser = Session["User"] as TaiKhoan;
+                    if (sessionUser != null)
+                    {
+                        var donHang = data.DonHangs
+                            .Where(d => d.MaND == sessionUser.MaND && (d.TrangThaiThanhToan == null || d.TrangThaiThanhToan == "Chưa thanh toán" || d.TrangThaiThanhToan == "Pending"))
+                            .OrderByDescending(d => d.NgayDat)
+                            .FirstOrDefault();
+
+                        if (donHang != null)
+                        {
+                            donHang.TrangThaiThanhToan = "Đã hủy";
+                            donHang.GhiChu = (donHang.GhiChu ?? "") + "\nHủy do khách xóa sản phẩm khỏi giỏ.";
+                            data.Entry(donHang).State = System.Data.Entity.EntityState.Modified;
+
+                            var details = data.ChiTietDonHangs.Where(ct => ct.MaDH == donHang.MaDH).ToList();
+                            if (details.Any())
+                            {
+                                data.ChiTietDonHangs.RemoveRange(details);
+                            }
+
+                            data.SaveChanges();
+                        }
+                    }
+                    else if (Session["CurrentOrder"] != null)
+                    {
+                        int maDH = (int)Session["CurrentOrder"];
+                        var donHang = data.DonHangs.FirstOrDefault(d => d.MaDH == maDH);
+                        if (donHang != null)
+                        {
+                            var status = donHang.TrangThaiThanhToan ?? "Chưa thanh toán";
+                            if (status != "Đã thanh toán" && status != "Paid")
+                            {
+                                donHang.TrangThaiThanhToan = "Đã hủy";
+                                donHang.GhiChu = (donHang.GhiChu ?? "") + "\nHủy do khách xóa sản phẩm khỏi giỏ.";
+                                data.Entry(donHang).State = System.Data.Entity.EntityState.Modified;
+
+                                var details = data.ChiTietDonHangs.Where(ct => ct.MaDH == maDH).ToList();
+                                if (details.Any()) data.ChiTietDonHangs.RemoveRange(details);
+
+                                data.SaveChanges();
+                            }
+                        }
+                        Session["CurrentOrder"] = null;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("Lỗi khi cập nhật trạng thái đơn hàng khi xóa sản phẩm: " + ex.Message);
+                }
+            }
+
+            return RedirectToAction("Index", "GioHang");
+        }
+
+        // Cập nhật số lượng
+        public ActionResult UpdateSLCart(int id, int num)
+        {
+            int result = -1;
+            Cart cart = (Cart)Session["Cart"];
+
+            if (cart == null)
+                cart = new Cart();
+
+            if (num == -1)
+                result = cart.Giam(id);
+            else
+                result = cart.Them(id);
+
+            if (result == 1)
+                Session["Cart"] = cart;
+
+            return RedirectToAction("Index", "GioHang");
+        }
+
+        // New: Cập nhật số lượng theo giá trị nhập vào
+        [HttpPost]
+        public ActionResult UpdateQuantity(int id, int quantity)
+        {
+            Cart cart = (Cart)Session["Cart"];
+            if (cart == null)
+                cart = new Cart();
+
+            var item = cart.list.FirstOrDefault(x => x.MaSP == id);
+            if (item == null)
+            {
+                return RedirectToAction("Index", "GioHang");
+            }
+
+            if (quantity <= 0)
+            {
+                cart.Xoa(id);
+            }
+            else
+            {
+                item.SoLuong = quantity;
+            }
+
+            Session["Cart"] = cart;
+            return RedirectToAction("Index", "GioHang");
+        }
+
+        public ActionResult PaymentReview()
+        {
+            Cart cart = (Cart)Session["Cart"];
+
+            if (cart == null || cart.list.Count == 0)
+                return RedirectToAction("Index", "GioHang");
+
+            return View(cart);
+        }
+
+        // Xác nhận thanh toán (Lưu hóa đơn & chi tiết)
+        public ActionResult PaymentConfirm()
+        {
+            var kh = (TaiKhoan)Session["User"];
+            Cart cart = (Cart)Session["Cart"];
+
+            if (kh == null)
+                return RedirectToAction("Login", "User");
+
+            if (cart == null || cart.list.Count == 0)
+                return RedirectToAction("Index", "GioHang");
+
+            foreach (var item in cart.list)
+            {
+                var sp = data.SanPhams.Find(item.MaSP);
+                int available = sp?.SoLuongTon ?? 0;
+                if (available < item.SoLuong)
+                {
+                    TempData["Error"] = $"Sản phẩm '{item.TenSP}' chỉ còn {available} nhưng bạn yêu cầu {item.SoLuong}. Vui lòng điều chỉnh giỏ hàng.";
+                    return RedirectToAction("PaymentReview");
+                }
+            }
+
+            // Lấy mã giảm đã lưu trong session (nếu có) và tính tổng sau giảm
+            decimal discountAmount = 0m;
+            if (Session["DiscountAmount"] != null)
+            {
+                try { discountAmount = Convert.ToDecimal(Session["DiscountAmount"]); } catch { discountAmount = 0m; }
+            }
+
+            var hoaDon = new DonHang
+            {
+                MaND = kh.MaND,
+                NgayDat = DateTime.Now,
+                TongTien = (decimal)cart.TongThanhTien() - discountAmount,
+                DiaChiGiaoHang = kh.NguoiDung?.DiaChi ?? "",
+                TrangThaiThanhToan = "Chưa thanh toán",
+                SoTienGiam = discountAmount
+            };
+
+            // Nếu có coupon trong session, lưu MaKM tham chiếu (nếu có)
+            try
+            {
+                var sessCoupon = Session["Discount"] as KhuyenMai;
+                if (sessCoupon != null)
+                {
+                    hoaDon.MaKM = sessCoupon.MaKM;
+                }
+                else if (Session["DiscountCode"] != null)
+                {
+                    var code = Session["DiscountCode"].ToString();
+                    var km = data.KhuyenMais.FirstOrDefault(x => x.MaCode == code);
+                    if (km != null) hoaDon.MaKM = km.MaKM;
+                }
+            }
+            catch { /* swallow */ }
+
+            data.DonHangs.Add(hoaDon);
+            data.SaveChanges();
+
+            Session["CurrentOrder"] = hoaDon.MaDH;
+
+            return RedirectToAction("PaymentMethod");
+        }
+
+        public ActionResult PaymentMethod()
+        {
+            try
+            {
+                if (Session["CurrentOrder"] == null)
+                {
+                    return RedirectToAction("Index", "GioHang");
+                }
+
+                int maDH = (int)Session["CurrentOrder"];
+                var hoaDon = data.DonHangs.FirstOrDefault(x => x.MaDH == maDH);
+
+                if (hoaDon == null)
+                {
+                    return RedirectToAction("Index", "GioHang");
+                }
+
+                return View(hoaDon);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"❌ PaymentMethod Error: {ex.Message}");
+                return RedirectToAction("Index", "GioHang");
+            }
+        }
+
+        public ActionResult LuuThongTinNhanHang(int? maDH)
+        {
+            try
+            {
+                if (!maDH.HasValue)
+                {
+                    if (Session["CurrentOrder"] == null)
+                    {
+                        return RedirectToAction("Index", "GioHang");
+                    }
+                    maDH = (int)Session["CurrentOrder"];
+                }
+
+                var hoaDon = data.DonHangs.FirstOrDefault(x => x.MaDH == maDH);
+
+                if (hoaDon == null)
+                {
+                    return RedirectToAction("Index", "GioHang");
+                }
+
+                return View(hoaDon);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Index", "GioHang");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult LuuThongTinNhanHang(int MaDH, string TenNguoiNhan, string SoDienThoai, string DiaChiGiaoHang, string GhiChu)
+        {
+            try
+            {
+                var hoaDon = data.DonHangs.FirstOrDefault(x => x.MaDH == MaDH);
+
+                if (hoaDon == null)
+                {
+                    return RedirectToAction("Index", "GioHang");
+                }
+
+                hoaDon.TenNguoiNhan = TenNguoiNhan;
+                hoaDon.SoDienThoai = SoDienThoai;
+                hoaDon.DiaChiGiaoHang = DiaChiGiaoHang;
+                hoaDon.GhiChu = GhiChu;
+
+                data.Entry(hoaDon).State = System.Data.Entity.EntityState.Modified;
+                data.SaveChanges();
+
+                return RedirectToAction("PaymentMethod", new { maDH = MaDH });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Index", "GioHang");
+            }
+        }
+
+        public ActionResult ThanhToanCOD(int? maDH)
+        {
+            try
+            {
+                if (!maDH.HasValue)
+                {
+                    if (Session["CurrentOrder"] == null)
+                    {
+                        return RedirectToAction("Index", "GioHang");
+                    }
+                    maDH = (int)Session["CurrentOrder"];
+                }
+
+                var hoaDon = data.DonHangs.FirstOrDefault(x => x.MaDH == maDH);
+
+                if (hoaDon == null)
+                {
+                    return RedirectToAction("Index", "GioHang");
+                }
+
+                var existingDetails = data.ChiTietDonHangs.Any(ct => ct.MaDH == hoaDon.MaDH);
+                if (!existingDetails)
+                {
+                    Cart cart = (Cart)Session["Cart"];
+                    if (cart != null)
+                    {
+                        foreach (var item in cart.list)
+                        {
+                            var sp = data.SanPhams.Find(item.MaSP);
+                            int available = sp?.SoLuongTon ?? 0;
+                            if (available < item.SoLuong)
+                            {
+                                TempData["Error"] = $"Sản phẩm '{item.TenSP}' chỉ còn {available} nhưng bạn yêu cầu {item.SoLuong}. Vui lòng điều chỉnh giỏ hàng.";
+                                return RedirectToAction("PaymentReview");
+                            }
+                        }
+
+                        foreach (var item in cart.list)
+                        {
+                            data.ChiTietDonHangs.Add(new ChiTietDonHang
+                            {
+                                MaDH = hoaDon.MaDH,
+                                MaSP = item.MaSP,
+                                SoLuong = item.SoLuong,
+                                DonGia = (decimal)item.GiaBan
+                            });
+                        }
+                        data.SaveChanges();
+                    }
+                }
+
+                hoaDon.TrangThaiThanhToan = "Đã thanh toán";
+                hoaDon.NgayThanhToan = DateTime.Now;
+                hoaDon.PhuongThucThanhToan = "COD";
+                data.SaveChanges();
+
+                Session["Cart"] = null;
+                Session["CurrentOrder"] = null;
+
+                return RedirectToAction("PaymentSuccess", new { maDH = maDH });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Index", "GioHang");
+            }
+        }
+
+        public ActionResult ThanhToanChuyenKhoan(int? maDH)
+        {
+            try
+            {
+                if (!maDH.HasValue)
+                {
+                    if (Session["CurrentOrder"] == null)
+                    {
+                        return RedirectToAction("Index", "GioHang");
+                    }
+                    maDH = (int)Session["CurrentOrder"];
+                }
+
+                var hoaDon = data.DonHangs.FirstOrDefault(x => x.MaDH == maDH);
+
+                if (hoaDon == null)
+                {
+                    return RedirectToAction("Index", "GioHang");
+                }
+
+                hoaDon.PhuongThucThanhToan = "Chuyển Khoản";
+                data.SaveChanges();
+
+                return View(hoaDon);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Index", "GioHang");
+            }
+        }
+
+        public ActionResult ThanhToanQR(int? maDH)
+        {
+            try
+            {
+                if (!maDH.HasValue)
+                {
+                    if (Session["CurrentOrder"] == null)
+                    {
+                        return RedirectToAction("Index", "GioHang");
+                    }
+                    maDH = (int)Session["CurrentOrder"];
+                }
+
+                var hoaDon = data.DonHangs.FirstOrDefault(x => x.MaDH == maDH);
+
+                if (hoaDon == null)
+                {
+                    return RedirectToAction("Index", "GioHang");
+                }
+
+                hoaDon.PhuongThucThanhToan = "QR";
+                data.SaveChanges();
+
+                return View(hoaDon);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Index", "GioHang");
+            }
+        }
+
+        public ActionResult ConfirmPaymentComplete(int? maDH)
+        {
+            try
+            {
+                if (!maDH.HasValue)
+                {
+                    if (Session["CurrentOrder"] == null)
+                        return RedirectToAction("Index", "GioHang");
+                    maDH = (int)Session["CurrentOrder"];
+                }
+
+                var hoaDon = data.DonHangs.FirstOrDefault(x => x.MaDH == maDH);
+
+                if (hoaDon != null)
+                {
+                    var existingDetails = data.ChiTietDonHangs.Any(ct => ct.MaDH == hoaDon.MaDH);
+                    if (!existingDetails)
+                    {
+                        Cart cart = (Cart)Session["Cart"];
+                        if (cart != null)
+                        {
+                            foreach (var item in cart.list)
+                            {
+                                var sp = data.SanPhams.Find(item.MaSP);
+                                int available = sp?.SoLuongTon ?? 0;
+                                if (available < item.SoLuong)
+                                {
+                                    TempData["Error"] = $"Sản phẩm '{item.TenSP}' chỉ còn {available} nhưng bạn yêu cầu {item.SoLuong}. Vui lòng điều chỉnh giỏ hàng.";
+                                    return RedirectToAction("PaymentReview");
+                                }
+                            }
+
+                            foreach (var item in cart.list)
+                            {
+                                data.ChiTietDonHangs.Add(new ChiTietDonHang
+                                {
+                                    MaDH = hoaDon.MaDH,
+                                    MaSP = item.MaSP,
+                                    SoLuong = item.SoLuong,
+                                    DonGia = (decimal)item.GiaBan
+                                });
+                            }
+
+                            data.SaveChanges();
+                        }
+                    }
+
+                    hoaDon.TrangThaiThanhToan = "Đã thanh toán";
+                    hoaDon.NgayThanhToan = DateTime.Now;
+
+                    data.Entry(hoaDon).State = System.Data.Entity.EntityState.Modified;
+                    data.SaveChanges();
+                }
+
+                Session["Cart"] = null;
+                Session["CurrentOrder"] = null;
+                return RedirectToAction("PaymentSuccess", new { maDH = maDH });
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public ActionResult PaymentSuccess(int? maDH)
+        {
+            if (!maDH.HasValue && Session["CurrentOrder"] != null)
+            {
+                maDH = (int)Session["CurrentOrder"];
+            }
+
+            if (maDH.HasValue)
+            {
+                ViewBag.MaDH = maDH.Value;
+
+                var hoaDon = data.DonHangs.FirstOrDefault(x => x.MaDH == maDH);
+
+                if (hoaDon != null)
+                {
+                    data.Entry(hoaDon).Reload();
+
+                    if (string.IsNullOrEmpty(hoaDon.TrangThaiThanhToan))
+                    {
+                        hoaDon.TrangThaiThanhToan = "Đã thanh toán";
+                        hoaDon.NgayThanhToan = DateTime.Now;
+                        data.SaveChanges();
+                    }
+
+                    ViewBag.TrangThaiThanhToan = hoaDon.TrangThaiThanhToan;
+                    ViewBag.PhuongThucThanhToan = hoaDon.PhuongThucThanhToan;
+                }
+            }
+
+            Session["Cart"] = null;
+            Session["CurrentOrder"] = null;
+
+            return View();
+        }
+
+        public ActionResult DebugPayment(int maDH)
+        {
+            try
+            {
+                var hoaDon = data.DonHangs.FirstOrDefault(x => x.MaDH == maDH);
+                if (hoaDon == null) return Content($"❌ Không tìm thấy đơn hàng MaDH={maDH}");
+
+                return Content($"Debug Info for MaDH: {maDH}", "text/plain");
+            }
+            catch (Exception ex)
+            {
+                return Content($"❌ Error: {ex.Message}", "text/plain");
+            }
+        }
+
+        // POST: ApplyDiscount (Dùng cho form submit thường - nếu còn dùng)
+        [HttpPost]
+        public ActionResult ApplyDiscount(string code)
+        {
+            // Hàm này giữ nguyên để fallback, nhưng logic chính đã chuyển sang Ajax bên dưới
+            return Json(new { success = false, message = "Vui lòng sử dụng chức năng Ajax." });
+        }
+
+        // =========================================================================
+        // ĐÂY LÀ HÀM QUAN TRỌNG ĐÃ SỬA LẠI ĐỂ CHẠY AJAX
+        // =========================================================================
+        [HttpPost]
+        public ActionResult ApplyDiscountAjax(string maGiamGia)
+        {
+            try
+            {
+                // 1. Kiểm tra mã
+                if (string.IsNullOrWhiteSpace(maGiamGia))
+                    return Json(new { success = false, message = "Vui lòng nhập mã giảm giá." });
+
+                // 2. Lấy giỏ hàng
+                var cartObj = Session["Cart"] as Cart;
+                if (cartObj == null || cartObj.list == null || !cartObj.list.Any())
+                    return Json(new { success = false, message = "Giỏ hàng đang trống!" });
+
+                var listItems = cartObj.list;
+                decimal tamTinh = listItems.Sum(x => x.ThanhTien);
+
+                // 3. Gọi Service
+                var couponService = new CouponService(data);
+                var coupon = couponService.GetValidCoupon(maGiamGia.Trim(), tamTinh);
+
+                if (coupon != null)
+                {
+                    Session["Discount"] = coupon;
+                    
+                    // Store discount code and numeric amount in session for later use (checkout)
+                    Session["DiscountCode"] = coupon.MaCode;
+                    
+                    // --- LOGIC TÍNH TOÁN ĐÃ SỬA ---
+                    decimal giaTri = coupon.GiaTriGiam;
+                    decimal soTienGiam = 0;
+
+                    if (giaTri <= 100)
+                    {
+                        soTienGiam = (tamTinh * giaTri) / 100;
+                    }
+                    else
+                    {
+                        soTienGiam = giaTri;
+                    }
+
+                    if (soTienGiam > tamTinh) soTienGiam = tamTinh;
+
+                    // Save numeric discount amount into session
+                    Session["DiscountAmount"] = soTienGiam;
+
+                    // Prepare response values
+                    decimal tongTienMoi = tamTinh - soTienGiam;
+
+                    return Json(new
+                    {
+                        success = true,
+                        discountAmount = soTienGiam.ToString("N0") + "₫",
+                        newTotal = tongTienMoi.ToString("N0") + "₫",
+                        newSubTotal = tamTinh.ToString("N0") + "₫",
+                        message = "Áp dụng mã thành công!"
+                    });
+                }
+                else
+                {
+                    Session["Discount"] = null;
+                    Session["DiscountAmount"] = null;
+                    Session["DiscountCode"] = null;
+                    return Json(new { success = false, message = "Mã không hợp lệ hoặc chưa đủ điều kiện." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi Server: " + ex.Message });
+            }
+        }
+    }
+}

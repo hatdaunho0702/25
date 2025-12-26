@@ -11,6 +11,7 @@ namespace WebApplication15.Controllers
 {
     public class GioHangController : Controller
     {
+        // Biến kết nối CSDL của bạn tên là 'data'
         private DB_SkinFood1Entities data = new DB_SkinFood1Entities();
 
         protected override void Dispose(bool disposing)
@@ -25,12 +26,31 @@ namespace WebApplication15.Controllers
         // GET: GioHang
         public ActionResult Index()
         {
-            Cart cart = (Cart)Session["Cart"];
+            // Ensure we pass the Cart model expected by the view
+            var cart = Session["Cart"] as Cart;
             if (cart == null)
+            {
                 cart = new Cart();
+            }
+
+            decimal tamTinh = cart.TongThanhTien();
+
+            decimal discount = 0m;
+            if (Session["DiscountAmount"] != null)
+            {
+                try { discount = Convert.ToDecimal(Session["DiscountAmount"]); } catch { discount = 0m; }
+            }
+
+            decimal tongCong = tamTinh - discount;
+            if (tongCong < 0) tongCong = 0;
+
+            ViewBag.TamTinh = tamTinh;
+            ViewBag.Discount = discount;
+            ViewBag.TongCong = tongCong;
 
             return View(cart);
         }
+
 
         // Thêm sản phẩm vào giỏ
         public ActionResult AddToCart(int id)
@@ -48,6 +68,7 @@ namespace WebApplication15.Controllers
             if (result == 1)
             {
                 Session["Cart"] = cart;
+                RecalculateDiscount();
             }
 
             return RedirectToAction("Index", "Home");
@@ -58,7 +79,6 @@ namespace WebApplication15.Controllers
         {
             if (Session["User"] == null)
             {
-                // Nếu chưa đăng nhập, chuyển hướng đến trang Login
                 return RedirectToAction("Login", "User");
             }
 
@@ -70,15 +90,14 @@ namespace WebApplication15.Controllers
             if (result == 1)
             {
                 Session["Cart"] = cart;
+                RecalculateDiscount();
             }
 
-            // Nếu url truyền vào là local, redirect về url đó để reload trang
             if (!string.IsNullOrEmpty(url) && Url.IsLocalUrl(url))
             {
                 return Redirect(url);
             }
 
-            // Nếu không có url hoặc không an toàn, dùng UrlReferrer hoặc fallback về trang hiện tại
             var refUrl = Request.UrlReferrer?.ToString();
             if (!string.IsNullOrEmpty(refUrl) && Url.IsLocalUrl(refUrl))
             {
@@ -104,14 +123,13 @@ namespace WebApplication15.Controllers
             if (result == 1)
             {
                 Session["Cart"] = cart;
+                RecalculateDiscount();
 
                 try
                 {
-                    // Try to cancel any unpaid order belonging to the current logged-in user
                     var sessionUser = Session["User"] as TaiKhoan;
                     if (sessionUser != null)
                     {
-                        // Find most recent unpaid order for this user
                         var donHang = data.DonHangs
                             .Where(d => d.MaND == sessionUser.MaND && (d.TrangThaiThanhToan == null || d.TrangThaiThanhToan == "Chưa thanh toán" || d.TrangThaiThanhToan == "Pending"))
                             .OrderByDescending(d => d.NgayDat)
@@ -123,7 +141,6 @@ namespace WebApplication15.Controllers
                             donHang.GhiChu = (donHang.GhiChu ?? "") + "\nHủy do khách xóa sản phẩm khỏi giỏ.";
                             data.Entry(donHang).State = System.Data.Entity.EntityState.Modified;
 
-                            // Remove any saved details to avoid stock triggers
                             var details = data.ChiTietDonHangs.Where(ct => ct.MaDH == donHang.MaDH).ToList();
                             if (details.Any())
                             {
@@ -135,7 +152,6 @@ namespace WebApplication15.Controllers
                     }
                     else if (Session["CurrentOrder"] != null)
                     {
-                        // Fallback: previous behavior when user not in session (keep for compatibility)
                         int maDH = (int)Session["CurrentOrder"];
                         var donHang = data.DonHangs.FirstOrDefault(d => d.MaDH == maDH);
                         if (donHang != null)
@@ -153,7 +169,6 @@ namespace WebApplication15.Controllers
                                 data.SaveChanges();
                             }
                         }
-
                         Session["CurrentOrder"] = null;
                     }
                 }
@@ -166,7 +181,6 @@ namespace WebApplication15.Controllers
             return RedirectToAction("Index", "GioHang");
         }
 
-        // Cập nhật số lượng
         public ActionResult UpdateSLCart(int id, int num)
         {
             int result = -1;
@@ -181,10 +195,14 @@ namespace WebApplication15.Controllers
                 result = cart.Them(id);
 
             if (result == 1)
+            {
                 Session["Cart"] = cart;
+                RecalculateDiscount(); // ✅ ĐẶT TRONG {}
+            }
 
             return RedirectToAction("Index", "GioHang");
         }
+
 
         // New: Cập nhật số lượng theo giá trị nhập vào
         [HttpPost]
@@ -197,7 +215,6 @@ namespace WebApplication15.Controllers
             var item = cart.list.FirstOrDefault(x => x.MaSP == id);
             if (item == null)
             {
-                // If item not found, nothing to update
                 return RedirectToAction("Index", "GioHang");
             }
 
@@ -211,9 +228,9 @@ namespace WebApplication15.Controllers
             }
 
             Session["Cart"] = cart;
+            RecalculateDiscount();
             return RedirectToAction("Index", "GioHang");
         }
-
 
         public ActionResult PaymentReview()
         {
@@ -226,56 +243,102 @@ namespace WebApplication15.Controllers
         }
 
         // Xác nhận thanh toán (Lưu hóa đơn & chi tiết)
+        // GioHangController.cs
+
+        // Action này xử lý khi bấm nút "Xác nhận thanh toán" ở View bạn vừa gửi
         public ActionResult PaymentConfirm()
         {
             var kh = (TaiKhoan)Session["User"];
             Cart cart = (Cart)Session["Cart"];
 
-            if (kh == null)
-                return RedirectToAction("Login", "User");
+            if (kh == null) return RedirectToAction("Login", "User");
+            if (cart == null || cart.list.Count == 0) return RedirectToAction("Index", "GioHang");
 
-            if (cart == null || cart.list.Count == 0)
-                return RedirectToAction("Index", "GioHang");
-
-            // --- KIỂM TRA TỒN KHO TRƯỚC KHI TẠO HÓA ĐƠN ---
+            // 1. Kiểm tra tồn kho (Giữ nguyên logic cũ của bạn)
             foreach (var item in cart.list)
             {
                 var sp = data.SanPhams.Find(item.MaSP);
                 int available = sp?.SoLuongTon ?? 0;
                 if (available < item.SoLuong)
                 {
-                    TempData["Error"] = $"Sản phẩm '{item.TenSP}' chỉ còn {available} nhưng bạn yêu cầu {item.SoLuong}. Vui lòng điều chỉnh giỏ hàng.";
+                    TempData["Error"] = $"Sản phẩm '{item.TenSP}' chỉ còn {available}.";
                     return RedirectToAction("PaymentReview");
                 }
             }
 
-            // TẠO HÓA ĐƠN (CHỈ LƯU HEADER) - KHÔNG LƯU CHI TIẾT NGAY
-            var hoaDon = new DonHang
+            // --- BẮT ĐẦU ĐOẠN LOGIC GIỐNG HỆT VIEW CỦA BẠN ---
+
+            // 2. Lấy tổng tiền gốc
+            decimal subTotal = (decimal)cart.TongThanhTien();
+
+            // 3. Lấy tiền giảm giá từ Session (giống hệt cách bạn làm ở View)
+            var discObj = Session["DiscountAmount"];
+            decimal discountAmount = 0m;
+            if (discObj != null)
             {
-                MaND = kh.MaND,
-                NgayDat = DateTime.Now,
-                TongTien = (decimal)cart.TongThanhTien(),
-                DiaChiGiaoHang = kh.NguoiDung?.DiaChi ?? "",
-                TrangThaiThanhToan = "Chưa thanh toán"
-            };
+                decimal.TryParse(discObj.ToString(), out discountAmount);
+            }
 
-            data.DonHangs.Add(hoaDon);
-            data.SaveChanges();
+            // 4. Tính tổng cuối cùng để LƯU VÀO DB
+            decimal finalTotal = subTotal - discountAmount;
 
-            // Lưu mã đơn để dùng ở bước thanh toán
-            Session["CurrentOrder"] = hoaDon.MaDH;
+            // Chặn âm tiền (phòng hờ)
+            if (finalTotal < 0) finalTotal = 0;
 
-            // CHUYỂN SANG TRANG CHỌN PHƯƠNG THỨC THANH TOÁN
-            return RedirectToAction("PaymentMethod");
+            // ---------------------------------------------------
+
+            // 5. Tạo hóa đơn với số tiền ĐÃ TRỪ
+            DonHang hoaDon = null;
+
+            // If a pending order was already created (e.g. when applying coupon), reuse it and update totals
+            if (Session["CurrentOrder"] != null)
+            {
+                int existingMaDH = (int)Session["CurrentOrder"];
+                hoaDon = data.DonHangs.FirstOrDefault(d => d.MaDH == existingMaDH);
+                if (hoaDon != null)
+                {
+                    hoaDon.TongTien = finalTotal;
+                    hoaDon.SoTienGiam = discountAmount;
+                    hoaDon.NgayDat = DateTime.Now;
+                    if (!string.IsNullOrEmpty(hoaDon.GhiChu)) hoaDon.GhiChu += " | ";
+                    hoaDon.GhiChu = (hoaDon.GhiChu ?? "") + (discountAmount > 0 ? $"Áp dụng Voucher: -{discountAmount:N0}đ" : "");
+                    data.Entry(hoaDon).State = System.Data.Entity.EntityState.Modified;
+                    data.SaveChanges();
+                }
+            }
+            else
+            {
+                hoaDon = new DonHang
+                {
+                    MaND = kh.MaND,
+                    NgayDat = DateTime.Now,
+                    // QUAN TRỌNG NHẤT: Lưu finalTotal
+                    TongTien = finalTotal,
+                    DiaChiGiaoHang = kh.NguoiDung?.DiaChi ?? "",
+                    TrangThaiThanhToan = "Chưa thanh toán",
+                    SoTienGiam = discountAmount,
+                    GhiChu = discountAmount > 0 ? $"Áp dụng Voucher: -{discountAmount:N0}đ" : ""
+                };
+
+                data.DonHangs.Add(hoaDon);
+                data.SaveChanges();
+
+                // Lưu mã đơn hàng vào session
+                Session["CurrentOrder"] = hoaDon.MaDH;
+            }
+
+             // (Tùy chọn) Xóa mã giảm giá khỏi Session sau khi đã dùng xong để tránh áp dụng cho đơn sau
+             // Session["DiscountAmount"] = null;
+             // Session["DiscountCode"] = null;
+
+             return RedirectToAction("PaymentMethod");
         }
-
         public ActionResult PaymentMethod()
         {
             try
             {
                 if (Session["CurrentOrder"] == null)
                 {
-                    System.Diagnostics.Debug.WriteLine("❌ PaymentMethod: Session['CurrentOrder'] là null");
                     return RedirectToAction("Index", "GioHang");
                 }
 
@@ -284,7 +347,6 @@ namespace WebApplication15.Controllers
 
                 if (hoaDon == null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"❌ PaymentMethod: Không tìm thấy đơn hàng MaDH={maDH}");
                     return RedirectToAction("Index", "GioHang");
                 }
 
@@ -297,7 +359,6 @@ namespace WebApplication15.Controllers
             }
         }
 
-        // GET: Hiển thị form thông tin nhận hàng
         public ActionResult LuuThongTinNhanHang(int? maDH)
         {
             try
@@ -306,7 +367,6 @@ namespace WebApplication15.Controllers
                 {
                     if (Session["CurrentOrder"] == null)
                     {
-                        System.Diagnostics.Debug.WriteLine("❌ LuuThongTinNhanHang: maDH không có và Session['CurrentOrder'] là null");
                         return RedirectToAction("Index", "GioHang");
                     }
                     maDH = (int)Session["CurrentOrder"];
@@ -316,7 +376,6 @@ namespace WebApplication15.Controllers
 
                 if (hoaDon == null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"❌ LuuThongTinNhanHang: Không tìm thấy đơn hàng MaDH={maDH}");
                     return RedirectToAction("Index", "GioHang");
                 }
 
@@ -324,12 +383,10 @@ namespace WebApplication15.Controllers
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ LuuThongTinNhanHang Error: {ex.Message}");
                 return RedirectToAction("Index", "GioHang");
             }
         }
 
-        // POST: Lưu thông tin nhận hàng
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LuuThongTinNhanHang(int MaDH, string TenNguoiNhan, string SoDienThoai, string DiaChiGiaoHang, string GhiChu)
@@ -340,7 +397,6 @@ namespace WebApplication15.Controllers
 
                 if (hoaDon == null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"❌ LuuThongTinNhanHang POST: Không tìm thấy đơn hàng MaDH={MaDH}");
                     return RedirectToAction("Index", "GioHang");
                 }
 
@@ -352,13 +408,10 @@ namespace WebApplication15.Controllers
                 data.Entry(hoaDon).State = System.Data.Entity.EntityState.Modified;
                 data.SaveChanges();
 
-                System.Diagnostics.Debug.WriteLine($"✅ LuuThongTinNhanHang: Đã lưu thông tin cho MaDH={MaDH}");
-
                 return RedirectToAction("PaymentMethod", new { maDH = MaDH });
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ LuuThongTinNhanHang POST Error: {ex.Message}");
                 return RedirectToAction("Index", "GioHang");
             }
         }
@@ -371,7 +424,6 @@ namespace WebApplication15.Controllers
                 {
                     if (Session["CurrentOrder"] == null)
                     {
-                        System.Diagnostics.Debug.WriteLine("❌ ThanhToanCOD: maDH không có và Session['CurrentOrder'] là null");
                         return RedirectToAction("Index", "GioHang");
                     }
                     maDH = (int)Session["CurrentOrder"];
@@ -381,18 +433,15 @@ namespace WebApplication15.Controllers
 
                 if (hoaDon == null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"❌ ThanhToanCOD: Không tìm thấy đơn hàng MaDH={maDH}");
                     return RedirectToAction("Index", "GioHang");
                 }
 
-                // Nếu chi tiết đơn hàng chưa được lưu (tức là chưa trừ kho), thì lưu chi tiết giờ để trigger DB trừ kho
                 var existingDetails = data.ChiTietDonHangs.Any(ct => ct.MaDH == hoaDon.MaDH);
                 if (!existingDetails)
                 {
                     Cart cart = (Cart)Session["Cart"];
                     if (cart != null)
                     {
-                        // Kiểm tra tồn kho trước khi lưu chi tiết
                         foreach (var item in cart.list)
                         {
                             var sp = data.SanPhams.Find(item.MaSP);
@@ -414,7 +463,6 @@ namespace WebApplication15.Controllers
                                 DonGia = (decimal)item.GiaBan
                             });
                         }
-                        // Save here to let DB trigger update stock
                         data.SaveChanges();
                     }
                 }
@@ -425,15 +473,16 @@ namespace WebApplication15.Controllers
                 data.SaveChanges();
 
                 Session["Cart"] = null;
+                // Clear discount session values after successful payment
                 Session["CurrentOrder"] = null;
-
-                System.Diagnostics.Debug.WriteLine($"✅ ThanhToanCOD: Đã cập nhật trạng thái COD cho MaDH={maDH}");
+                Session["Discount"] = null;
+                Session["DiscountAmount"] = null;
+                Session["DiscountCode"] = null;
 
                 return RedirectToAction("PaymentSuccess", new { maDH = maDH });
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ ThanhToanCOD Error: {ex.Message}");
                 return RedirectToAction("Index", "GioHang");
             }
         }
@@ -446,7 +495,6 @@ namespace WebApplication15.Controllers
                 {
                     if (Session["CurrentOrder"] == null)
                     {
-                        System.Diagnostics.Debug.WriteLine("❌ ThanhToanChuyenKhoan: maDH không có và Session['CurrentOrder'] là null");
                         return RedirectToAction("Index", "GioHang");
                     }
                     maDH = (int)Session["CurrentOrder"];
@@ -456,20 +504,16 @@ namespace WebApplication15.Controllers
 
                 if (hoaDon == null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"❌ ThanhToanChuyenKhoan: Không tìm thấy đơn hàng MaDH={maDH}");
                     return RedirectToAction("Index", "GioHang");
                 }
 
                 hoaDon.PhuongThucThanhToan = "Chuyển Khoản";
                 data.SaveChanges();
 
-                System.Diagnostics.Debug.WriteLine($"✅ ThanhToanChuyenKhoan: Đã cập nhật phương thức Chuyển Khoản cho MaDH={maDH}");
-
                 return View(hoaDon);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ ThanhToanChuyenKhoan Error: {ex.Message}");
                 return RedirectToAction("Index", "GioHang");
             }
         }
@@ -482,7 +526,6 @@ namespace WebApplication15.Controllers
                 {
                     if (Session["CurrentOrder"] == null)
                     {
-                        System.Diagnostics.Debug.WriteLine("❌ ThanhToanQR: maDH không có và Session['CurrentOrder'] là null");
                         return RedirectToAction("Index", "GioHang");
                     }
                     maDH = (int)Session["CurrentOrder"];
@@ -492,25 +535,20 @@ namespace WebApplication15.Controllers
 
                 if (hoaDon == null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"❌ ThanhToanQR: Không tìm thấy đơn hàng MaDH={maDH}");
                     return RedirectToAction("Index", "GioHang");
                 }
 
                 hoaDon.PhuongThucThanhToan = "QR";
                 data.SaveChanges();
 
-                System.Diagnostics.Debug.WriteLine($"✅ ThanhToanQR: Đã cập nhật phương thức QR cho MaDH={maDH}");
-
                 return View(hoaDon);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ ThanhToanQR Error: {ex.Message}");
                 return RedirectToAction("Index", "GioHang");
             }
         }
 
-        // Action để xác nhận thanh toán hoàn tất (cho QR/Chuyển khoản)
         public ActionResult ConfirmPaymentComplete(int? maDH)
         {
             try
@@ -526,14 +564,12 @@ namespace WebApplication15.Controllers
 
                 if (hoaDon != null)
                 {
-                    // Nếu chi tiết đơn hàng chưa được lưu thì lưu bây giờ (trigger DB sẽ trừ kho)
                     var existingDetails = data.ChiTietDonHangs.Any(ct => ct.MaDH == hoaDon.MaDH);
                     if (!existingDetails)
                     {
                         Cart cart = (Cart)Session["Cart"];
                         if (cart != null)
                         {
-                            // Kiểm tra tồn kho trước khi lưu chi tiết
                             foreach (var item in cart.list)
                             {
                                 var sp = data.SanPhams.Find(item.MaSP);
@@ -556,11 +592,7 @@ namespace WebApplication15.Controllers
                                 });
                             }
 
-                            data.SaveChanges(); // trigger sẽ trừ kho
-                        }
-                        else
-                        {
-                            System.Diagnostics.Debug.WriteLine($"⚠️ ConfirmPaymentComplete: Session Cart null when inserting details for MaDH={maDH}");
+                            data.SaveChanges();
                         }
                     }
 
@@ -568,23 +600,18 @@ namespace WebApplication15.Controllers
                     hoaDon.NgayThanhToan = DateTime.Now;
 
                     data.Entry(hoaDon).State = System.Data.Entity.EntityState.Modified;
-
-                    int result = data.SaveChanges();
-
-                    System.Diagnostics.Debug.WriteLine($"✅ ConfirmPaymentComplete: Đã cập nhật maDH={maDH}, SaveChanges result={result}");
-                }
-                else
-                {
-                    System.Diagnostics.Debug.WriteLine($"❌ ConfirmPaymentComplete: Không tìm thấy đơn hàng maDH={maDH}");
+                    data.SaveChanges();
                 }
 
                 Session["Cart"] = null;
                 Session["CurrentOrder"] = null;
+                Session["Discount"] = null;
+                Session["DiscountAmount"] = null;
+                Session["DiscountCode"] = null;
                 return RedirectToAction("PaymentSuccess", new { maDH = maDH });
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ ConfirmPaymentComplete Error: {ex.Message}");
                 throw;
             }
         }
@@ -611,11 +638,6 @@ namespace WebApplication15.Controllers
                         hoaDon.TrangThaiThanhToan = "Đã thanh toán";
                         hoaDon.NgayThanhToan = DateTime.Now;
                         data.SaveChanges();
-                        System.Diagnostics.Debug.WriteLine($"✅ PaymentSuccess: Cập nhật trạng thái cho maDH={maDH}");
-                    }
-                    else
-                    {
-                        System.Diagnostics.Debug.WriteLine($"✅ PaymentSuccess: maDH={maDH}, TrangThaiThanhToan={hoaDon.TrangThaiThanhToan}");
                     }
 
                     ViewBag.TrangThaiThanhToan = hoaDon.TrangThaiThanhToan;
@@ -623,10 +645,16 @@ namespace WebApplication15.Controllers
                 }
             }
 
+            // Clear sessions
             Session["Cart"] = null;
             Session["CurrentOrder"] = null;
+            Session["Discount"] = null;
+            Session["DiscountAmount"] = null;
+            Session["DiscountCode"] = null;
 
-            return View();
+            // Set a success message and redirect to home so cart is empty and user returns to storefront
+            TempData["PaymentSuccess"] = "Thanh toán thành công. Cảm ơn bạn!";
+            return RedirectToAction("Index", "Home");
         }
 
         public ActionResult DebugPayment(int maDH)
@@ -634,184 +662,133 @@ namespace WebApplication15.Controllers
             try
             {
                 var hoaDon = data.DonHangs.FirstOrDefault(x => x.MaDH == maDH);
+                if (hoaDon == null) return Content($"❌ Không tìm thấy đơn hàng MaDH={maDH}");
 
-                if (hoaDon == null)
-                {
-                    return Content($"❌ Không tìm thấy đơn hàng MaDH={maDH}");
-                }
-
-                string info = $@"
-🔍 DEBUG INFO - MaDH: {maDH}
-================================================
-✅ Tìm thấy đơn hàng
-- MaDH: {hoaDon.MaDH}
-- MaND: {hoaDon.MaND}
-- TongTien: {hoaDon.TongTien}
-- NgayDat: {hoaDon.NgayDat}
-- TrangThaiThanhToan: '{hoaDon.TrangThaiThanhToan}' (null={hoaDon.TrangThaiThanhToan == null})
-- NgayThanhToan: {hoaDon.NgayThanhToan}
-- PhuongThucThanhToan: {hoaDon.PhuongThucThanhToan}
-- DiaChiGiaoHang: {hoaDon.DiaChiGiaoHang}
-";
-
-                return Content(info, "text/plain; charset=utf-8");
+                return Content($"Debug Info for MaDH: {maDH}", "text/plain");
             }
             catch (Exception ex)
             {
-                return Content($"❌ Error: {ex.Message}\n{ex.InnerException?.Message}", "text/plain; charset=utf-8");
+                return Content($"❌ Error: {ex.Message}", "text/plain");
             }
         }
 
-        // POST: ApplyDiscount
+        // POST: ApplyDiscount (Dùng cho form submit thường - nếu còn dùng)
         [HttpPost]
-        // NOTE: We validate antiforgery token manually to return JSON error messages for AJAX calls
         public ActionResult ApplyDiscount(string code)
         {
-            try
-            {
-                // Manual anti-forgery validation so we can return JSON instead of letting MVC throw a 500/400
-                try
-                {
-                    // AntiForgery.Validate() will read token from form or header/cookie pair
-                    // We keep this simple: call Validate and catch any exception
-                    AntiForgery.Validate();
-                }
-                catch (Exception afEx)
-                {
-                    System.Diagnostics.Debug.WriteLine("AntiForgery validation failed: " + afEx.Message);
-                    return Json(new { success = false, message = "Token bảo mật không hợp lệ. Vui lòng tải lại trang và thử lại." });
-                }
-
-                // 1. Kiểm tra mã đầu vào
-                if (string.IsNullOrWhiteSpace(code))
-                    return Json(new { success = false, message = "Vui lòng nhập mã giảm giá." });
-
-                // 2. Lấy giỏ hàng an toàn
-                var cartObj = Session["Cart"] as Cart;
-                if (cartObj == null || cartObj.list == null || !cartObj.list.Any())
-                    return Json(new { success = false, message = "Giỏ hàng đang trống!" });
-
-                // 3. Chuyển đổi dữ liệu an toàn (Dùng Convert.ToDecimal để tránh lỗi 500 do sai kiểu)
-                var items = new List<CartItem>();
-                foreach (var x in cartObj.list)
-                {
-                    items.Add(new CartItem
-                    {
-                        MaSP = x.MaSP,
-                        SoLuong = x.SoLuong,
-                        DonGia = x.GiaBan != null ? Convert.ToDecimal(x.GiaBan) : 0m
-                    });
-                }
-
-                // 4. Tính tổng tiền tạm tính
-                decimal tamTinh = items.Sum(x => x.DonGia * x.SoLuong);
-
-                // 5. Gọi Service xử lý
-                var couponService = new CouponService(data);
-                decimal soTienGiam = 0m;
-
-                try
-                {
-                    soTienGiam = couponService.CalculateDiscount(code.Trim(), items, tamTinh);
-                }
-                catch (Exception serviceEx)
-                {
-                    return Json(new { success = false, message = serviceEx.Message });
-                }
-
-                if (soTienGiam <= 0)
-                {
-                    return Json(new { success = false, message = "Mã này không áp dụng được cho đơn hàng của bạn." });
-                }
-
-                Session["DiscountCode"] = code.Trim();
-                Session["DiscountAmount"] = soTienGiam;
-
-                decimal tongCongMoi = tamTinh - soTienGiam;
-
-                return Json(new
-                {
-                    success = true,
-                    discountAmount = soTienGiam.ToString("N0") + "₫",
-                    newTotal = tongCongMoi.ToString("N0") + "₫",
-                    newSubTotal = tamTinh.ToString("N0") + "₫",
-                    message = "Áp dụng mã thành công!"
-                });
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine("CRITICAL ERROR ApplyDiscount: " + ex.ToString());
-                return Json(new { success = false, message = "Lỗi xử lý: " + ex.Message });
-            }
+            // Hàm này giữ nguyên để fallback, nhưng logic chính đã chuyển sang Ajax bên dưới
+            return Json(new { success = false, message = "Vui lòng sử dụng chức năng Ajax." });
         }
 
-        // POST: ApplyDiscountAjax (no anti-forgery) - temporary fallback for AJAX testing
+        // =========================================================================
+        // ĐÂY LÀ HÀM QUAN TRỌNG ĐÃ SỬA LẠI ĐỂ CHẠY AJAX
+        // =========================================================================
         [HttpPost]
-        public ActionResult ApplyDiscountAjax(string code)
+        [ValidateAntiForgeryToken]
+        public ActionResult ApplyDiscountAjax(string maGiamGia)
         {
             try
             {
-                // 1. Kiểm tra mã đầu vào
-                if (string.IsNullOrWhiteSpace(code))
+                if (string.IsNullOrWhiteSpace(maGiamGia))
                     return Json(new { success = false, message = "Vui lòng nhập mã giảm giá." });
 
-                // 2. Lấy giỏ hàng an toàn
-                var cartObj = Session["Cart"] as Cart;
-                if (cartObj == null || cartObj.list == null || !cartObj.list.Any())
-                    return Json(new { success = false, message = "Giỏ hàng đang trống!" });
+                var cart = Session["Cart"] as Cart;
+                if (cart == null || cart.list == null || !cart.list.Any())
+                    return Json(new { success = false, message = "Giỏ hàng đang trống." });
 
-                // 3. Chuyển đổi dữ liệu an toàn
-                var items = new List<CartItem>();
-                foreach (var x in cartObj.list)
-                {
-                    items.Add(new CartItem
-                    {
-                        MaSP = x.MaSP,
-                        SoLuong = x.SoLuong,
-                        DonGia = x.GiaBan != null ? Convert.ToDecimal(x.GiaBan) : 0m
-                    });
-                }
+                decimal tamTinh = cart.list.Sum(x => x.ThanhTien);
 
-                // 4. Tính tổng tiền tạm tính
-                decimal tamTinh = items.Sum(x => x.DonGia * x.SoLuong);
-
-                // 5. Gọi Service xử lý
                 var couponService = new CouponService(data);
-                decimal soTienGiam = 0m;
+                var coupon = couponService.GetValidCoupon(maGiamGia.Trim(), tamTinh);
 
-                try
-                {
-                    soTienGiam = couponService.CalculateDiscount(code.Trim(), items, tamTinh);
-                }
-                catch (Exception serviceEx)
-                {
-                    return Json(new { success = false, message = serviceEx.Message });
-                }
+                if (coupon == null)
+                    return Json(new { success = false, message = "Mã không hợp lệ hoặc chưa đủ điều kiện." });
 
-                if (soTienGiam <= 0)
-                {
-                    return Json(new { success = false, message = "Mã này không áp dụng được cho đơn hàng của bạn." });
-                }
+                // ===== TÍNH TIỀN GIẢM =====
+                decimal soTienGiam;
+                if (coupon.GiaTriGiam <= 100)
+                    soTienGiam = tamTinh * coupon.GiaTriGiam / 100;
+                else
+                    soTienGiam = coupon.GiaTriGiam;
 
-                Session["DiscountCode"] = code.Trim();
+                if (soTienGiam > tamTinh)
+                    soTienGiam = tamTinh;
+
+                // ===== LƯU SESSION (QUAN TRỌNG) =====
+                Session["Discount"] = coupon;
+                Session["DiscountCode"] = coupon.MaCode;
                 Session["DiscountAmount"] = soTienGiam;
 
-                decimal tongCongMoi = tamTinh - soTienGiam;
+                // ===== CHUẨN BỊ DỮ LIỆU TRẢ VỀ =====
+                string subTotalFormatted = tamTinh.ToString("N0") + "₫";
+                string discountAmountFormatted = soTienGiam.ToString("N0") + "₫";
+                string finalTotalFormatted = (tamTinh - soTienGiam).ToString("N0") + "₫";
 
-                return Json(new
-                {
-                    success = true,
-                    discountAmount = soTienGiam.ToString("N0") + "₫",
-                    newTotal = tongCongMoi.ToString("N0") + "₫",
-                    newSubTotal = tamTinh.ToString("N0") + "₫",
-                    message = "Áp dụng mã thành công!"
-                });
+                return Json(new { success = true, subTotalFormatted, discountAmountFormatted, finalTotalFormatted, discountCode = coupon.MaCode });
             }
-            catch (Exception ex)
+            catch
             {
-                System.Diagnostics.Debug.WriteLine("CRITICAL ERROR ApplyDiscountAjax: " + ex.ToString());
-                return Json(new { success = false, message = "Lỗi xử lý: " + ex.Message });
+                return Json(new { success = false, message = "Lỗi hệ thống. Vui lòng thử lại." });
             }
+        }
+
+
+        // Recalculate discount stored in session and pending DonHang when cart changes
+        private void RecalculateDiscount()
+        {
+            try
+            {
+                var code = Session["DiscountCode"] as string;
+                var cart = Session["Cart"] as Cart;
+                if (string.IsNullOrWhiteSpace(code) || cart == null || cart.list == null || !cart.list.Any())
+                {
+                    // No code or no cart -> clear discount
+                    Session["Discount"] = null;
+                    Session["DiscountAmount"] = null;
+                    Session["DiscountCode"] = null;
+                    return;
+                }
+
+                decimal tamTinh = cart.list.Sum(x => x.ThanhTien);
+                var couponService = new CouponService(data);
+                var coupon = couponService.GetValidCoupon(code.Trim(), tamTinh);
+                if (coupon == null)
+                {
+                    Session["Discount"] = null;
+                    Session["DiscountAmount"] = null;
+                    Session["DiscountCode"] = null;
+                    return;
+                }
+
+                decimal giaTri = coupon.GiaTriGiam;
+                decimal soTienGiam = 0m;
+                if (giaTri <= 100) soTienGiam = (tamTinh * giaTri) / 100; else soTienGiam = giaTri;
+                if (soTienGiam > tamTinh) soTienGiam = tamTinh;
+
+                Session["Discount"] = coupon;
+                Session["DiscountCode"] = coupon.MaCode;
+                Session["DiscountAmount"] = soTienGiam;
+
+                // If pending order exists, update it
+                if (Session["CurrentOrder"] != null)
+                {
+                    try
+                    {
+                        int maDH = (int)Session["CurrentOrder"];
+                        var hoaDon = data.DonHangs.FirstOrDefault(d => d.MaDH == maDH);
+                        if (hoaDon != null)
+                        {
+                            hoaDon.SoTienGiam = soTienGiam;
+                            hoaDon.TongTien = tamTinh - soTienGiam;
+                            hoaDon.MaKM = coupon.MaKM;
+                            data.Entry(hoaDon).State = System.Data.Entity.EntityState.Modified;
+                            data.SaveChanges();
+                        }
+                    }
+                    catch { /* ignore */ }
+                }
+            }
+            catch { /* ignore */ }
         }
     }
 }

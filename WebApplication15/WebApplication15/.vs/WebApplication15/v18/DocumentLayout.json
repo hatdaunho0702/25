@@ -3,67 +3,59 @@
   "WorkspaceRootPath": "D:\\25\\25\\WebApplication15\\WebApplication15\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\controllers\\chatcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\controllers\\chatcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\areas\\admin\\controllers\\khuyenmaiscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\controllers\\khuyenmaiscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\views\\giohang\\luuthongtinnhanhang.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\views\\giohang\\luuthongtinnhanhang.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\views\\giohang\\paymentreview.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\views\\giohang\\paymentreview.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\views\\giohang\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\views\\giohang\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\controllers\\giohangcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|D:\\25\\25\\WebApplication15\\WebApplication15\\webapplication15\\controllers\\giohangcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\controllers\\giohangcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\models\\giohang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\models\\giohang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|D:\\25\\25\\WebApplication15\\WebApplication15\\webapplication15\\views\\giohang\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\views\\giohang\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\models\\donhang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\models\\donhang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\models\\cart.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|D:\\25\\25\\WebApplication15\\WebApplication15\\webapplication15\\views\\giohang\\paymentreview.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\views\\giohang\\paymentreview.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|D:\\25\\25\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\controllers\\khuyenmaiscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\controllers\\khuyenmaiscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|D:\\25\\25\\WebApplication15\\WebApplication15\\webapplication15\\views\\giohang\\luuthongtinnhanhang.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\views\\giohang\\luuthongtinnhanhang.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|D:\\25\\25\\WebApplication15\\WebApplication15\\webapplication15\\models\\giohang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\models\\giohang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|D:\\25\\25\\WebApplication15\\WebApplication15\\webapplication15\\models\\cart.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\models\\cart.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\models\\cartitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|D:\\25\\25\\WebApplication15\\WebApplication15\\webapplication15\\models\\cartitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\models\\cartitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\models\\khuyenmai.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|D:\\25\\25\\WebApplication15\\WebApplication15\\webapplication15\\models\\khuyenmai.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\models\\khuyenmai.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\services\\couponservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\services\\couponservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\areas\\admin\\views\\khuyenmais\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|D:\\25\\25\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\views\\khuyenmais\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\views\\khuyenmais\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|D:\\25\\25\\WebApplication15\\WebApplication15\\webapplication15\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\areas\\admin\\views\\khuyenmais\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|D:\\25\\25\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\views\\khuyenmais\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\views\\khuyenmais\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|d:\\25\\25\\webapplication15\\webapplication15\\webapplication15\\areas\\admin\\views\\donhang\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|D:\\25\\25\\WebApplication15\\WebApplication15\\webapplication15\\areas\\admin\\views\\donhang\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{263C40A0-CD9E-4D6B-922D-EC277C81E546}|WebApplication15\\WebApplication15.csproj|solutionrelative:webapplication15\\areas\\admin\\views\\donhang\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
@@ -74,7 +66,7 @@
       "DocumentGroups": [
         {
           "DockedHeight": 239,
-          "SelectedChildIndex": 10,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Bookmark",
@@ -98,33 +90,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "KhuyenMaisController.cs",
-              "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Controllers\\KhuyenMaisController.cs",
-              "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Controllers\\KhuyenMaisController.cs",
-              "ToolTip": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Controllers\\KhuyenMaisController.cs",
-              "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Controllers\\KhuyenMaisController.cs",
-              "ViewState": "AgIAAP0AAAAAAAAAAAAuwAIBAAAfAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-25T14:27:33.142Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 2,
               "Title": "DonHang.cs",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Models\\DonHang.cs",
               "RelativeDocumentMoniker": "WebApplication15\\Models\\DonHang.cs",
               "ToolTip": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Models\\DonHang.cs",
               "RelativeToolTip": "WebApplication15\\Models\\DonHang.cs",
-              "ViewState": "AgIAAB0AAAAAAAAAAAA4wCoAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAB8AAAAAAAAAAAA5wCcAAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-25T14:26:40.173Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 8,
               "Title": "CartItem.cs",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Models\\CartItem.cs",
               "RelativeDocumentMoniker": "WebApplication15\\Models\\CartItem.cs",
@@ -132,8 +111,7 @@
               "RelativeToolTip": "WebApplication15\\Models\\CartItem.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-25T14:26:30.334Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-25T14:26:30.334Z"
             },
             {
               "$type": "Document",
@@ -145,57 +123,30 @@
               "RelativeToolTip": "WebApplication15\\Models\\GioHang.cs",
               "ViewState": "AgIAABcAAAAAAAAAAAAiwCkAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-25T13:23:19.394Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-25T13:23:19.394Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 0,
               "Title": "GioHangController.cs",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Controllers\\GioHangController.cs",
               "RelativeDocumentMoniker": "WebApplication15\\Controllers\\GioHangController.cs",
               "ToolTip": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Controllers\\GioHangController.cs",
               "RelativeToolTip": "WebApplication15\\Controllers\\GioHangController.cs",
-              "ViewState": "AgIAACEDAAAAAAAAAAAiwDADAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAJQAAAAAAAAAAAApwJ0AAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-25T12:13:53.453Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ChatController.cs",
-              "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Controllers\\ChatController.cs",
-              "RelativeDocumentMoniker": "WebApplication15\\Controllers\\ChatController.cs",
-              "ToolTip": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Controllers\\ChatController.cs",
-              "RelativeToolTip": "WebApplication15\\Controllers\\ChatController.cs",
-              "ViewState": "AgIAAEsAAAAAAAAAAAAqwGIAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-21T06:13:50.096Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "LuuThongTinNhanHang.cshtml",
-              "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\GioHang\\LuuThongTinNhanHang.cshtml",
-              "RelativeDocumentMoniker": "WebApplication15\\Views\\GioHang\\LuuThongTinNhanHang.cshtml",
-              "ToolTip": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\GioHang\\LuuThongTinNhanHang.cshtml",
-              "RelativeToolTip": "WebApplication15\\Views\\GioHang\\LuuThongTinNhanHang.cshtml",
-              "ViewState": "AgIAACUAAAAAAAAAAADwvzoAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-12-25T14:27:27.082Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 1,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\GioHang\\Index.cshtml",
               "RelativeDocumentMoniker": "WebApplication15\\Views\\GioHang\\Index.cshtml",
               "ToolTip": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\GioHang\\Index.cshtml",
               "RelativeToolTip": "WebApplication15\\Views\\GioHang\\Index.cshtml",
-              "ViewState": "AgIAAMAAAAAAAAAAAADwv9QAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAALQAAAAAAAAAAAAmwGUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-12-25T12:14:38.656Z",
               "EditorCaption": ""
@@ -208,14 +159,37 @@
               "RelativeDocumentMoniker": "WebApplication15\\Views\\GioHang\\PaymentReview.cshtml",
               "ToolTip": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\GioHang\\PaymentReview.cshtml",
               "RelativeToolTip": "WebApplication15\\Views\\GioHang\\PaymentReview.cshtml",
-              "ViewState": "AgIAAEMAAAAAAAAAAADwv1gAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAFgAAAAAAAAAAAAAwGsAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-12-25T12:51:54.296Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-25T12:51:54.296Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 4,
+              "Title": "KhuyenMaisController.cs",
+              "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Controllers\\KhuyenMaisController.cs",
+              "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Controllers\\KhuyenMaisController.cs",
+              "ToolTip": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Controllers\\KhuyenMaisController.cs",
+              "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Controllers\\KhuyenMaisController.cs",
+              "ViewState": "AgIAAP0AAAAAAAAAAAAuwAIBAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-25T14:27:33.142Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "LuuThongTinNhanHang.cshtml",
+              "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\GioHang\\LuuThongTinNhanHang.cshtml",
+              "RelativeDocumentMoniker": "WebApplication15\\Views\\GioHang\\LuuThongTinNhanHang.cshtml",
+              "ToolTip": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Views\\GioHang\\LuuThongTinNhanHang.cshtml",
+              "RelativeToolTip": "WebApplication15\\Views\\GioHang\\LuuThongTinNhanHang.cshtml",
+              "ViewState": "AgIAACUAAAAAAAAAAADwvzoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-25T14:27:27.082Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
               "Title": "KhuyenMai.cs",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Models\\KhuyenMai.cs",
               "RelativeDocumentMoniker": "WebApplication15\\Models\\KhuyenMai.cs",
@@ -223,25 +197,11 @@
               "RelativeToolTip": "WebApplication15\\Models\\KhuyenMai.cs",
               "ViewState": "AgIAAB0AAAAAAAAAAAAiwCoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-25T14:26:23.847Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-25T14:26:23.847Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "CouponService.cs",
-              "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Services\\CouponService.cs",
-              "RelativeDocumentMoniker": "WebApplication15\\Services\\CouponService.cs",
-              "ToolTip": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Services\\CouponService.cs",
-              "RelativeToolTip": "WebApplication15\\Services\\CouponService.cs",
-              "ViewState": "AgIAAJkAAAAAAAAAAAASwKUAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-25T13:03:35.927Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 10,
               "Title": "Create.cshtml",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\KhuyenMais\\Create.cshtml",
               "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Views\\KhuyenMais\\Create.cshtml",
@@ -249,12 +209,11 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\KhuyenMais\\Create.cshtml",
               "ViewState": "AgIAAMwAAAAAAAAAAAAiwNcAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-12-25T13:02:43.181Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-25T13:02:43.181Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 7,
               "Title": "Cart.cs",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Models\\Cart.cs",
               "RelativeDocumentMoniker": "WebApplication15\\Models\\Cart.cs",
@@ -262,12 +221,11 @@
               "RelativeToolTip": "WebApplication15\\Models\\Cart.cs",
               "ViewState": "AgIAAEkAAAAAAAAAAAAUwFkAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-25T14:07:10.3Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-25T14:07:10.3Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 11,
               "Title": "UserController.cs",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Controllers\\UserController.cs",
               "RelativeDocumentMoniker": "WebApplication15\\Controllers\\UserController.cs",
@@ -275,12 +233,11 @@
               "RelativeToolTip": "WebApplication15\\Controllers\\UserController.cs",
               "ViewState": "AgIAAJEBAAAAAAAAAAAswKQBAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-25T12:22:46.845Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-25T12:22:46.845Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 13,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\DonHang\\Index.cshtml",
               "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Views\\DonHang\\Index.cshtml",
@@ -288,12 +245,11 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\DonHang\\Index.cshtml",
               "ViewState": "AgIAAMsAAAAAAAAAAGBnwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-12-25T12:45:33.304Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-25T12:45:33.304Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 12,
               "Title": "Edit.cshtml",
               "DocumentMoniker": "D:\\25\\25\\WebApplication15\\WebApplication15\\WebApplication15\\Areas\\Admin\\Views\\KhuyenMais\\Edit.cshtml",
               "RelativeDocumentMoniker": "WebApplication15\\Areas\\Admin\\Views\\KhuyenMais\\Edit.cshtml",
@@ -301,8 +257,7 @@
               "RelativeToolTip": "WebApplication15\\Areas\\Admin\\Views\\KhuyenMais\\Edit.cshtml",
               "ViewState": "AgIAAF4AAAAAAAAAAADwv3IAAAAGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-12-25T13:03:15.51Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-25T13:03:15.51Z"
             }
           ]
         },

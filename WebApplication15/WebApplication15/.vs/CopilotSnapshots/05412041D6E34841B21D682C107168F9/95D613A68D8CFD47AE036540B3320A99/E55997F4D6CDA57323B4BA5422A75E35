@@ -1,0 +1,185 @@
+﻿@model WebApplication15.Models.Cart
+
+@{
+    ViewBag.Title = "Giỏ hàng";
+
+    decimal discountAmountDecimal = 0m;
+    if (Session["DiscountAmount"] != null)
+    {
+        try { discountAmountDecimal = Convert.ToDecimal(Session["DiscountAmount"]); }
+        catch { discountAmountDecimal = 0m; }
+    }
+
+    var discountCode = Session["DiscountCode"] as string ?? "";
+
+    decimal subTotalValue = Model.TongThanhTien();
+    decimal finalTotalValue = subTotalValue - discountAmountDecimal;
+    if (finalTotalValue < 0) { finalTotalValue = 0; }
+
+    bool hasDiscount = discountAmountDecimal > 0;
+
+    string subTotalFormatted = subTotalValue.ToString("N0") + "₫";
+    string discountAmountFormatted = discountAmountDecimal.ToString("N0") + "₫";
+    string finalTotalFormatted = finalTotalValue.ToString("N0") + "₫";
+}
+
+<div class="container py-5">
+    <div class="d-flex align-items-center mb-4">
+        <i class="bi bi-cart3 fs-3 me-2 text-primary"></i>
+        <h2 class="mb-0 fw-bold">Giỏ hàng của bạn (@Model.list.Count sản phẩm)</h2>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-3 mb-4">
+                <div class="card-body p-0">
+                    @if (Model.list.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="ps-4">Sản phẩm</th>
+                                        <th class="text-center">Giá</th>
+                                        <th class="text-center">Số lượng</th>
+                                        <th class="text-end">Thành tiền</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.list)
+                                    {
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center">
+                                                    <img src="@Url.Content("~/Content/images/" + item.AnhBia)"
+                                                         class="rounded border me-3"
+                                                         style="width:70px;height:70px;object-fit:cover;" />
+                                                    <div>
+                                                        <strong>@item.TenSP</strong><br />
+                                                        <small class="text-muted">Mã SP: @item.MaSP</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">@item.GiaBan.ToString("N0")₫</td>
+                                            <td class="text-center">
+                                                <a href="@Url.Action("UpdateSLCart","GioHang",new { id=item.MaSP, num=-1 })" class="btn btn-sm btn-outline-secondary">-</a>
+                                                <span class="mx-2">@item.SoLuong</span>
+                                                <a href="@Url.Action("UpdateSLCart","GioHang",new { id=item.MaSP, num=1 })" class="btn btn-sm btn-outline-secondary">+</a>
+                                            </td>
+                                            <td class="text-end fw-bold text-primary">@item.ThanhTien.ToString("N0")₫</td>
+                                            <td class="text-center">
+                                                <a href="@Url.Action("RemoveFromCart","GioHang",new { id=item.MaSP })"
+                                                   onclick="return confirm('Xóa sản phẩm?')"
+                                                   class="text-danger">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <p class="text-muted">Giỏ hàng trống</p>
+                            <a href="/" class="btn btn-primary">Mua sắm ngay</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm rounded-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tạm tính</span>
+                        <span id="subTotal">@subTotalFormatted</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2 text-success" id="discountRow" style="display:@(hasDiscount ? "flex" : "none")">
+                        <span>Voucher giảm</span>
+                        <span id="discountAmount">-@discountAmountFormatted</span>
+                    </div>
+
+                    <div class="input-group mb-2">
+                        <input id="couponCodeInput"
+                               class="form-control"
+                               placeholder="Mã giảm giá"
+                               value="@discountCode"
+                               @(hasDiscount ? "readonly" : "") />
+
+                        <button id="btnApplyCoupon"
+                                class="btn @(hasDiscount ? "btn-success" : "btn-outline-secondary")"
+                                @(hasDiscount ? "disabled" : "")>
+                            @(hasDiscount ? "Đã áp dụng" : "Áp dụng")
+                        </button>
+                    </div>
+
+                    <div id="couponMessage" class="small text-danger mb-2"></div>
+
+                    @Html.AntiForgeryToken()
+
+                    <hr />
+
+                    <div class="d-flex justify-content-between fw-bold fs-5">
+                        <span>Tổng cộng</span>
+                        <span class="text-primary" id="finalTotal">@finalTotalFormatted</span>
+                    </div>
+
+                    <a href="@Url.Action("PaymentConfirm","GioHang")"
+                       class="btn btn-primary w-100 mt-3 fw-bold">
+                        Thanh toán
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+$(document).ready(function () {
+
+    $('#btnApplyCoupon').on('click', function () {
+        let code = $('#couponCodeInput').val().trim();
+        let msg = $('#couponMessage');
+        let btn = $(this);
+
+        msg.text('').removeClass('text-danger text-success');
+
+        if (!code) {
+            msg.text('Vui lòng nhập mã giảm giá').addClass('text-danger');
+            return;
+        }
+
+        btn.prop('disabled', true).text('Đang áp dụng...');
+
+        $.ajax({
+            url: '/GioHang/ApplyDiscountAjax',
+            type: 'POST',
+            data: {
+                maGiamGia: code,
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function (res) {
+                console.log('ApplyDiscountAjax response:', res);
+
+                if (res.success === true) {
+                    // 🔥 LOAD LẠI TRANG ĐỂ VIEW TÍNH LẠI ViewBag
+                    window.location.href = '@Url.Action("Index", "GioHang")';
+                } else {
+                    msg.text(res.message).addClass('text-danger');
+                    btn.prop('disabled', false).text('Áp dụng');
+                }
+            },
+            error: function () {
+                msg.text('Lỗi kết nối máy chủ').addClass('text-danger');
+                btn.prop('disabled', false).text('Áp dụng');
+            }
+        });
+    });
+
+});
+</script>
