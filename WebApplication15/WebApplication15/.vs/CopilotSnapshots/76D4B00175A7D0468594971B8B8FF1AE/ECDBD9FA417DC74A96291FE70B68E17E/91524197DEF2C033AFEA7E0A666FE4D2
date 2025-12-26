@@ -1,0 +1,120 @@
+﻿@model WebApplication15.Models.Cart
+@{
+    ViewBag.Title = "Xác nhận và Thanh toán";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // 1. Khai báo biến (Để trống để tránh lỗi code đỏ CS1061)
+    string tenSan = "";
+    string sdtSan = "";
+    string diaChiSan = "";
+
+    // 2. LOGIC TÍNH TIỀN (Lấy lại từ Session để hiển thị đúng số tiền đã giảm)
+    decimal subTotal = 0m;
+    decimal discount = 0m;
+
+    if (Model != null)
+    {
+        subTotal = Model.TongThanhTien();
+    }
+
+    if (Session["DiscountAmount"] != null)
+    {
+        decimal.TryParse(Session["DiscountAmount"].ToString(), out discount);
+    }
+
+    decimal finalTotal = subTotal - discount;
+    if (finalTotal < 0) { finalTotal = 0; }
+}
+
+<div class="container py-5">
+    <h2 class="text-center mb-4">Xác nhận đơn hàng</h2>
+
+    @using (Html.BeginForm("PaymentConfirm", "GioHang", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">1. Thông tin giao hàng</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Họ và tên (*)</label>
+                            <input type="text" name="tenNguoiNhan" class="form-control" value="@tenSan" required placeholder="Nhập họ tên người nhận" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Số điện thoại (*)</label>
+                            <input type="text" name="soDienThoai" class="form-control" value="@sdtSan" required placeholder="Nhập số điện thoại" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Địa chỉ nhận hàng (*)</label>
+                            <textarea name="diaChi" class="form-control" rows="3" required placeholder="Số nhà, đường, phường, quận...">@diaChiSan</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Ghi chú</label>
+                            <textarea name="ghiChu" class="form-control" placeholder="Ghi chú thêm (tùy chọn)"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">2. Đơn hàng của bạn</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model != null && Model.list != null)
+                        {
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Sản phẩm</th>
+                                        <th>SL</th>
+                                        <th class="text-end">Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.list)
+                                    {
+                                        <tr>
+                                            <td>@item.TenSP</td>
+                                            <td>@item.SoLuong</td>
+                                            <td class="text-end">@item.ThanhTien.ToString("N0")₫</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            <hr />
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Tạm tính:</span>
+                                <span>@subTotal.ToString("N0")₫</span>
+                            </div>
+
+                            @* SỬA LỖI Ở ĐÂY: Bỏ ký tự @ trước chữ if vì đang nằm trong khối code cha *@
+                            if (discount > 0)
+                            {
+                                <div class="d-flex justify-content-between mb-2 text-success">
+                                    <span>Voucher giảm:</span>
+                                    <span>-@discount.ToString("N0")₫</span>
+                                </div>
+                            }
+
+                            <div class="d-flex justify-content-between fs-4 fw-bold text-danger border-top pt-2">
+                                <span>Tổng thanh toán:</span>
+                                <span>@finalTotal.ToString("N0")₫</span>
+                            </div>
+                        }
+
+                        <button type="submit" class="btn btn-success w-100 mt-4 btn-lg" onclick="return confirm('Xác nhận đặt hàng?');">
+                            <i class="bi bi-check-circle-fill me-2"></i> XÁC NHẬN ĐẶT HÀNG
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

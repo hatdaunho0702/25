@@ -1,21 +1,43 @@
-﻿@{
-    ViewBag.Title = "Thanh toán thành công";
+﻿@model dynamic
+@{
+    ViewBag.Title = "Đặt hàng thành công";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="text-center mt-5">
-    <h2 class="text-success fw-bold mb-4">✅ Thanh toán thành công!</h2>
-    <p>Cảm ơn bạn đã mua hàng tại <strong>SkinFood</strong>.</p>
-    <p>Đơn hàng của bạn đang được xử lý và sẽ được giao sớm nhất có thể.</p>
+<div class="container text-center py-5" style="margin-top: 50px;">
+    <div class="mb-4">
+        <i class="bi bi-check-circle-fill text-success" style="font-size: 80px;"></i>
+    </div>
+
+    <h2 class="text-success fw-bold">ĐẶT HÀNG THÀNH CÔNG!</h2>
 
     @if (ViewBag.MaDH != null)
     {
-        <div class="alert alert-info mt-4">
-            <p><strong>Mã đơn hàng:</strong> #@ViewBag.MaDH</p>
-        </div>
+        <p class="fs-5">Mã đơn hàng của bạn: <strong>#@ViewBag.MaDH</strong></p>
     }
 
-    <a href="@Url.Action("Index", "Home")" class="btn btn-primary mt-4">
-        Quay lại Trang chủ
-    </a>
+    <p class="text-muted">Cảm ơn bạn đã mua sắm tại SkinFood.</p>
+
+    <div class="alert alert-info d-inline-block mt-3">
+        Tự động về trang chủ trong <span id="countdown" class="fw-bold text-danger">5</span> giây...
+    </div>
+
+    <div class="mt-4">
+        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Quay về trang chủ ngay</a>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        var seconds = 5;
+        var element = document.getElementById("countdown");
+        var interval = setInterval(function() {
+            seconds--;
+            element.textContent = seconds;
+            if (seconds <= 0) {
+                clearInterval(interval);
+                window.location.href = "@Url.Action("Index", "Home")";
+            }
+        }, 1000);
+    </script>
+}

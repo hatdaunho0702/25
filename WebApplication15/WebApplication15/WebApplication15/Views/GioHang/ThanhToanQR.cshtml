@@ -1,23 +1,29 @@
 ﻿@model WebApplication15.Models.DonHang
+@{
+    ViewBag.Title = "Thanh toán QR";
+}
 
-<h2 class="text-center mb-3">Thanh toán bằng QR</h2>
+<div class="container py-5">
+    <h2 class="text-center mb-4">Thanh toán bằng QR</h2>
 
-<div class="card p-4 shadow">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <h5 class="mb-3">Quét mã QR</h5>
+                    <img src="~/Content/images/QR.jpg" style="max-width:250px;" class="img-fluid mb-3" />
 
-    <h5>Quét mã QR để thanh toán</h5>
+                    <hr />
 
-    <img src="~/Content/images/QR.jpg" style="width:250px" class="mx-auto d-block" />
+                    <p><b>Số tiền:</b> <span class="text-danger">@Model.TongTien.Value.ToString("N0") đ</span></p>
+                    <p><b>Mã đơn:</b> #@Model.MaDH</p>
 
-    <hr />
-
-    <p><b>Số tiền:</b> @Model.TongTien.Value.ToString("N0") đ</p>
-    
-    <!-- Debug info -->
-    @*<p style="font-size: 12px; color: #999;">
-        Debug: MaDH = @Model.MaDH | TrangThaiThanhToan = "@(Model.TrangThaiThanhToan ?? "null")"
-    </p>*@
-
-    <a href="@Url.Action("ConfirmPaymentComplete", new { maDH = Model.MaDH })" class="btn btn-primary mt-3">
-        Tôi đã thanh toán
-    </a>
+                    <a href="@Url.Action("ConfirmPaymentComplete", "GioHang", new { maDH = Model.MaDH })"
+                       class="btn btn-primary w-100 mt-3">
+                        Tôi đã thanh toán
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

@@ -1,0 +1,201 @@
+﻿@model WebApplication15.Models.Cart
+@{
+    ViewBag.Title = "Xác nhận thanh toán";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // Lấy thông tin giảm giá từ Session
+    decimal discountAmount = 0m;
+    var discObj = Session["DiscountAmount"];
+    if (discObj != null)
+    {
+        try
+        {
+            discountAmount = Convert.ToDecimal(discObj);
+        }
+        catch
+        {
+            discountAmount = 0m;
+        }
+    }
+
+    var discountCode = Session["DiscountCode"] as string ?? String.Empty;
+
+    // Tính toán
+    decimal subTotal = 0m;
+    decimal finalTotal = 0m;
+
+    if (Model != null && Model.list != null && Model.list.Any())
+    {
+        subTotal = Model.TongThanhTien();
+        finalTotal = subTotal - discountAmount;
+        if (finalTotal < 0) { finalTotal = 0; }
+    }
+}
+
+<div class="container py-4">
+    <h2 class="mb-4 text-center text-primary">
+        <i class="bi bi-clipboard-check me-2"></i>Xác nhận Thanh toán
+    </h2>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (Model.list == null || Model.list.Count == 0)
+    {
+        <div class="alert alert-warning text-center">
+            <i class="bi bi-cart-x fs-1 d-block mb-3"></i>
+            <p>Không có sản phẩm trong giỏ hàng.</p>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-primary">
+                <i class="bi bi-house-door me-2"></i>Quay lại Trang chủ
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <!-- Danh sách sản phẩm -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="bi bi-bag-check me-2"></i>Sản phẩm trong đơn hàng
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">Sản phẩm</th>
+                                        <th class="text-center">Giá</th>
+                                        <th class="text-center">Số lượng</th>
+                                        <th class="text-end pe-4">Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.list)
+                                    {
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center">
+                                                    <img src="@Url.Content("~/Content/images/" + item.AnhBia)"
+                                                         class="rounded me-3"
+                                                         style="width:60px;height:60px;object-fit:cover;"
+                                                         alt="@item.TenSP" />
+                                                    <div>
+                                                        <strong>@item.TenSP</strong><br />
+                                                        <small class="text-muted">Mã: @item.MaSP</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">@item.GiaBan.ToString("N0")₫</td>
+                                            <td class="text-center">
+                                                <span class="badge bg-secondary">@item.SoLuong</span>
+                                            </td>
+                                            <td class="text-end pe-4 fw-bold text-primary">
+                                                @item.ThanhTien.ToString("N0")₫
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nút quay lại giỏ hàng -->
+                <a href="@Url.Action("Index", "GioHang")" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Quay lại Giỏ hàng
+                </a>
+            </div>
+
+            <!-- Tóm tắt đơn hàng -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm sticky-top" style="top: 20px;">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-receipt me-2"></i>Tóm tắt đơn hàng
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Tổng tiền hàng -->
+                        <div class="d-flex justify-content-between mb-3 pb-2 border-bottom">
+                            <span>Tổng tiền hàng:</span>
+                            <span class="fw-bold">@subTotal.ToString("N0")₫</span>
+                        </div>
+
+                        <!-- Phí vận chuyển -->
+                        <div class="d-flex justify-content-between mb-3 pb-2 border-bottom">
+                            <span>Phí vận chuyển:</span>
+                            <span class="fw-bold text-success">Miễn phí</span>
+                        </div>
+
+                        <!-- Voucher giảm giá (nếu có) -->
+                        @if (discountAmount > 0)
+                        {
+                            <div class="d-flex justify-content-between mb-3 pb-2 border-bottom">
+                                <div>
+                                    <span>Voucher giảm giá</span><br />
+                                    <small class="text-success">
+                                        <i class="bi bi-tag-fill me-1"></i>@discountCode
+                                    </small>
+                                </div>
+                                <span class="fw-bold text-success">-@discountAmount.ToString("N0")₫</span>
+                            </div>
+                        }
+
+                        <!-- Tổng cộng -->
+                        <div class="bg-light p-3 rounded mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fs-5 fw-bold">TỔNG CỘNG:</span>
+                                <span class="fs-4 fw-bold text-danger">@finalTotal.ToString("N0")₫</span>
+                            </div>
+                        </div>
+
+                        <!-- Nút xác nhận -->
+                        <a href="@Url.Action("PaymentConfirm", "GioHang")"
+                           class="btn btn-success w-100 btn-lg mb-2">
+                            <i class="bi bi-check-circle me-2"></i>Xác nhận thanh toán
+                        </a>
+
+                        <!-- Thông tin bảo mật -->
+                        <div class="text-center mt-3">
+                            <small class="text-muted">
+                                <i class="bi bi-shield-check me-1"></i>
+                                Giao dịch được bảo mật và mã hóa
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .card {
+        border: none;
+        border-radius: 10px;
+    }
+
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+
+    @@media (max-width: 991px) {
+        .sticky-top {
+            position: relative !important;
+            top: 0 !important;
+        }
+    }
+</style>

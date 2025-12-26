@@ -1,0 +1,132 @@
+﻿@model WebApplication15.Models.Cart
+@{
+    ViewBag.Title = "Giỏ hàng";
+
+    // KHAI BÁO BIẾN C# NGAY ĐẦU FILE
+    decimal subTotalValue = 0m;
+    decimal discountAmountDecimal = 0m;
+
+    if (Model != null)
+    {
+        subTotalValue = Model.TongThanhTien();
+    }
+
+    if (Session["DiscountAmount"] != null)
+    {
+        decimal.TryParse(Session["DiscountAmount"].ToString(), out discountAmountDecimal);
+    }
+
+    decimal finalTotalValue = subTotalValue - discountAmountDecimal;
+    if (finalTotalValue < 0) { finalTotalValue = 0; }
+
+    bool hasDiscount = discountAmountDecimal > 0;
+
+    string subTotalFormatted = subTotalValue.ToString("N0") + "₫";
+    string discountAmountFormatted = discountAmountDecimal.ToString("N0") + "₫";
+    string finalTotalFormatted = finalTotalValue.ToString("N0") + "₫";
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger mt-3">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        @TempData["Error"]
+    </div>
+}
+
+<div class="container py-5">
+    <div class="d-flex align-items-center mb-4">
+        <i class="bi bi-cart3 fs-3 me-2 text-primary"></i>
+        <h2 class="mb-0 fw-bold">Giỏ hàng của bạn (@(Model != null ? Model.list.Count : 0) sản phẩm)</h2>
+    </div>
+
+    @if (Model == null || Model.list.Count == 0)
+    {
+        <div class="alert alert-warning text-center">
+            <p>Giỏ hàng đang trống.</p>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Mua sắm ngay</a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-3 mb-4">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="ps-4">Sản phẩm</th>
+                                        <th class="text-center">Giá</th>
+                                        <th class="text-center">Số lượng</th>
+                                        <th class="text-end pe-4">Thành tiền</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.list)
+                                    {
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center">
+                                                    <img src="@Url.Content("~/Content/HinhAnhSP/" + item.AnhBia)" alt="@item.TenSP" class="img-fluid" />
+                                                    <div>
+                                                        <strong>@item.TenSP</strong><br />
+                                                        <small class="text-muted">Mã: @item.MaSP</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">@item.GiaBan.ToString("N0")₫</td>
+                                            <td class="text-center">
+                                                <a href="@Url.Action("UpdateSLCart", "GioHang", new { id = item.MaSP, num = -1 })" class="btn btn-sm btn-outline-secondary">-</a>
+                                                <span class="mx-2">@item.SoLuong</span>
+                                                <a href="@Url.Action("UpdateSLCart", "GioHang", new { id = item.MaSP, num = 1 })" class="btn btn-sm btn-outline-secondary">+</a>
+                                            </td>
+                                            <td class="text-end pe-4 fw-bold">@item.ThanhTien.ToString("N0")₫</td>
+                                            <td>
+                                                <a href="@Url.Action("RemoveFromCart", "GioHang", new { id = item.MaSP })" class="text-danger" onclick="return confirm('Xóa sản phẩm này?')"><i class="bi bi-trash"></i></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm rounded-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Tạm tính</span>
+                            <span>@subTotalFormatted</span>
+                        </div>
+                        @if (hasDiscount)
+                        {
+                            <div class="d-flex justify-content-between mb-2 text-success">
+                                <span>Giảm giá</span>
+                                <span>-@discountAmountFormatted</span>
+                            </div>
+                        }
+                        <hr />
+                        <div class="d-flex justify-content-between fw-bold fs-5 mb-4">
+                            <span>Tổng cộng</span>
+                            <span class="text-primary">@finalTotalFormatted</span>
+                        </div>
+                        <a href="@Url.Action("PaymentReview", "GioHang")" class="btn btn-primary w-100 fw-bold">Thanh toán</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="voucher-section mb-5">
+        <form method="post" action="@Url.Action("ApplyDiscountAjax", "GioHang")" id="apply-discount-form">
+            <div class="input-group">
+                <input type="text" name="maGiamGia" class="form-control" placeholder="Nhập mã giảm giá" />
+                <button type="submit" class="btn btn-primary">Áp dụng</button>
+            </div>
+        </form>
+    </div>
+</div>

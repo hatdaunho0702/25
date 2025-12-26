@@ -1,0 +1,118 @@
+﻿using System;
+using System.Linq;
+using System.Text;
+using System.Web.Mvc;
+using WebApplication15.Models;
+using System.Data.Entity;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using WebApplication15.Areas.Admin.Data;
+
+namespace WebApplication15.Areas.Admin.Controllers
+{
+    [AuthorizeAdmin]
+    public class BaoCaoController : Controller
+    {
+        private DB_SkinFood1Entities db = new DB_SkinFood1Entities();
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) db?.Dispose();
+            base.Dispose(disposing);
+        }
+
+        // GET: Admin/BaoCao/DoanhThuChiTiet
+        // Optional query: from, to, export=csv
+        public ActionResult DoanhThuChiTiet(DateTime? from, DateTime? to, string export = null)
+        {
+            try
+            {
+                // Match status values used elsewhere in the app
+                var paidStatuses = new[] { "Đã thanh toán", "Paid" };
+                DateTime fromDate = from ?? DateTime.Now.AddMonths(-1);
+                DateTime toDate = to ?? DateTime.Now;
+                // normalize end of day
+                toDate = toDate.Date.AddDays(1).AddSeconds(-1);
+
+                // Attempt to select only paid orders first
+                var paidQuery = db.DonHangs.Where(d => d.NgayDat >= fromDate && d.NgayDat <= toDate && paidStatuses.Contains(d.TrangThaiThanhToan));
+
+                bool showingPaid = paidQuery.Any();
+                IQueryable<DonHang> orderQuery = showingPaid ? paidQuery : db.DonHangs.Where(d => d.NgayDat >= fromDate && d.NgayDat <= toDate);
+
+                decimal totalRevenue = orderQuery.Sum(d => (decimal?)d.TongTien) ?? 0m;
+                int totalOrders = orderQuery.Count();
+
+                // Doanh thu theo ngày
+                var doanhThuTheoNgayRaw = orderQuery
+                    .GroupBy(d => DbFunctions.TruncateTime(d.NgayDat))
+                    .Select(g => new { Date = g.Key, Total = g.Sum(x => (decimal?)x.TongTien) ?? 0m })
+                    .OrderBy(x => x.Date)
+                    .ToList();
+
+                var doanhThuTheoNgay = doanhThuTheoNgayRaw
+                    .Select(x => new { Date = x.Date.HasValue ? x.Date.Value.ToString("yyyy-MM-dd") : null, Total = x.Total })
+                    .ToList();
+
+                // Use same orderQuery for detail grouping
+                var productRevenue = db.ChiTietDonHangs
+                    .Where(ct => ct.DonHang.NgayDat >= fromDate && ct.DonHang.NgayDat <= toDate && (showingPaid ? paidStatuses.Contains(ct.DonHang.TrangThaiThanhToan) : true))
+                    .GroupBy(ct => new { ct.MaSP, TenSP = ct.SanPham.TenSP })
+                    .Select(g => new
+                    {
+                        MaSP = g.Key.MaSP,
+                        TenSP = g.Key.TenSP,
+                        Quantity = g.Sum(x => (int?)(x.SoLuong ?? 0)) ?? 0,
+                        Revenue = g.Sum(x => (decimal?)((x.DonGia ?? 0m) * (x.SoLuong ?? 0))) ?? 0m
+                    })
+                    .OrderByDescending(x => x.Revenue)
+                    .ToList();
+
+                var categoryRevenue = db.ChiTietDonHangs
+                    .Where(ct => ct.DonHang.NgayDat >= fromDate && ct.DonHang.NgayDat <= toDate && (showingPaid ? paidStatuses.Contains(ct.DonHang.TrangThaiThanhToan) : true))
+                    .GroupBy(ct => new { MaDM = ct.SanPham.MaDM, TenDM = ct.SanPham.DanhMuc.TenDM })
+                    .Select(g => new
+                    {
+                        MaDM = g.Key.MaDM,
+                        TenDM = g.Key.TenDM,
+                        Quantity = g.Sum(x => (int?)(x.SoLuong ?? 0)) ?? 0,
+                        Revenue = g.Sum(x => (decimal?)((x.DonGia ?? 0m) * (x.SoLuong ?? 0))) ?? 0m
+                    })
+                    .OrderByDescending(x => x.Revenue)
+                    .ToList();
+
+                // If export requested, return CSV of product revenue
+                if (!string.IsNullOrEmpty(export) && export.Equals("csv", StringComparison.OrdinalIgnoreCase))
+                {
+                    var sb = new StringBuilder();
+                    sb.AppendLine("MaSP,TenSP,Quantity,Revenue");
+                    foreach (var p in productRevenue)
+                    {
+                        var line = string.Format("{0},\"{1}\",{2},{3}", p.MaSP, p.TenSP?.Replace("\"", "\"\"") ?? "", p.Quantity, p.Revenue);
+                        sb.AppendLine(line);
+                    }
+                    var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+                    return File(bytes, "text/csv; charset=utf-8", $"doanhthu_sanpham_{fromDate:yyyyMMdd}_{toDate:yyyyMMdd}.csv");
+                }
+
+                // Prepare JSON for charts
+                ViewBag.LabelsByDay = JsonConvert.SerializeObject(doanhThuTheoNgay.Select(x => x.Date));
+                ViewBag.DataByDay = JsonConvert.SerializeObject(doanhThuTheoNgay.Select(x => x.Total));
+                ViewBag.ProductRevenue = productRevenue;
+                ViewBag.CategoryRevenue = categoryRevenue;
+                ViewBag.TotalRevenue = totalRevenue;
+                ViewBag.TotalOrders = totalOrders;
+                ViewBag.From = fromDate.ToString("yyyy-MM-dd");
+                ViewBag.To = toDate.ToString("yyyy-MM-dd");
+                ViewBag.ShowingPaid = showingPaid;
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Lỗi khi tạo báo cáo: " + ex.Message;
+                return RedirectToAction("Index", "Dashboard");
+            }
+        }
+    }
+}

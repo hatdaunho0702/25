@@ -130,6 +130,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\BaoCaoController.cs" />
     <Compile Include="Areas\Admin\Controllers\DanhGiasController.cs" />
     <Compile Include="Areas\Admin\Controllers\DashboardController.cs" />
     <Compile Include="Areas\Admin\Controllers\DonHangController.cs" />
@@ -145,6 +146,7 @@
     <Compile Include="Areas\Admin\Controllers\ThuongHieuController.cs" />
     <Compile Include="Areas\Admin\Data\AuthorizeAdmin.cs" />
     <Compile Include="Areas\Admin\Data\TaiKhoanCreateVM.cs" />
+    <Compile Include="Areas\Admin\Models\RevenueViewModels.cs" />
     <Compile Include="Areas\Admin\Models\SanPhamCanhBaoViewModel.cs" />
     <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Controllers\GioHangController.cs" />
@@ -335,6 +337,7 @@
     <Content Include="Models\DB_SkinFood1.edmx.diagram">
       <DependentUpon>DB_SkinFood1.edmx</DependentUpon>
     </Content>
+    <Content Include="Areas\Admin\Views\BaoCao\DoanhThuChiTiet.cshtml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -399,7 +402,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Areas\Admin\Views\BaoCao\" />
     <Folder Include="Content\images\avatars\" />
   </ItemGroup>
   <ItemGroup>

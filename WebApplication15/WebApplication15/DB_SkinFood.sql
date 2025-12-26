@@ -232,7 +232,8 @@ BEGIN
 END
 GO
 -- Trigger Bán Hàng
-ALTER TRIGGER trg_CapNhatKho_BanHang ON ChiTietDonHangs 
+CREATE TRIGGER trg_CapNhatKho_BanHang
+ON ChiTietDonHangs  -- <--- QUAN TRỌNG: Phải thêm dòng này để biết trigger gắn vào bảng nào
 AFTER INSERT AS
 BEGIN
     SET NOCOUNT ON;
@@ -245,14 +246,13 @@ BEGIN
 
     -- 2. KIỂM TRA NGAY LẬP TỨC: Nếu có sản phẩm nào bị âm kho -> Hủy và Báo lỗi
     IF EXISTS (SELECT 1 FROM SanPham WHERE SoLuongTon < 0)
-    
+    BEGIN
         ROLLBACK TRANSACTION; -- Hủy lệnh Insert ChiTietDonHang vừa rồi
         RAISERROR (N'Lỗi: Sản phẩm đã hết hàng hoặc không đủ số lượng tồn kho!', 16, 1);
         RETURN;
-    
+    END
 END
 GO
-
 -- Trigger dành cho Xuất Kho Nội Bộ (Áp dụng cho bảng ChiTietPhieuXuats)
 CREATE TRIGGER trg_CapNhatKho_XuatKhoNoiBo ON ChiTietPhieuXuat
 AFTER INSERT, UPDATE, DELETE AS

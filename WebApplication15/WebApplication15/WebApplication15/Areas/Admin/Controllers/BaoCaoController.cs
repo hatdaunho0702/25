@@ -1,0 +1,136 @@
+using System;
+using System.Linq;
+using System.Text;
+using System.Web.Mvc;
+using WebApplication15.Models;
+using System.Data.Entity;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using WebApplication15.Areas.Admin.Data;
+using WebApplication15.Areas.Admin.Models;
+
+namespace WebApplication15.Areas.Admin.Controllers
+{
+    [AuthorizeAdmin]
+    public class BaoCaoController : Controller
+    {
+        private DB_SkinFood1Entities db = new DB_SkinFood1Entities();
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) db?.Dispose();
+            base.Dispose(disposing);
+        }
+
+        // GET: Admin/BaoCao/DoanhThuChiTiet
+        // Added optional `paidOnly` parameter. Default = false to show data by default.
+        public ActionResult DoanhThuChiTiet(DateTime? from, DateTime? to, string export = null, bool? paidOnly = null)
+        {
+            try
+            {
+                var paidStatuses = new[] { "Ð? thanh toán", "Paid" };
+                DateTime fromDate = from ?? DateTime.Now.AddMonths(-1);
+                DateTime toDate = to ?? DateTime.Now;
+                toDate = toDate.Date.AddDays(1).AddSeconds(-1);
+
+                // Determine whether to filter to paid orders. Default to include all (show data) when not specified.
+                bool filterPaid = paidOnly ?? false;
+
+                IQueryable<DonHang> orderQuery;
+                bool showingPaid = false;
+
+                if (filterPaid)
+                {
+                    // Use only paid orders
+                    orderQuery = db.DonHangs.Where(d => d.NgayDat >= fromDate && d.NgayDat <= toDate && paidStatuses.Contains(d.TrangThaiThanhToan));
+                    showingPaid = true;
+                }
+                else
+                {
+                    // Include all orders in range to ensure report shows data by default
+                    orderQuery = db.DonHangs.Where(d => d.NgayDat >= fromDate && d.NgayDat <= toDate);
+                    showingPaid = false;
+                }
+
+                decimal totalRevenue = orderQuery.Sum(d => (decimal?)d.TongTien) ?? 0m;
+                int totalOrders = orderQuery.Count();
+
+                var doanhThuTheoNgayRaw = orderQuery
+                    .GroupBy(d => DbFunctions.TruncateTime(d.NgayDat))
+                    .Select(g => new { Date = g.Key, Total = g.Sum(x => (decimal?)x.TongTien) ?? 0m })
+                    .OrderBy(x => x.Date)
+                    .ToList();
+
+                var doanhThuTheoNgay = doanhThuTheoNgayRaw
+                    .Select(x => new { Date = x.Date.HasValue ? x.Date.Value.ToString("yyyy-MM-dd") : null, Total = x.Total })
+                    .ToList();
+
+                var productRevenueQuery = db.ChiTietDonHangs.Where(ct => ct.DonHang.NgayDat >= fromDate && ct.DonHang.NgayDat <= toDate);
+                if (filterPaid)
+                {
+                    productRevenueQuery = productRevenueQuery.Where(ct => paidStatuses.Contains(ct.DonHang.TrangThaiThanhToan));
+                }
+
+                var productRevenue = productRevenueQuery
+                    .GroupBy(ct => new { ct.MaSP, TenSP = ct.SanPham.TenSP })
+                    .Select(g => new ProductRevenueVM
+                    {
+                        MaSP = g.Key.MaSP,
+                        TenSP = g.Key.TenSP,
+                        Quantity = g.Sum(x => (int?)(x.SoLuong ?? 0)) ?? 0,
+                        Revenue = g.Sum(x => (decimal?)((x.DonGia ?? 0m) * (x.SoLuong ?? 0))) ?? 0m
+                    })
+                    .OrderByDescending(x => x.Revenue)
+                    .ToList();
+
+                var categoryRevenueQuery = db.ChiTietDonHangs.Where(ct => ct.DonHang.NgayDat >= fromDate && ct.DonHang.NgayDat <= toDate);
+                if (filterPaid)
+                {
+                    categoryRevenueQuery = categoryRevenueQuery.Where(ct => paidStatuses.Contains(ct.DonHang.TrangThaiThanhToan));
+                }
+
+                var categoryRevenue = categoryRevenueQuery
+                    .GroupBy(ct => new { MaDM = ct.SanPham.MaDM, TenDM = ct.SanPham.DanhMuc.TenDM })
+                    .Select(g => new CategoryRevenueVM
+                    {
+                        MaDM = g.Key.MaDM ?? 0,
+                        TenDM = g.Key.TenDM,
+                        Quantity = g.Sum(x => (int?)(x.SoLuong ?? 0)) ?? 0,
+                        Revenue = g.Sum(x => (decimal?)((x.DonGia ?? 0m) * (x.SoLuong ?? 0))) ?? 0m
+                    })
+                    .OrderByDescending(x => x.Revenue)
+                    .ToList();
+
+                if (!string.IsNullOrEmpty(export) && export.Equals("csv", StringComparison.OrdinalIgnoreCase))
+                {
+                    var sb = new StringBuilder();
+                    sb.AppendLine("MaSP,TenSP,Quantity,Revenue");
+                    foreach (var p in productRevenue)
+                    {
+                        var line = string.Format("{0},\"{1}\",{2},{3}", p.MaSP, p.TenSP?.Replace("\"", "\"\"") ?? "", p.Quantity, p.Revenue);
+                        sb.AppendLine(line);
+                    }
+                    var bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+                    return File(bytes, "text/csv; charset=utf-8", $"doanhthu_sanpham_{fromDate:yyyyMMdd}_{toDate:yyyyMMdd}.csv");
+                }
+
+                ViewBag.LabelsByDay = JsonConvert.SerializeObject(doanhThuTheoNgay.Select(x => x.Date));
+                ViewBag.DataByDay = JsonConvert.SerializeObject(doanhThuTheoNgay.Select(x => x.Total));
+                ViewBag.ProductRevenue = productRevenue;
+                ViewBag.CategoryRevenue = categoryRevenue;
+                ViewBag.TotalRevenue = totalRevenue;
+                ViewBag.TotalOrders = totalOrders;
+                ViewBag.From = fromDate.ToString("yyyy-MM-dd");
+                ViewBag.To = toDate.ToString("yyyy-MM-dd");
+                ViewBag.ShowingPaid = showingPaid;
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "L?i khi t?o báo cáo: " + ex.Message;
+                return RedirectToAction("Index", "Dashboard");
+            }
+        }
+    }
+}

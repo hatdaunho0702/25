@@ -1,0 +1,169 @@
+﻿@using System.Text
+@{
+    // Force UTF-8 response for this view to avoid mojibake when file encoding is correct
+    Response.ContentEncoding = Encoding.UTF8;
+    Response.Charset = "utf-8";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Báo cáo doanh thu chi tiết";
+}
+
+<div class="container py-4">
+    <!-- Debug panel: shows raw data used to render charts/tables -->
+    <div class="card mb-3 p-3 bg-light">
+        <strong>Debug info:</strong>
+        <div class="small text-muted">LabelsByDay / DataByDay / ProductCount / CategoryCount / ShowingPaid</div>
+        <pre style="white-space:pre-wrap; word-break:break-word;">Labels: @Html.Raw(ViewBag.LabelsByDay ?? "[]")
+Data: @Html.Raw(ViewBag.DataByDay ?? "[]")
+Products: @(ViewBag.ProductRevenue != null ? ((IEnumerable<dynamic>)ViewBag.ProductRevenue).Count().ToString() : "0")
+Categories: @(ViewBag.CategoryRevenue != null ? ((IEnumerable<dynamic>)ViewBag.CategoryRevenue).Count().ToString() : "0")
+ShowingPaid: @(ViewBag.ShowingPaid ?? false)
+</pre>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="mb-0">Báo cáo doanh thu chi tiết</h3>
+        <div>
+            <a href="@Url.Action("DoanhThuChiTiet", "BaoCao", new { area = "Admin", from = ViewBag.From, to = ViewBag.To, export = "csv" })" class="btn btn-outline-secondary">Xuất CSV</a>
+        </div>
+    </div>
+
+    <form method="get" action="@Url.Action("DoanhThuChiTiet", "BaoCao", new { area = "Admin" })" class="row g-2 align-items-end mb-4">
+        <div class="col-auto">
+            <label class="form-label small">Từ</label>
+            <input type="date" name="from" value="@ViewBag.From" class="form-control" />
+        </div>
+        <div class="col-auto">
+            <label class="form-label small">Đến</label>
+            <input type="date" name="to" value="@ViewBag.To" class="form-control" />
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary">Lọc</button>
+        </div>
+    </form>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card p-3">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="small text-muted">Tổng doanh thu</div>
+                        <div class="fs-4 fw-bold text-success">@String.Format(System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), "{0:c0}", ViewBag.TotalRevenue ?? 0)</div>
+                        <div class="small">Đơn hàng: @ViewBag.TotalOrders</div>
+                    </div>
+                    <div class="text-end">
+                        @if(ViewBag.ShowingPaid != null && (bool)ViewBag.ShowingPaid)
+                        {
+                            <span class="badge bg-success">Chỉ đơn đã thanh toán</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Bao gồm tất cả đơn</span>
+                        }
+                    </div>
+                </div>
+
+                @if((ViewBag.TotalOrders ?? 0) == 0)
+                {
+                    <div class="mt-3 text-muted small">Không có đơn hàng trong khoảng thời gian đã chọn. Thử mở rộng khoảng thời gian hoặc kiểm tra trạng thái đơn.</div>
+                }
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card p-3">
+                <canvas id="chartDay" style="height:220px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm p-3">
+                <h6>Doanh thu theo sản phẩm (Top 50)</h6>
+                <div class="table-responsive mt-2">
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr><th>Mã</th><th>Sản phẩm</th><th>Số lượng</th><th class="text-end">Doanh thu</th></tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.ProductRevenue != null && ((IEnumerable<dynamic>)ViewBag.ProductRevenue).Any())
+                            {
+                                foreach(var p in (IEnumerable<dynamic>)ViewBag.ProductRevenue)
+                                {
+                                    <tr>
+                                        <td>@p.MaSP</td>
+                                        <td>@p.TenSP</td>
+                                        <td>@p.Quantity</td>
+                                        <td class="text-end">@String.Format(System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), "{0:c0}", p.Revenue)</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">Không có dữ liệu sản phẩm</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm p-3">
+                <h6>Doanh thu theo danh mục</h6>
+                <div class="table-responsive mt-2">
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr><th>Danh mục</th><th>Số lượng</th><th class="text-end">Doanh thu</th></tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.CategoryRevenue != null && ((IEnumerable<dynamic>)ViewBag.CategoryRevenue).Any())
+                            {
+                                foreach(var c in (IEnumerable<dynamic>)ViewBag.CategoryRevenue)
+                                {
+                                    <tr>
+                                        <td>@c.TenDM</td>
+                                        <td>@c.Quantity</td>
+                                        <td class="text-end">@String.Format(System.Globalization.CultureInfo.GetCultureInfo("vi-VN"), "{0:c0}", c.Revenue)</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">Không có dữ liệu danh mục</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var labels = @Html.Raw(ViewBag.LabelsByDay ?? "[]");
+        var data = @Html.Raw(ViewBag.DataByDay ?? "[]");
+
+        const formatCurrency = (v) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v);
+
+        var ctx = document.getElementById('chartDay');
+        if (ctx) {
+            new Chart(ctx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{ label: 'Doanh thu', data: data, borderColor: '#4e73df', backgroundColor: 'rgba(78,115,223,0.1)', fill: true, tension: 0.3 }]
+                },
+                options: {
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => 'Doanh thu: ' + formatCurrency(c.raw) } } },
+                    scales: { y: { beginAtZero: true, ticks: { callback: (v) => formatCurrency(v) } } }
+                }
+            });
+        }
+    </script>
+}
